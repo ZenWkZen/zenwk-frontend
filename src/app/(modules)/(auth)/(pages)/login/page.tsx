@@ -14,8 +14,8 @@ import Label from "../../components/Label";
 import SubTitle from "../../components/SubTitlle";
 
 interface LoginForm {
-  email: string;
-  password: string;
+    email: string;
+    password: string;
 }
 
 /**
@@ -23,80 +23,99 @@ interface LoginForm {
  * @returns
  */
 const Login = () => {
-  const { requiredEmail, requiredPassword, patternEmail, minLength } =
-    formValidate();
-  const [loading, setLoding] = useState(false);
+    const [resetPassword, setResetPassword] = useState(false);
+    const { requiredEmail, requiredPassword, patternEmail, minLength } =
+        formValidate();
+    const [loading, setLoding] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<LoginForm>();
+    const {
+        register,
+        handleSubmit,
+        setError,
+        formState: { errors },
+    } = useForm<LoginForm>();
 
-  /**
-   * @abstract Procesa el formulario de incio de sesión. Consume el API de login.
-   *
-   */
-  const onSubmit = handleSubmit(async (data) => {
-    const path = "/auth/login";
-    const loginJson = { username: data.email, password: data.password };
+    /**
+     * @abstract Procesa el formulario de incio de sesión. Consume el API de login.
+     *
+     */
+    const onSubmit = handleSubmit(async (data) => {
+        setResetPassword(false);
+        const path = "/auth/login";
+        const loginJson = { username: data.email, password: data.password };
 
-    try {
-      const result = await fetchJwtBaseApi(
-        path,
-        undefined,
-        undefined,
-        loginJson,
-        "POST"
-      );
-    } catch (error: unknown) {
-      const errors = error as ClientErrorMessage;
-      switch (errors.code) {
-        case "FUNC_SEC_006":
-          return setError("email", { message: errors.message });
-        case "FUNC_SEC_017":
-          return setError("password", { message: errors.message });
-        default:
-          return setError("root", { message: (error as Error).message });
-      }
-    }
-  });
+        try {
+            const result = await fetchJwtBaseApi(
+                path,
+                undefined,
+                undefined,
+                loginJson,
+                "POST"
+            );
+        } catch (error: unknown) {
+            const errors = error as ClientErrorMessage;
+            switch (errors.code) {
+                case "FUNC_SEC_006":
+                    return setError("email", { message: errors.message });
+                case "FUNC_SEC_017":
+                    setResetPassword(true);
+                    return setError("password", { message: errors.message });
+                default:
+                    return setError("root", {
+                        message: (error as Error).message,
+                    });
+            }
+        }
+    });
 
-  return (
-    <>
-      <Title title="Bienvenido a Zenwk" />
-      <SubTitle text="Inicia sesión y descubre una forma motivadora y eficiente de gestionar tus actividades." />
-      <form onSubmit={onSubmit} className="flex flex-col items-center ">
-        <FormInput
-          type="root"
-          label="Dirección de email"
-          placeholder="name@your-email.com"
-          {...register("email", {
-            required: requiredEmail,
-            pattern: patternEmail,
-          })}
-          isError={Boolean(errors.email || errors.root)}
-        >
-          <FormError error={errors.email} />
-        </FormInput>
+    return (
+        <>
+            <Title title="Bienvenido a Zenwk" />
+            <SubTitle text="Inicia sesión y descubre una forma motivadora y eficiente de gestionar tus actividades." />
+            <div className="grid justify-items-center px-2">
+                <form onSubmit={onSubmit}>
+                    <FormInput
+                        type="root"
+                        label="Dirección de email"
+                        placeholder="name@your-email.com"
+                        {...register("email", {
+                            required: requiredEmail,
+                            pattern: patternEmail,
+                        })}
+                        isError={Boolean(errors.email || errors.root)}
+                    >
+                        <FormError error={errors.email} />
+                    </FormInput>
 
-        <FormInput
-          type="password"
-          {...register("password", { required: requiredPassword, minLength })}
-          label="Ingresa tu contraseña"
-          isError={Boolean(errors.password || errors.root)}
-        >
-          <FormError error={errors.password} />
-        </FormInput>
-        {loading ? (
-          <ButtonLoading />
-        ) : (
-          <Button type="submit" text="Iniciar sesión" />
-        )}
-      </form>
-    </>
-  );
+                    <FormInput
+                        type="password"
+                        {...register("password", {
+                            required: requiredPassword,
+                            minLength,
+                        })}
+                        label="Ingresa tu contraseña"
+                        isError={Boolean(errors.password || errors.root)}
+                    >
+                        <FormError error={errors.password} />
+
+                        {resetPassword && (
+                            <div className="mt-3 text-center">
+                                <Label text="¿Olvidaste tu contraseña? Restablécela aquí. " />
+                            </div>
+                        )}
+                    </FormInput>
+                    {loading ? (
+                        <ButtonLoading />
+                    ) : (
+                        <Button type="submit" text="Iniciar sesión" />
+                    )}
+                    <div className="mt-7 text-center">
+                        <Label text="¿No tienes una cuenta? Regístrate." />
+                    </div>
+                </form>
+            </div>
+        </>
+    );
 };
 
 export default Login;

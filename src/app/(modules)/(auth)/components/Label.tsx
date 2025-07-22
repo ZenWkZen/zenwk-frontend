@@ -1,14 +1,11 @@
 const Label = ({ text }: { text: string }) => {
-  return (
-    <>
-      <label
-        className="block mb-2 text-sm font-medium  dark:ttext-gray-700 
-          text-gray-500"
-      >
-        {text}
-      </label>
-    </>
-  );
+    return (
+        <>
+            <label className="mb-2 block text-sm font-medium text-gray-500 sm:w-[400px] dark:text-gray-700">
+                {text}
+            </label>
+        </>
+    );
 };
 
 export default Label;

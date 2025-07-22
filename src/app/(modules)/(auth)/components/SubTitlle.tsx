@@ -1,5 +1,5 @@
 interface Props {
-  text: string;
+    text: string;
 }
 
 /**
@@ -8,11 +8,11 @@ interface Props {
  * @returns
  */
 const SubTitle = ({ text }: Props) => {
-  return (
-    <h3 className="text-center my-5 text-xl font-medium text-gray-500">
-      {text}
-    </h3>
-  );
+    return (
+        <h3 className="my-5 text-center text-xl font-medium text-gray-500">
+            {text}
+        </h3>
+    );
 };
 
 export default SubTitle;
