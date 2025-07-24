@@ -1,5 +1,5 @@
 interface Props {
-    text: string;
+    text: React.ReactNode;
 }
 
 /**
@@ -9,9 +9,7 @@ interface Props {
  */
 const SubTitle = ({ text }: Props) => {
     return (
-        <h3 className="my-5 text-center text-xl font-medium text-gray-500">
-            {text}
-        </h3>
+        <h3 className="my-5 text-center font-medium text-gray-500">{text}</h3>
     );
 };
 

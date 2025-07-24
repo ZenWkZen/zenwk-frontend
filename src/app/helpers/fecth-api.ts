@@ -1,5 +1,6 @@
 import { getTokenUrl, getBaseUrl } from "./api-helper";
-import { BackendErrorResponse } from "<app>/app/interfaces/errors";
+import { BackendErrorResponse } from "<app>/app/interfaces/auth";
+import { error } from "console";
 import qs from "qs";
 
 /**
@@ -10,33 +11,33 @@ import qs from "qs";
  * @returns
  */
 export const getMergedOptions = (
-  methodHttp: string,
-  tokenJwt?: string,
-  bodyJson?: object
+    methodHttp: string,
+    tokenJwt?: string,
+    bodyJson?: object
 ) => {
-  const headers: Record<string, string> = {};
-  let isBody: boolean = false;
+    const headers: Record<string, string> = {};
+    let isBody: boolean = false;
 
-  if (tokenJwt) {
-    headers["Authorization"] = `Bearer ${tokenJwt}`;
-  }
+    if (tokenJwt) {
+        headers["Authorization"] = `Bearer ${tokenJwt}`;
+    }
 
-  if (bodyJson && Object.keys.length > 0) {
-    headers["content-type"] = "application/json";
-    isBody = true;
-  }
+    if (bodyJson && Object.keys.length > 0) {
+        headers["content-type"] = "application/json";
+        isBody = true;
+    }
 
-  const options: RequestInit & { next?: { revalidate: number } } = {
-    next: { revalidate: 60 },
-    method: methodHttp,
-    headers,
-  };
+    const options: RequestInit & { next?: { revalidate: number } } = {
+        next: { revalidate: 60 },
+        method: methodHttp,
+        headers,
+    };
 
-  if (isBody) {
-    options.body = JSON.stringify(bodyJson);
-  }
+    if (isBody) {
+        options.body = JSON.stringify(bodyJson);
+    }
 
-  return options;
+    return options;
 };
 
 /**
@@ -46,7 +47,7 @@ export const getMergedOptions = (
  * @returns
  */
 export const getUrl = (queryString: string, path: string) => {
-  return `/api${path}${queryString ? `?${queryString}` : ""}`;
+    return `/api${path}${queryString ? `?${queryString}` : ""}`;
 };
 
 /**
@@ -55,11 +56,11 @@ export const getUrl = (queryString: string, path: string) => {
  * @returns
  */
 export const getQueryString = (queryParams?: Record<string, string>) => {
-  if (queryParams && Object.keys(queryParams).length == 0) {
-    return qs.stringify(queryParams, { encodeValuesOnly: true });
-  }
+    if (queryParams && Object.keys(queryParams).length == 0) {
+        return qs.stringify(queryParams, { encodeValuesOnly: true });
+    }
 
-  return qs.stringify(undefined, { encodeValuesOnly: true });
+    return qs.stringify(undefined, { encodeValuesOnly: true });
 };
 
 /**
@@ -69,48 +70,48 @@ export const getQueryString = (queryParams?: Record<string, string>) => {
  * @returns
  */
 export const getFetch = async (
-  requestUrl: string,
-  mergedOptions: RequestInit & { next?: { revalidate: number } }
+    requestUrl: string,
+    mergedOptions: RequestInit & { next?: { revalidate: number } }
 ) => {
-  const res = await fetch(requestUrl, mergedOptions);
+    try {
+        const res = await fetch(requestUrl, mergedOptions);
 
-  if (res.status == 404 || res.status == 500) {
-    const errorBackend = await res.json();
-    throw {
-      code: errorBackend.code,
-      message: errorBackend.error,
-    };
-  }
+        if (res.status === 404 || res.status === 500) {
+            const errorBackend = await res.json();
+            throw {
+                code: errorBackend.code,
+                message: errorBackend.error,
+            };
+        }
 
-  if (!res.ok) {
-    console.log("Error", res);
-    throw new Error("Error en getFetch() ....");
-  }
+        if (res.status === 204 || res.status === 201) {
+            return true;
+        }
 
-  return await res.json();
+        return await res.json();
+    } catch (error: unknown) {
+        throw error;
+    }
 };
 
 /**
  * Genera un token asociado al email del usuario.
  * @returns
  */
-export const fetchTokenApi = async (correo?: string) => {
-  const path = "verification/token/send";
-  try {
-    const queryString = getQueryString(undefined);
-    const mergedOptions = getMergedOptions("POST", undefined, {
-      email: correo,
-    });
+export const fetchTokenApi = async (correo: string) => {
+    const path = "/verification/token/send";
+    try {
+        const queryString = getQueryString(undefined);
+        const mergedOptions = getMergedOptions("POST", undefined, {
+            email: correo,
+        });
 
-    const requestUrl = `${getTokenUrl(getUrl(queryString, path))}`;
+        const requestUrl = `${getTokenUrl(getUrl(queryString, path))}`;
 
-    const data = await getFetch(requestUrl, mergedOptions);
-    console.log("fetchTokenApi: ------> ", data);
-    return data;
-  } catch (error) {
-    console.error("error!", error);
-    throw new Error("Error en fetchTokenApi()...");
-  }
+        return await getFetch(requestUrl, mergedOptions);
+    } catch (error: unknown) {
+        throw new Error(error as string);
+    }
 };
 
 /**
@@ -118,25 +119,21 @@ export const fetchTokenApi = async (correo?: string) => {
  * @param tokenCode
  */
 export const fetchValidateTokenApi = async (
-  tokenCode: string,
-  email: string
+    tokenCode: string,
+    email: string
 ) => {
-  try {
-    if (tokenCode) {
-      throw new Error("El valor del token es oblitario.");
+    try {
+        const path = "/verification/token/validate/" + tokenCode;
+        const mergedOptions = getMergedOptions("POST", undefined, {
+            email: email,
+        });
+        const queryString = getQueryString(undefined);
+        const requestUrl = `${getTokenUrl(getUrl(queryString, path))}`;
+        const data = await getFetch(requestUrl, mergedOptions);
+        return data;
+    } catch (error: unknown) {
+        throw error as BackendErrorResponse;
     }
-
-    const path = "verification/token/validate/" + tokenCode;
-    const mergedOptions = getMergedOptions("POST", undefined, { email: email });
-    const queryString = getQueryString(undefined);
-    const requestUrl = `${getTokenUrl(getUrl(queryString, path))}`;
-    const data = await getFetch(requestUrl, mergedOptions);
-    console.log("fetchValidateTokenApi: ------> ", data);
-    return data;
-  } catch (error) {
-    console.error("error!", error);
-    console.log("Error en fetchValidateTokenApi()...");
-  }
 };
 
 /**
@@ -149,22 +146,22 @@ export const fetchValidateTokenApi = async (
  * @returns
  */
 export const fetchJwtBaseApi = async (
-  path: string,
-  urlParamObjects?: Record<string, string>,
-  tokenJwt = "",
-  bodyJson = {},
-  methodHttp = ""
+    path: string,
+    urlParamObjects?: Record<string, string>,
+    tokenJwt = "",
+    bodyJson = {},
+    methodHttp = ""
 ) => {
-  console.log();
+    console.log();
 
-  try {
-    const mergedOptions = getMergedOptions(methodHttp, tokenJwt, bodyJson);
-    const queryString = getQueryString(urlParamObjects);
-    const requestUrl = `${getBaseUrl(getUrl(queryString, path))}`;
+    try {
+        const mergedOptions = getMergedOptions(methodHttp, tokenJwt, bodyJson);
+        const queryString = getQueryString(urlParamObjects);
+        const requestUrl = `${getBaseUrl(getUrl(queryString, path))}`;
 
-    const data = await getFetch(requestUrl, mergedOptions);
-    return data;
-  } catch (error: unknown) {
-    throw error as BackendErrorResponse;
-  }
+        const data = await getFetch(requestUrl, mergedOptions);
+        return data;
+    } catch (error: unknown) {
+        throw error as BackendErrorResponse;
+    }
 };

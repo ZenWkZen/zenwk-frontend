@@ -7,6 +7,12 @@ export const formValidate = () => {
             message: "Formato de email incorrecto.",
         },
 
+        patternPassword: {
+            value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+={}[\]:;"'<>,.?/~\\|]).{8,}$/,
+            message:
+                "La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.",
+        },
+
         minLength: {
             value: 6,
             message: "Mínimo 6 carácteres.",

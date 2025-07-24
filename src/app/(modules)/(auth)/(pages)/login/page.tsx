@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { formValidate } from "../../../../utils/formValidate.js";
 import { fetchJwtBaseApi } from "<app>/app/helpers/fecth-api";
-import { ClientErrorMessage } from "<app>/app/interfaces/errors";
+import { ClientErrorMessage, LoginForm } from "<app>/app/interfaces/auth";
 
 import Title from "../../components/Title";
 import FormInput from "../../components/FormInput";
@@ -11,12 +11,7 @@ import FormError from "../../components/FormError";
 import ButtonLoading from "../../components/ButtonLoading";
 import Button from "../../components/Button";
 import Label from "../../components/Label";
-import SubTitle from "../../components/SubTitlle";
-
-interface LoginForm {
-    email: string;
-    password: string;
-}
+import HeaderText from "../../components/HeaderText";
 
 /**
  * @abstract Pagina del lado del cliente para el Login correspondiente.
@@ -36,8 +31,8 @@ const Login = () => {
     } = useForm<LoginForm>();
 
     /**
-     * @abstract Procesa el formulario de incio de sesión. Consume el API de login.
-     *
+     * Procesa el formulario de incio de sesión. Consume el API de login.
+     * @oaram data
      */
     const onSubmit = handleSubmit(async (data) => {
         setResetPassword(false);
@@ -55,9 +50,9 @@ const Login = () => {
         } catch (error: unknown) {
             const errors = error as ClientErrorMessage;
             switch (errors.code) {
-                case "FUNC_SEC_006":
+                case "FUNC_SEC_USER_0003":
                     return setError("email", { message: errors.message });
-                case "FUNC_SEC_017":
+                case "FUNC_SEC_AUTH_0003":
                     setResetPassword(true);
                     return setError("password", { message: errors.message });
                 default:
@@ -71,7 +66,7 @@ const Login = () => {
     return (
         <>
             <Title title="Bienvenido a Zenwk" />
-            <SubTitle text="Inicia sesión y descubre una forma motivadora y eficiente de gestionar tus actividades." />
+            <HeaderText text="Inicia sesión y descubre una forma motivadora y eficiente de gestionar tus actividades." />
             <div className="grid justify-items-center px-2">
                 <form onSubmit={onSubmit}>
                     <FormInput
