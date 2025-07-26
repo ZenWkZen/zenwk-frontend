@@ -84,6 +84,10 @@ export const getFetch = async (
             };
         }
 
+        if (res.status === 400) {
+            throw "400 (Bad request)";
+        }
+
         if (res.status === 204 || res.status === 201) {
             return true;
         }

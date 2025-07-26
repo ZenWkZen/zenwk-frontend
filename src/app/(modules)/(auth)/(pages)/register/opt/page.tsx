@@ -39,6 +39,7 @@ const Opt = () => {
     const [otp, setOtp] = useState("");
     const [errorBack, setErrorBack] = useState("");
     const [isSuccessResend, setSuccessResend] = useState(false);
+    const [codeError, setCodeError] = useState("");
 
     /**
      * Maneja el evento onChange, cuando el código cumple con 6 dígitos
@@ -58,12 +59,21 @@ const Opt = () => {
             }
         } catch (error: unknown) {
             const errors = error as ClientErrorMessage;
-            setErrorBack(errors.message);
+            switch (errors.code) {
+                case "FUNC_SEC_VERIFICATION_0003":
+                    setCodeError(errors.code);
+                    setErrorBack(errors.message);
+                    console.log(codeError);
+                    return;
+                default:
+                    setErrorBack(errors.message);
+                    return;
+            }
         }
     };
 
     /**
-     *  Reenvio de email
+     * Evento click. Reenvio de email
      */
     const handleClick = async () => {
         setOtp("");
@@ -104,10 +114,27 @@ const Opt = () => {
                         />
                     )}
                 />
-
-                {errorBack && (
-                    <div className="text-cente d mt-2">
+                {errorBack && !codeError && (
+                    <div className="mt-2 text-center">
                         <FormError error={errorBack} />
+                    </div>
+                )}
+
+                {codeError && (
+                    <div className="mt-2 text-center">
+                        <FormError
+                            error={
+                                <>
+                                    {errorBack} Volver al{" "}
+                                    <Link
+                                        href="/register"
+                                        className="font-medium hover:underline"
+                                    >
+                                        registro.
+                                    </Link>
+                                </>
+                            }
+                        />
                     </div>
                 )}
 

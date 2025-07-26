@@ -88,7 +88,7 @@ const Login = () => {
                         })}
                         isError={Boolean(errors.email || errors.root)}
                     >
-                        <FormError error={errors.email} />
+                        <FormError error={errors.email?.message ?? ""} />
                     </FormInput>
 
                     <FormInput

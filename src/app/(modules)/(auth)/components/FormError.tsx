@@ -1,7 +1,8 @@
 import { FieldError, Merge, FieldErrorsImpl } from "react-hook-form";
+import React, { useState } from "react";
 
 interface Props {
-    error?: string | FieldError | Merge<FieldError, FieldErrorsImpl<any>>;
+    error?: React.ReactNode;
 }
 
 /**
@@ -10,21 +11,11 @@ interface Props {
  * @returns
  */
 const FormError = ({ error }: Props) => {
-    let errorMessage: string | undefined;
-
-    if (typeof error === "string") {
-        errorMessage = error;
-    } else {
-        errorMessage = (error as FieldError)?.message;
-    }
-
     return (
         <>
-            {typeof errorMessage === "string" && (
-                <div className="mt-1 mb-2 w-full text-sm text-red-600 sm:w-[400px] dark:text-red-500">
-                    <span className="font-stretch-normal">{errorMessage}</span>
-                </div>
-            )}
+            <div className="mt-1 mb-2 w-full text-sm text-red-600 sm:w-[400px] dark:text-red-500">
+                <span className="font-stretch-normal">{error}</span>
+            </div>
         </>
     );
 };
