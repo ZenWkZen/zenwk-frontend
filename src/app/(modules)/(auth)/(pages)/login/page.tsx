@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { formValidate } from "../../../../utils/formValidate.js";
 import { fetchJwtBaseApi } from "<app>/app/helpers/fecth-api";
 import { ClientErrorMessage, LoginForm } from "<app>/app/interfaces/auth";
+import { useSearchParams } from "next/navigation.js";
 
 import Title from "../../components/Title";
 import FormInput from "../../components/FormInput";
@@ -12,12 +13,18 @@ import ButtonLoading from "../../components/ButtonLoading";
 import Button from "../../components/Button";
 import Label from "../../components/Label";
 import HeaderText from "../../components/HeaderText";
+import LableLink from "../../components/LableLink";
+import Link from "next/link.js";
+import Paragraph from "../../components/Paragraph";
 
 /**
  * @abstract Pagina del lado del cliente para el Login correspondiente.
  * @returns
  */
 const Login = () => {
+    const searchParams = useSearchParams();
+    const emailParam = searchParams.get("email") as string;
+
     const [resetPassword, setResetPassword] = useState(false);
     const { requiredEmail, requiredPassword, patternEmail, minLength } =
         formValidate();
@@ -65,17 +72,19 @@ const Login = () => {
 
     return (
         <>
-            <Title title="Bienvenido a Zenwk" />
-            <HeaderText text="Inicia sesión y descubre una forma motivadora y eficiente de gestionar tus actividades." />
+            <Title title="Bienvenido a ZenWk" />
+            <HeaderText text="Inicia sesión y redescubre el equilibrio entre productividad y bienestar." />
             <div className="grid justify-items-center px-2">
                 <form onSubmit={onSubmit}>
                     <FormInput
+                        value="fsdfsfsfss"
                         type="root"
                         label="Dirección de email"
                         placeholder="name@your-email.com"
                         {...register("email", {
                             required: requiredEmail,
                             pattern: patternEmail,
+                            value: emailParam && emailParam,
                         })}
                         isError={Boolean(errors.email || errors.root)}
                     >
@@ -105,7 +114,19 @@ const Login = () => {
                         <Button type="submit" text="Iniciar sesión" />
                     )}
                     <div className="mt-7 text-center">
-                        <Label text="¿No tienes una cuenta? Regístrate." />
+                        <Paragraph
+                            text={
+                                <>
+                                    ¿No tienes una cuenta?{" "}
+                                    <Link href="/register">
+                                        <LableLink
+                                            text=" Regístrate"
+                                            textColor="text-cyan-800"
+                                        />
+                                    </Link>
+                                </>
+                            }
+                        />
                     </div>
                 </form>
             </div>

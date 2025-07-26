@@ -106,7 +106,7 @@ const Opt = () => {
                 />
 
                 {errorBack && (
-                    <div className="mt-2 text-center">
+                    <div className="text-cente d mt-2">
                         <FormError error={errorBack} />
                     </div>
                 )}
@@ -118,7 +118,10 @@ const Opt = () => {
                             <>
                                 Revisa tu carpeta de spam o haz clic{" "}
                                 <Link href="" onClick={handleClick}>
-                                    <LableLink text="aquí" />
+                                    <LableLink
+                                        text="aquí"
+                                        textColor="text-cyan-700"
+                                    />
                                 </Link>{" "}
                                 para reenviar el código.
                             </>

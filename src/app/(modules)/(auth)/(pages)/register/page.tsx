@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { formValidate } from "../../../../utils/formValidate.js";
-import { fetchTokenApi } from "<app>/app/helpers/fecth-api";
+import { fetchTokenApi, fetchJwtBaseApi } from "<app>/app/helpers/fecth-api";
+import { ClientErrorMessage } from "<app>/app/interfaces/auth.js";
 
-import Title from "../../components/Title";
 import HeaderText from "../../components/HeaderText";
 import FormInput from "../../components/FormInput";
 import FormError from "../../components/FormError";
@@ -31,22 +31,37 @@ const register = () => {
      */
     const onSubmit = handleSubmit(async (data) => {
         try {
-            const result = await fetchTokenApi(data.email);
-            if (result) {
-                router.push(
-                    `/register/opt?email=${encodeURIComponent(data.email)}`
-                );
+            const path = "/users/email/" + data.email;
+            const validateEmail = await fetchJwtBaseApi(
+                path,
+                undefined,
+                undefined,
+                undefined,
+                "GET"
+            );
+
+            if (!validateEmail) {
+                const result = await fetchTokenApi(data.email);
+                if (result) {
+                    router.push(
+                        `/register/opt?email=${encodeURIComponent(data.email)}`
+                    );
+                }
             }
         } catch (error: unknown) {
-            setError("root", { message: (error as Error).message });
+            const errors = error as ClientErrorMessage;
+            if (errors.code === "FUNC_SEC_USER_0001") {
+                router.push(`/login?email=${encodeURIComponent(data.email)}`);
+            } else {
+                setError("root", { message: (error as Error).message });
+            }
         }
     });
 
     return (
         <>
-            <Title title="ZenWk" />
-            <HeaderText text="Empezar a usar ZenWKß" />
-            <div className="grip justify-items-center px-2">
+            <HeaderText text="Empezar a usar ZenWK" />
+            <div className="grid justify-items-center px-2">
                 <form onSubmit={onSubmit}>
                     <FormInput
                         type="root"

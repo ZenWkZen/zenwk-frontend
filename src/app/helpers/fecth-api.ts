@@ -149,7 +149,7 @@ export const fetchJwtBaseApi = async (
     path: string,
     urlParamObjects?: Record<string, string>,
     tokenJwt = "",
-    bodyJson = {},
+    bodyJson?: {},
     methodHttp = ""
 ) => {
     console.log();

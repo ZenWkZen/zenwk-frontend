@@ -1,14 +1,22 @@
+import clsx from "clsx";
+
+interface Props {
+    text: string;
+    textColor?: string;
+}
+
 /**
  * Componente para resaltar textos usando en link's.
  * @param param0
  * @returns
  */
-const LableLink = ({ text }: { text: string }) => {
-    return (
-        <span className="mb-2 inline cursor-pointer font-bold text-[#339989] hover:underline">
-            {text}
-        </span>
+const LableLink = ({ text, textColor }: Props) => {
+    //  text-[#339989]
+    const styleSpan = clsx(
+        "mb-2 inline cursor-pointer font-medium hover:underline ",
+        textColor
     );
+    return <span className={styleSpan}>{text}</span>;
 };
 
 export default LableLink;
