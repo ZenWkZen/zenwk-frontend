@@ -1,29 +1,33 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { formValidate } from "../../../../utils/formValidate";
+import { formValidate } from "@app/shared/utils/formValidate";
 import {
     fetchJwtBaseApi,
     fecthValidateRegisterEmail,
-} from "<app>/app/helpers/fecth-api";
-import { ClientErrorMessage, LoginForm } from "<app>/app/interfaces/auth";
+} from "@app/helpers/fecth-api";
+import { ClientErrorMessage, LoginForm } from "@app/shared/interfaces/auth";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation.js";
-import { Messages } from "<app>/constants/messages";
+import { AuthMessages } from "@auth/constants/auth-messages";
 
-import Title from "../../components/Title";
-import FormInput from "../../components/FormInput";
-import FormError from "../../components/FormError";
-import ButtonLoading from "../../components/ButtonLoading";
-import Button from "../../components/Button";
-import HeaderText from "../../components/HeaderText";
-import LableLink from "../../components/LableLink";
+import Title from "@app/shared/components/Title";
+import FormInput from "@app/shared/components/FormInput";
+import FormError from "@app/shared/components/FormError";
+import ButtonLoading from "@app/shared/components/ButtonLoading";
+import Button from "@app/shared/components/Button";
+import HeaderText from "@app/shared/components/HeaderText";
+import LabelLink from "@app/shared/components/LabelLink";
+import Paragraph from "@app/shared/components/Paragraph";
 import Link from "next/link";
-import Paragraph from "../../components/Paragraph";
+import { AuthErrors } from "../../constants/auth-errors";
 
 /**
- * @abstract Pagina del lado del cliente para el Login correspondiente.
- * @returns
+ * Página login: ssta vista presenta un formulario de autenticación para que el usuario ingrese
+ * su correo electrónico y contraseña. Valida los datos, muestra errores en caso de
+ * fallos y redirige al usuario tras un login exitoso. También puede precargar el
+ * email si se recibe como parámetro en la URL.
  */
 const Login = () => {
     const router = useRouter();
@@ -33,11 +37,15 @@ const Login = () => {
         formValidate();
     const [loading, setLoding] = useState(false);
     const [isRegisteredUser, setRegisteredUser] = useState(false);
-
+    /**
+     * Prellena el campo de email si se recibe como parámetro en la URL (?email=).
+     * Ejecutado en el primer render y al cambiar los searchParams.
+     */
     useEffect(() => {
         const emailFromParam = searchParams.get("email");
         if (emailFromParam) {
             setEmailParam(emailFromParam);
+            setValue("email", emailFromParam);
         }
     }, [searchParams]);
 
@@ -47,11 +55,12 @@ const Login = () => {
         register,
         handleSubmit,
         setError,
+        setValue,
         formState: { errors },
     } = useForm<LoginForm>();
 
     /**
-     * useForm Login - Props para register password
+     * Configuración de validación para el campo de email.
      */
     const passwordRegister = register("password", {
         required: requiredPassword,
@@ -59,16 +68,15 @@ const Login = () => {
     });
 
     /**
-     * useForm Login - Props para register email / username
+     * Configuración de validación para el campo de contraseña.
      */
     const usernameRegister = register("email", {
         required: requiredEmail,
         pattern: patternEmail,
-        value: emailParam || "",
     });
 
-    /**
-     * userForm Login - Valida si un email esta registrado, si aplica habilita el forgot-password
+    /** Al perder el foco del campo email, valida si el correo está registrado
+     * para habilitar la opción de recuperación de contraseña.
      */
     const handleEmailBlur = async () => {
         const isValid = await trigger("email");
@@ -89,8 +97,8 @@ const Login = () => {
     };
 
     /**
-     * Procesa el formulario de incio de sesión. Consume el API de login.
-     * @oaram data
+     Envía las credenciales al backend para iniciar sesión.
+     Redirige a registro si el usuario no existe o muestra errores según el código.
      */
     const onSubmit = handleSubmit(async (data) => {
         const path = "/auth/login";
@@ -107,9 +115,9 @@ const Login = () => {
         } catch (error: unknown) {
             const errors = error as ClientErrorMessage;
             switch (errors.code) {
-                case "FUNC_SEC_USER_0003":
+                case AuthErrors.funciontal.login.notFoundUsername:
                     return router.push(`/register?email=${data.email}`);
-                case "FUNC_SEC_AUTH_0003":
+                case AuthErrors.funciontal.login.badCredentials:
                     return setError("password", { message: errors.message });
                 default:
                     return setError("root", {
@@ -119,17 +127,18 @@ const Login = () => {
         }
     });
 
+    /**
+     * Componente React con el formulario de login.
+     */
     return (
         <>
-            <Title title={Messages.PAGE_LOGIN_TEXT.TITLE_WELCOME_GENERAL} />
-            <HeaderText
-                text={Messages.PAGE_LOGIN_TEXT.SUBTITLE_WELCOME_GENERAL}
-            />
+            <Title title={AuthMessages.login.title} />
+            <HeaderText text={AuthMessages.login.subtitle} />
             <div className="grid justify-items-center px-2">
                 <form onSubmit={onSubmit}>
                     <FormInput
                         type="root"
-                        label={Messages.PAGE_LOGIN_TEXT.LABEL_EMAIL}
+                        label={AuthMessages.inputs.email}
                         placeholder="name@your-email.com"
                         {...usernameRegister}
                         onBlur={async (e) => {
@@ -153,7 +162,7 @@ const Login = () => {
                             passwordRegister.onChange(e);
                             await trigger("password");
                         }}
-                        label={Messages.PAGE_LOGIN_TEXT.LABEL_PASSWORD}
+                        label={AuthMessages.inputs.password}
                         isError={Boolean(errors.password || errors.root)}
                     >
                         <FormError error={errors.password?.message ?? ""} />
@@ -163,12 +172,14 @@ const Login = () => {
                                 <Paragraph
                                     text={
                                         <>
-                                            {Messages.AUTH.FORGOT_PASSWORD +
-                                                " "}
+                                            {
+                                                AuthMessages.forgotPassword
+                                                    .linkText
+                                            }
                                             <Link
                                                 href={`/login/forgot-password?email=${emailParam}`}
                                             >
-                                                <LableLink
+                                                <LabelLink
                                                     text=" aquí"
                                                     textColor="text-cyan-800"
                                                 />
@@ -182,18 +193,20 @@ const Login = () => {
                     {loading ? (
                         <ButtonLoading />
                     ) : (
-                        <Button type="submit" text="Iniciar sesión" />
+                        <Button
+                            type="submit"
+                            text={AuthMessages.buttons.login}
+                        />
                     )}
                     <div className="mt-7 text-center">
                         <Paragraph
                             text={
                                 <>
-                                    {Messages.PAGE_LOGIN_TEXT.NOT_REGISTERED +
-                                        " "}
+                                    {AuthMessages.register.promptText}
                                     <Link href="/register">
-                                        <LableLink
+                                        <LabelLink
                                             text={
-                                                Messages.REGISTER.REGISTER_LABEL
+                                                AuthMessages.register.linkText
                                             }
                                             textColor="text-cyan-800"
                                         />

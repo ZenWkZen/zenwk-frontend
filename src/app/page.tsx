@@ -1,9 +1,9 @@
 import { Span } from "next/dist/trace";
-import HeaderText from "./(modules)/(auth)/components/HeaderText";
-import SubTitle from "./(modules)/(auth)/components/SubTitle";
-import Title from "./(modules)/(auth)/components/Title";
-import Footer from "./components/Footer";
-import Header from "./components/Header";
+import HeaderText from "../shared/components/HeaderText";
+import SubTitle from "../shared/components/SubTitle";
+import Title from "../shared/components/Title";
+import Footer from "@app/shared/components/Footer";
+import Header from "@app/shared/components/Header";
 import Link from "next/link";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 

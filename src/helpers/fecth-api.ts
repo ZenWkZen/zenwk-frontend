@@ -1,14 +1,14 @@
 import { getTokenUrl, getBaseUrl } from "./api-helper";
-import { BackendErrorResponse } from "<app>/app/interfaces/auth";
-import { error } from "console";
+import { BackendErrorResponse } from "@app/shared/interfaces/auth";
 import qs from "qs";
 
 /**
- * Genera el merged options del request.
- * @param methodHttp
- * @param tokenJwt
- * @param bodyJson
- * @returns
+ * Construye y retorna un objeto de configuración para `fetch` con headers, método y body.
+ *
+ * @param methodHttp - Método HTTP (GET, POST, etc.).
+ * @param tokenJwt - Token JWT opcional para autenticación.
+ * @param bodyJson - Objeto JSON que se incluirá como cuerpo de la solicitud.
+ * @returns Opciones para el método `fetch`.
  */
 export const getMergedOptions = (
     methodHttp: string,
@@ -16,13 +16,13 @@ export const getMergedOptions = (
     bodyJson?: object
 ) => {
     const headers: Record<string, string> = {};
-    let isBody: boolean = false;
+    let isBody = false;
 
     if (tokenJwt) {
         headers["Authorization"] = `Bearer ${tokenJwt}`;
     }
 
-    if (bodyJson && Object.keys.length > 0) {
+    if (bodyJson && Object.keys(bodyJson).length > 0) {
         headers["content-type"] = "application/json";
         isBody = true;
     }
@@ -41,33 +41,32 @@ export const getMergedOptions = (
 };
 
 /**
- * @abstract Obtiene la URL del API a consultar.
- * @param queryString
- * @param path
- * @returns
+ * Construye una URL relativa con su query string (si aplica) bajo el prefijo `/api`.
+ *
+ * @param queryString - Cadena de parámetros en formato URL.
+ * @param path - Ruta base.
+ * @returns URL relativa combinada.
  */
 export const getUrl = (queryString: string, path: string) => {
     return `/api${path}${queryString ? `?${queryString}` : ""}`;
 };
 
 /**
- * Genera un query string a partir de un objeto de parámetros.
- * @param queryParams
- * @returns
+ * Convierte un objeto de parámetros en un query string.
+ *
+ * @param queryParams - Objeto con claves y valores de parámetros.
+ * @returns Query string codificado.
  */
 export const getQueryString = (queryParams?: Record<string, string>) => {
-    if (queryParams && Object.keys(queryParams).length == 0) {
-        return qs.stringify(queryParams, { encodeValuesOnly: true });
-    }
-
-    return qs.stringify(undefined, { encodeValuesOnly: true });
+    return qs.stringify(queryParams, { encodeValuesOnly: true });
 };
 
 /**
- * Realiza la peticion, valida errores funcionales y técnicos manejados en el backend.
- * @param requestUrl
- * @param mergedOptions
- * @returns
+ * Realiza una petición `fetch` y maneja errores funcionales y técnicos definidos por el backend.
+ *
+ * @param requestUrl - URL completa a consumir.
+ * @param mergedOptions - Configuración de la solicitud.
+ * @returns Respuesta procesada o error.
  */
 export const getFetch = async (
     requestUrl: string,
@@ -100,7 +99,9 @@ export const getFetch = async (
 
 /**
  * Genera un token asociado al email del usuario.
- * @returns
+ *
+ * @param correo - Email del usuario.
+ * @returns Respuesta del backend o error.
  */
 export const fetchTokenApi = async (correo: string) => {
     const path = "/verification/token/send";
@@ -118,10 +119,12 @@ export const fetchTokenApi = async (correo: string) => {
 };
 
 /**
- * Valida un token del usuario
- * @param code
- * @param email
- * @param uuid
+ * Valida un token enviado al usuario.
+ *
+ * @param code - Código de verificación.
+ * @param email - Email del usuario.
+ * @param uuid - Identificador único de la sesión.
+ * @returns Respuesta del backend o error.
  */
 export const fetchValidateTokenApi = async (
     code: string,
@@ -145,13 +148,14 @@ export const fetchValidateTokenApi = async (
 };
 
 /**
- * Utilidad para realizar el consumo de API´s expuestas en el stack security-zenwk.
- * @param path recurso rest expuesto.
- * @param urlParamObjects parámetros (query´s filter) en la url (endpoint) para el recurso rest expuesto.
- * @param tokenJwt token jwt
- * @param bodyJson  body json de la solicitud
- * @param methodHttp  metodo HTTP
- * @returns
+ * Utilidad para realizar el consumo de APIs expuestas en el stack `security-zenwk`.
+ *
+ * @param path - Recurso REST expuesto.
+ * @param urlParamObjects - Parámetros de la URL (query params).
+ * @param tokenJwt - Token JWT.
+ * @param bodyJson - Cuerpo de la solicitud.
+ * @param methodHttp - Método HTTP.
+ * @returns Respuesta del backend o error.
  */
 export const fetchJwtBaseApi = async (
     path: string,
@@ -160,8 +164,6 @@ export const fetchJwtBaseApi = async (
     bodyJson?: {},
     methodHttp = ""
 ) => {
-    console.log();
-
     try {
         const mergedOptions = getMergedOptions(methodHttp, tokenJwt, bodyJson);
         const queryString = getQueryString(urlParamObjects);
@@ -173,14 +175,15 @@ export const fetchJwtBaseApi = async (
         throw error as BackendErrorResponse;
     }
 };
-/**
-  * Utilidad para realizar el consumo de API´s expuestas en el stack verification-zenwk.
 
- * @param path 
- * @param urlParamObjects 
- * @param bodyJson 
- * @param methodHttp 
- * @returns 
+/**
+ * Utilidad para consumir APIs expuestas en el stack `verification-zenwk`.
+ *
+ * @param path - Recurso REST expuesto.
+ * @param urlParamObjects - Parámetros de la URL (query params).
+ * @param bodyJson - Cuerpo de la solicitud.
+ * @param methodHttp - Método HTTP.
+ * @returns Respuesta del backend o error.
  */
 export const fethStackVerifcation = async (
     path: string,
@@ -201,14 +204,14 @@ export const fethStackVerifcation = async (
 };
 
 /**
- * Consume el api que valida si un email ya se encuentra registrado.
- * @param email
- * @returns
+ * Verifica si un correo ya se encuentra registrado en el sistema.
+ *
+ * @param email - Correo a validar.
+ * @returns `true` si ya está registrado, `false` si no.
  */
 export const fecthValidateRegisterEmail = async (email: string) => {
     try {
         const path = "/users/email/" + email;
-        // si el usuario no esta registrado retorna false por defecto
         return await fetchJwtBaseApi(
             path,
             undefined,
@@ -218,7 +221,6 @@ export const fecthValidateRegisterEmail = async (email: string) => {
         );
     } catch (error: unknown) {
         if (isBackendErrorResponse(error)) {
-            // Si se genera un error es por que el usuario ya esta registrado.
             return true;
         }
         console.log("Error no registrado por el backend: ", error);
@@ -226,9 +228,10 @@ export const fecthValidateRegisterEmail = async (email: string) => {
 };
 
 /**
- * Valida que el error tengo el formato de los errores reportados por el backend.
- * @param error
- * @returns
+ * Verifica si el objeto de error corresponde a un error del backend.
+ *
+ * @param error - Objeto a validar.
+ * @returns `true` si el error es del tipo `BackendErrorResponse`.
  */
 function isBackendErrorResponse(error: unknown): error is BackendErrorResponse {
     return (
@@ -243,17 +246,12 @@ function isBackendErrorResponse(error: unknown): error is BackendErrorResponse {
  * Obtiene la URL base del sitio, adaptándose automáticamente
  * al entorno (cliente o servidor).
  *
- * - En el cliente: usa `window.location`.
- * - En el servidor: usa la variable de entorno `NEXT_PUBLIC_BASE_URL`.
- *
- * @returns {string} La URL base, incluyendo protocolo y host (ej. https://zenwk.com).
+ * @returns URL base del sitio (ej. https://zenwk.com).
  */
 export const getUrlServer = (): string => {
-    // Si estamos en el navegador
     if (typeof window !== "undefined") {
         return `${window.location.protocol}//${window.location.host}`;
     }
 
-    // Si estamos en el servidor (ej. SSR o API)
     return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 };

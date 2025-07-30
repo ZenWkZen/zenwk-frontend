@@ -3,7 +3,7 @@ interface Props {
 }
 
 /**
- * @abstract Componente general para los subtitulos.
+ *  Componente general para los subtitulos.
  * @param title
  * @returns
  */

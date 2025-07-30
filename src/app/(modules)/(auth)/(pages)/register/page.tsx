@@ -1,39 +1,46 @@
 "use client";
 
-import { SearchParams } from "next/dist/server/request/search-params.js";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { formValidate } from "../../../../utils/formValidate.js";
+import { formValidate } from "@app/shared/utils/formValidate";
 import {
     fetchTokenApi,
     fecthValidateRegisterEmail,
-} from "<app>/app/helpers/fecth-api";
-import { ClientErrorMessage } from "<app>/app/interfaces/auth.js";
+} from "@app/helpers/fecth-api";
 
-import HeaderText from "../../components/HeaderText";
-import FormInput from "../../components/FormInput";
-import FormError from "../../components/FormError";
-import Button from "../../components/Button";
+import HeaderText from "@app/shared/components/HeaderText";
+import FormInput from "@app/shared/components/FormInput";
+import FormError from "@app/shared/components/FormError";
+import Button from "@app/shared/components/Button";
+import { AuthMessages } from "../../constants/auth-messages";
+import { Messages } from "@app/shared/constants/messages";
 
 /**
- * Registro del usuario, renderiza al page para la gestion del OPT.
- * @returns
+ * Registro del usuario, renderiza la pantalla para la gestión del OTP.
  */
 const Register = () => {
+    // Obtiene parámetros de la URL
     const searchParams = useSearchParams();
     const emailFromLogin = searchParams.get("email") as string;
+
+    // Hook para navegación programática
     const router = useRouter();
+
+    // Reglas de validación para el campo email
     const { requiredEmail, patternEmail } = formValidate();
+
+    // Hook para manejar formularios
     const {
-        register,
         setError,
+        register,
         handleSubmit,
         formState: { errors },
     } = useForm<{ email: string }>();
 
     /**
-     * Evento evento de envió del formulario.
-     * @param data
+     * Evento de envío del formulario.
+     * Valida el email, solicita el token y redirige según resultado.
+     * @param data - Datos del formulario
      */
     const onSubmit = handleSubmit(async (data) => {
         try {
@@ -50,24 +57,30 @@ const Register = () => {
                 router.push(`/login?email=${encodeURIComponent(data.email)}`);
             }
         } catch (error: unknown) {
-            console.log("Se ha presentado un error inesperado: ", error);
+            // Captura y muestra el error en el campo email
+            const errorMessage = error as string;
+            setError("email", { message: errorMessage || "Error unknown..." });
         }
     });
 
     return (
         <>
-            {!emailFromLogin && <HeaderText text="Empezar a usar ZenWK" />}
+            {/* Renderiza encabezado según si viene de login o no */}
+            {!emailFromLogin && (
+                <HeaderText text={AuthMessages.register.title} />
+            )}
             {emailFromLogin && (
                 <>
-                    <HeaderText text="Crea tu cuenta y da el primer paso." />
+                    <HeaderText text={AuthMessages.register.subtitle} />
                 </>
             )}
+            {/* Formulario de ingreso de correo */}
             <div className="grid justify-items-center px-2">
                 <form onSubmit={onSubmit}>
                     <FormInput
                         type="root"
-                        label="Dirección de email"
-                        placeholder="name@your-email.com"
+                        label={AuthMessages.inputs.email}
+                        placeholder={Messages.placeholder.emailExample}
                         {...register("email", {
                             required: requiredEmail,
                             pattern: patternEmail,
@@ -77,7 +90,10 @@ const Register = () => {
                     >
                         <FormError error={errors.email?.message ?? ""} />
                     </FormInput>
-                    <Button type="submit" text="Continuar con email" />
+                    <Button
+                        type="submit"
+                        text={AuthMessages.buttons.registerWithEmail}
+                    />
                 </form>
             </div>
         </>

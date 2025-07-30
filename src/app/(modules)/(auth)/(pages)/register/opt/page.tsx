@@ -1,24 +1,25 @@
 "use client";
 
-import { ClientErrorMessage } from "<app>/app/interfaces/auth";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
-import {
-    fetchValidateTokenApi,
-    fetchTokenApi,
-} from "<app>/app/helpers/fecth-api";
-import useRedirectRegister from "../../../hooks/useRedirectRegister";
-
 import OtpInput from "react-otp-input";
-import HeaderText from "../../../components/HeaderText";
-import Label from "../../../components/Label";
-import SubTitle from "../../../components/SubTitle";
-import FormError from "../../../components/FormError";
 import Link from "next/link";
-import LableLink from "../../../components/LableLink";
-import Paragraph from "../../../components/Paragraph";
-import ButtonOpen from "../../../components/ButtonOpen";
+import { ClientErrorMessage } from "@app/shared/interfaces/auth";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+
+import HeaderText from "@app/shared/components/HeaderText";
+import Label from "@app/shared/components/Label";
+import SubTitle from "@app/shared/components/SubTitle";
+import FormError from "@app/shared/components/FormError";
+import LabelLink from "@app/shared/components/LabelLink";
+import Paragraph from "@app/shared/components/Paragraph";
+import ButtonOpen from "@app/shared/components/ButtonOpen";
+import { fetchValidateTokenApi, fetchTokenApi } from "@app/helpers/fecth-api";
+
+import { AuthErrors } from "@auth/constants/auth-errors";
+import useRedirectRegister from "@auth/hooks/useRedirectRegister";
+import { AuthMessages } from "../../../constants/auth-messages";
+import { Messages } from "@app/shared/constants/messages";
 
 /**
  * Estilos CSS inline para el código OPT.
@@ -29,9 +30,9 @@ const styleOpt = {
 };
 
 /**
- * Generación de códigos asociados a la cuenta del usuario.
- * @param email
- * @returns
+ * Página de ingreso de código OTP para la validación del usuario en el proceso de registro.
+ * El código se verifica automáticamente al ingresar 6 dígitos.
+ * También permite reenviar el código al correo del usuario.
  */
 const Opt = () => {
     const [otp, setOtp] = useState("");
@@ -45,19 +46,19 @@ const Opt = () => {
     const [loading, setLoading] = useState(true);
 
     /**
-     * useEffect del componente.
+     * Redirige si los parámetros no son válidos o no coinciden.
      */
     useRedirectRegister(email, uuid, setLoading);
 
     /**
-     * Cargador ... implementar cargador
+     * Muestra un mensaje mientras se cargan los datos necesarios.
      */
     if (loading) return <span>Cargando ..... </span>;
 
     /**
-     * Maneja el evento onChange, cuando el código cumple con 6 dígitos
-     * se cosumen el api de verigiación si todo es exitoso, se continua con el registro.
-     * @param code
+     * Valida el código OTP cuando el usuario completa los 6 dígitos.
+     * Redirige a la página de establecer contraseña si el código es válido.
+     * Muestra errores en caso de fallo.
      */
     const handleChange = async (code: string) => {
         setOtp(code);
@@ -75,7 +76,7 @@ const Opt = () => {
         } catch (error: unknown) {
             const errors = error as ClientErrorMessage;
             switch (errors.code) {
-                case "FUNC_SEC_VERIFICATION_0003":
+                case AuthErrors.funciontal.login.emailNotMatch:
                     setCodeError(errors.code);
                     setErrorBack(errors.message);
                     console.log(codeError);
@@ -88,7 +89,8 @@ const Opt = () => {
     };
 
     /**
-     * Evento click. Reenvio de email
+     * Reenvía un nuevo código OTP al correo del usuario.
+     * Reinicia estados de error y código anterior.
      */
     const handleClick = async () => {
         setOtp("");
@@ -104,16 +106,21 @@ const Opt = () => {
             setErrorBack(errors.message);
         }
     };
+
+    /**
+     * Renderizado del componente OTP, instrucciones, inputs de código,
+     * mensajes de error, enlaces para reenviar código y acceso rápido a clientes de correo.
+     */
     return (
         <>
-            <HeaderText text="Ingresa el código que llego a tu correo" />
+            <HeaderText text={AuthMessages.otp.title} />
             <SubTitle
                 text={
-                    <>
-                        Te hemos enviado un código al correo{" "}
+                    <div className="px-4">
+                        {AuthMessages.otp.subtitleSendEmail}
                         <label className="text-[#339989]"> {email}</label>,
-                        ingresa el código para continuar
-                    </>
+                        {AuthMessages.otp.subtitleEnterCode}
+                    </div>
                 }
             />
             <div className="grid justify-items-center">
@@ -154,18 +161,20 @@ const Opt = () => {
                 )}
 
                 <div className="mt-3 text-center">
-                    <Paragraph text="¿No ves nuestro correo en tu bandeja de entrada?" />
+                    <Paragraph text={AuthMessages.otp.emailNotFound} />
                     <Paragraph
                         text={
                             <>
-                                Revisa tu carpeta de spam o haz clic{" "}
+                                {AuthMessages.otp.checkSpamOrClick}
                                 <Link href="" onClick={handleClick}>
-                                    <LableLink
-                                        text="aquí"
+                                    <LabelLink
+                                        text={
+                                            Messages.commons.literalTexts.here
+                                        }
                                         textColor="text-cyan-700"
                                     />
-                                </Link>{" "}
-                                para reenviar el código.
+                                </Link>
+                                {AuthMessages.otp.resendCodeLink}
                             </>
                         }
                     />
@@ -174,7 +183,7 @@ const Opt = () => {
                 <div className="mt-3 w-full text-center sm:w-[400px]">
                     {isSuccessResend && (
                         <>
-                            <Label text="¡Código reenviado exitosamente! Puedes revisar tu correo ahora." />
+                            <Label text={AuthMessages.otp.codeResentSuccess} />
                         </>
                     )}
                     <Paragraph
@@ -183,19 +192,19 @@ const Opt = () => {
                                 <li>
                                     <ButtonOpen
                                         href="https://mail.google.com"
-                                        text="Gmail"
+                                        text={Messages.commons.gmail}
                                     />
                                 </li>
                                 <li>
                                     <ButtonOpen
                                         href="https://outlook.live.com/mail"
-                                        text="Outlook"
+                                        text={Messages.commons.outlook}
                                     />
                                 </li>
                                 <li>
                                     <ButtonOpen
                                         href="https://www.icloud.com/mail"
-                                        text="iCloud"
+                                        text={Messages.commons.iCloud}
                                     />
                                 </li>
                             </ul>

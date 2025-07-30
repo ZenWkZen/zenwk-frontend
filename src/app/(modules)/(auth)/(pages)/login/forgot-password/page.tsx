@@ -1,45 +1,52 @@
 "use client";
 
-import FormInput from "../../../components/FormInput";
-import HeaderText from "../../../components/HeaderText";
-import Title from "../../../components/Title";
-import FormError from "../../../components/FormError";
-import Button from "../../../components/Button";
-import Label from "../../../components/Label";
+import FormInput from "@app/shared/components/FormInput";
+import HeaderText from "@app/shared/components/HeaderText";
+import Title from "@app/shared/components/Title";
+import FormError from "@app/shared/components/FormError";
+import Button from "@app/shared/components/Button";
+import Label from "@app/shared/components/Label";
 import Link from "next/link";
-import LableLink from "../../../components/LableLink";
+import LabelLink from "@app/shared/components/LabelLink";
 
 import { useForm } from "react-hook-form";
-import { formValidate } from "../../../../../utils/formValidate.js";
-import { LoginForm } from "<app>/app/interfaces/auth";
+import { formValidate } from "@app/shared/utils/formValidate";
+import { LoginForm } from "@app/shared/interfaces/auth";
 import { useSearchParams } from "next/navigation";
+
 import {
     fecthValidateRegisterEmail,
-    fetchJwtBaseApi,
     getUrlServer,
     fethStackVerifcation,
-} from "<app>/app/helpers/fecth-api";
-import { ClientErrorMessage } from "<app>/app/interfaces/auth";
-import { useState } from "react";
-import { Messages } from "<app>/constants/messages";
-import { getBaseUrl } from "<app>/app/helpers/api-helper";
+} from "@app/helpers/fecth-api";
 
+import { ClientErrorMessage } from "@app/shared/interfaces/auth";
+import { useState } from "react";
+import { AuthMessages } from "@auth/constants/auth-messages";
+import { Messages } from "@app/shared/constants/messages";
+
+/**
+ * Página ForgotPassword: permite ingresar el email para recuperar contraseña.
+ */
 const ForgotPassword = () => {
-    const searchParams = useSearchParams();
-    const emailFromLogin = searchParams.get("email") as string;
-    const { patternEmail, requiredEmail } = formValidate();
-    const [isRegisteredEmail, setRegisteredEmail] = useState(true);
-    const [paramEmail, setParamEmail] = useState("");
-    const [isSendEmail, setSendEmail] = useState(false);
     const {
         register,
         handleSubmit,
         setError,
+        setValue,
         formState: { errors },
     } = useForm<LoginForm>();
 
+    const searchParams = useSearchParams();
+    const emailFromLogin = searchParams.get("email") as string;
+    setValue("email", emailFromLogin);
+    const { patternEmail, requiredEmail } = formValidate();
+    const [isRegisteredEmail, setRegisteredEmail] = useState(true);
+    const [paramEmail, setParamEmail] = useState("");
+
     /**
-     *
+     * Maneja el envío del formulario.
+     * Valida si el email está registrado y envía el código de verificación.
      */
     const onSubmit = handleSubmit(async (data) => {
         try {
@@ -66,21 +73,25 @@ const ForgotPassword = () => {
         }
     });
 
+    const regiserEmail = register("email", {
+        required: requiredEmail,
+        pattern: patternEmail,
+    });
+
+    /**
+     * Renderiza el formulario de recuperación de contraseña.
+     */
     return (
         <>
-            <Title title={Messages.FORGOT_PASSWORD.TITLE} />
-            <HeaderText text={Messages.FORGOT_PASSWORD.SUBTITLE} />
+            <Title title={AuthMessages.forgotPassword.title} />
+            <HeaderText text={AuthMessages.forgotPassword.subtitle} />
             <div className="grid justify-center">
                 <form onSubmit={onSubmit}>
                     <FormInput
                         type="root"
-                        label={Messages.PAGE_LOGIN_TEXT.LABEL_EMAIL}
-                        placeholder="name@your-email.com"
-                        {...register("email", {
-                            required: requiredEmail,
-                            pattern: patternEmail,
-                            value: emailFromLogin || "",
-                        })}
+                        label={AuthMessages.inputs.email}
+                        placeholder={Messages.placeholder.emailExample}
+                        {...regiserEmail}
                         onChange={() => setRegisteredEmail(true)}
                         isError={Boolean(errors.email)}
                     >
@@ -90,14 +101,13 @@ const ForgotPassword = () => {
                         <Label
                             text={
                                 <div className="text-center">
-                                    {Messages.PAGE_LOGIN_TEXT.NOT_REGISTERED +
-                                        " "}
+                                    {AuthMessages.register.promptText}
                                     <Link
                                         href={`/register?email=${paramEmail}`}
                                     >
-                                        <LableLink
+                                        <LabelLink
                                             text={
-                                                Messages.REGISTER.REGISTER_LABEL
+                                                AuthMessages.register.linkText
                                             }
                                         />
                                     </Link>
@@ -107,7 +117,7 @@ const ForgotPassword = () => {
                     )}
                     <Button
                         type="submit"
-                        text={Messages.BUTTONS.FORGOT_PASSWORD}
+                        text={AuthMessages.buttons.forgotPassword}
                     />
                 </form>
             </div>

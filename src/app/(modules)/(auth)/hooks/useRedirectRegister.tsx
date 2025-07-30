@@ -1,16 +1,15 @@
 import { useRouter } from "next/navigation";
 import { useEffect, Dispatch, SetStateAction } from "react";
 
-import {
-    fetchValidateTokenApi,
-    fetchTokenApi,
-} from "<app>/app/helpers/fecth-api";
+import { fetchValidateTokenApi } from "@app/helpers/fecth-api";
 
 /**
- *  Redirige al registro si el código UUID, token y email no coinciden.
- * @param email - Email del usuario
- * @param uuid  - Código UUID al generar el token
- * @param setLoading  - Cargador
+ * Verifica la validez del token, UUID y correo electrónico proporcionados.
+ * Si alguno no coincide, redirige al usuario al flujo de registro.
+ *
+ * @param email - Correo electrónico del usuario.
+ * @param uuid - Identificador UUID asociado al token.
+ * @param setLoading - Función para activar o desactivar el indicador de carga.
  */
 const useRedirectRegister = (
     email: string,
@@ -24,7 +23,7 @@ const useRedirectRegister = (
     useEffect(() => {
         const validateToken = async () => {
             /**
-             * Funcion para validar el flujo del registro
+             * Función para validar el flujo del registro.
              */
             try {
                 if (email && uuid) {

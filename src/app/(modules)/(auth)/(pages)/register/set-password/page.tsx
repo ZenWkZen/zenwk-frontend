@@ -4,16 +4,20 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { useForm } from "react-hook-form";
-import { SetPassword, ClientErrorMessage } from "<app>/app/interfaces/auth";
-import { formValidate } from "../../../../../utils/formValidate.js";
-import { fetchJwtBaseApi } from "<app>/app/helpers/fecth-api";
+import {
+    SetPassword,
+    ClientErrorMessage,
+} from "@app/shared/interfaces/auth.js";
+import { formValidate } from "@app/shared/utils/formValidate.js";
+import { fetchJwtBaseApi } from "@app/helpers/fecth-api";
 
-import FormInput from "../../../components/FormInput";
-import FormError from "../../../components/FormError";
-import HeaderText from "../../../components/HeaderText";
-import Button from "../../../components/Button";
-import InputDisabled from "../../../components/InputDisabled";
-import useRedirectRegister from "../../../hooks/useRedirectRegister";
+import FormInput from "@app/shared/components/FormInput.jsx";
+import FormError from "@app/shared/components/FormError.jsx";
+import HeaderText from "@app/shared/components/HeaderText.jsx";
+import Button from "@app/shared/components/Button.jsx";
+import InputDisabled from "@app/shared/components/InputDisabled.jsx";
+import useRedirectRegister from "@auth/hooks/useRedirectRegister";
+import { AuthMessages } from "../../../constants/auth-messages";
 
 const page = () => {
     const searchParams = useSearchParams();
@@ -74,14 +78,17 @@ const page = () => {
     return (
         <>
             <div className="grid justify-center px-2">
-                <HeaderText text="Elige una contraseña" isCenter={false} />
+                <HeaderText
+                    text={AuthMessages.setPassword.title}
+                    isCenter={false}
+                />
                 <form onSubmit={onSubmit}>
                     <InputDisabled text={email} />
 
                     <FormInput
-                        label="Contraseña"
+                        label={AuthMessages.inputs.password}
                         type="password"
-                        placeholder="Ingresa tu contraseña"
+                        placeholder={AuthMessages.placeholder.password}
                         {...register("password", {
                             required: requiredPassword,
                             pattern: patternPassword,
@@ -92,9 +99,9 @@ const page = () => {
                     </FormInput>
 
                     <FormInput
-                        label="Confirmar contraseña"
+                        label={AuthMessages.inputs.repasword}
                         type="password"
-                        placeholder="Ingresa tu contraseña"
+                        placeholder={AuthMessages.placeholder.password}
                         {...register("repassword", {
                             validate: validateEquals(getValues("password")),
                         })}
