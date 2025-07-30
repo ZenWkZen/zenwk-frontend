@@ -1,9 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { SearchParams } from "next/dist/server/request/search-params.js";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { formValidate } from "../../../../utils/formValidate.js";
-import { fetchTokenApi, fetchJwtBaseApi } from "<app>/app/helpers/fecth-api";
+import {
+    fetchTokenApi,
+    fecthValidateRegisterEmail,
+} from "<app>/app/helpers/fecth-api";
 import { ClientErrorMessage } from "<app>/app/interfaces/auth.js";
 
 import HeaderText from "../../components/HeaderText";
@@ -15,7 +19,9 @@ import Button from "../../components/Button";
  * Registro del usuario, renderiza al page para la gestion del OPT.
  * @returns
  */
-const register = () => {
+const Register = () => {
+    const searchParams = useSearchParams();
+    const emailFromLogin = searchParams.get("email") as string;
     const router = useRouter();
     const { requiredEmail, patternEmail } = formValidate();
     const {
@@ -31,36 +37,31 @@ const register = () => {
      */
     const onSubmit = handleSubmit(async (data) => {
         try {
-            const path = "/users/email/" + data.email;
-            const validateEmail = await fetchJwtBaseApi(
-                path,
-                undefined,
-                undefined,
-                undefined,
-                "GET"
-            );
-
+            const validateEmail = await fecthValidateRegisterEmail(data.email);
             if (!validateEmail) {
                 const result = await fetchTokenApi(data.email);
+                console.log(result);
                 if (result) {
                     router.push(
-                        `/register/opt?email=${encodeURIComponent(data.email)}`
+                        `/register/opt?email=${encodeURIComponent(result.email)}&uuid=${encodeURIComponent(result.uuid)}`
                     );
                 }
+            } else {
+                router.push(`/login?email=${encodeURIComponent(data.email)}`);
             }
         } catch (error: unknown) {
-            const errors = error as ClientErrorMessage;
-            if (errors.code === "FUNC_SEC_USER_0001") {
-                router.push(`/login?email=${encodeURIComponent(data.email)}`);
-            } else {
-                setError("root", { message: (error as Error).message });
-            }
+            console.log("Se ha presentado un error inesperado: ", error);
         }
     });
 
     return (
         <>
-            <HeaderText text="Empezar a usar ZenWK" />
+            {!emailFromLogin && <HeaderText text="Empezar a usar ZenWK" />}
+            {emailFromLogin && (
+                <>
+                    <HeaderText text="Crea tu cuenta y da el primer paso." />
+                </>
+            )}
             <div className="grid justify-items-center px-2">
                 <form onSubmit={onSubmit}>
                     <FormInput
@@ -70,10 +71,11 @@ const register = () => {
                         {...register("email", {
                             required: requiredEmail,
                             pattern: patternEmail,
+                            value: emailFromLogin && emailFromLogin,
                         })}
                         isError={Boolean(errors.email || errors.root)}
                     >
-                        <FormError error={errors.email} />
+                        <FormError error={errors.email?.message ?? ""} />
                     </FormInput>
                     <Button type="submit" text="Continuar con email" />
                 </form>
@@ -82,4 +84,4 @@ const register = () => {
     );
 };
 
-export default register;
+export default Register;

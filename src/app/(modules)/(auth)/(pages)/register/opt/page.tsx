@@ -1,13 +1,14 @@
 "use client";
 
-import { ClientErrorMessage, LoginForm } from "<app>/app/interfaces/auth";
+import { ClientErrorMessage } from "<app>/app/interfaces/auth";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
     fetchValidateTokenApi,
     fetchTokenApi,
 } from "<app>/app/helpers/fecth-api";
+import useRedirectRegister from "../../../hooks/useRedirectRegister";
 
 import OtpInput from "react-otp-input";
 import HeaderText from "../../../components/HeaderText";
@@ -33,13 +34,25 @@ const styleOpt = {
  * @returns
  */
 const Opt = () => {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const email = searchParams.get("email") as string;
     const [otp, setOtp] = useState("");
     const [errorBack, setErrorBack] = useState("");
     const [isSuccessResend, setSuccessResend] = useState(false);
     const [codeError, setCodeError] = useState("");
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const email = searchParams.get("email") as string;
+    const uuid = searchParams.get("uuid") as string;
+    const [loading, setLoading] = useState(true);
+
+    /**
+     * useEffect del componente.
+     */
+    useRedirectRegister(email, uuid, setLoading);
+
+    /**
+     * Cargador ... implementar cargador
+     */
+    if (loading) return <span>Cargando ..... </span>;
 
     /**
      * Maneja el evento onChange, cuando el código cumple con 6 dígitos
@@ -51,10 +64,12 @@ const Opt = () => {
 
         try {
             if (code.length === 6) {
-                const res = await fetchValidateTokenApi(code, email);
+                const res = await fetchValidateTokenApi(code, email, uuid);
 
                 if (res) {
-                    router.push(`/register/set-password?email=${email}`);
+                    router.push(
+                        `/register/set-password?email=${encodeURIComponent(email)}&uuid=${encodeURIComponent(uuid)}`
+                    );
                 }
             }
         } catch (error: unknown) {
@@ -125,12 +140,12 @@ const Opt = () => {
                         <FormError
                             error={
                                 <>
-                                    {errorBack} Volver al{" "}
+                                    {errorBack} ¿Desea volver al{" "}
                                     <Link
                                         href="/register"
                                         className="font-medium hover:underline"
                                     >
-                                        registro.
+                                        registro?
                                     </Link>
                                 </>
                             }

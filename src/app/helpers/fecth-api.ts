@@ -111,7 +111,6 @@ export const fetchTokenApi = async (correo: string) => {
         });
 
         const requestUrl = `${getTokenUrl(getUrl(queryString, path))}`;
-
         return await getFetch(requestUrl, mergedOptions);
     } catch (error: unknown) {
         throw new Error(error as string);
@@ -120,16 +119,21 @@ export const fetchTokenApi = async (correo: string) => {
 
 /**
  * Valida un token del usuario
- * @param tokenCode
+ * @param code
+ * @param email
+ * @param uuid
  */
 export const fetchValidateTokenApi = async (
-    tokenCode: string,
-    email: string
+    code: string,
+    email: string,
+    uuid: string
 ) => {
     try {
-        const path = "/verification/token/validate/" + tokenCode;
+        const path = "/verification/token/validate";
         const mergedOptions = getMergedOptions("POST", undefined, {
-            email: email,
+            code,
+            email,
+            uuid,
         });
         const queryString = getQueryString(undefined);
         const requestUrl = `${getTokenUrl(getUrl(queryString, path))}`;
@@ -141,7 +145,7 @@ export const fetchValidateTokenApi = async (
 };
 
 /**
- * Utilidad para realizar el consumo de API´s expuestas remotamente.
+ * Utilidad para realizar el consumo de API´s expuestas en el stack security-zenwk.
  * @param path recurso rest expuesto.
  * @param urlParamObjects parámetros (query´s filter) en la url (endpoint) para el recurso rest expuesto.
  * @param tokenJwt token jwt
@@ -168,4 +172,88 @@ export const fetchJwtBaseApi = async (
     } catch (error: unknown) {
         throw error as BackendErrorResponse;
     }
+};
+/**
+  * Utilidad para realizar el consumo de API´s expuestas en el stack verification-zenwk.
+
+ * @param path 
+ * @param urlParamObjects 
+ * @param bodyJson 
+ * @param methodHttp 
+ * @returns 
+ */
+export const fethStackVerifcation = async (
+    path: string,
+    urlParamObjects?: Record<string, string>,
+    bodyJson?: {},
+    methodHttp = ""
+) => {
+    try {
+        const mergedOptions = getMergedOptions(methodHttp, undefined, bodyJson);
+        const queryString = getQueryString(urlParamObjects);
+        const requestUrl = `${getTokenUrl(getUrl(queryString, path))}`;
+
+        const data = await getFetch(requestUrl, mergedOptions);
+        return data;
+    } catch (error: unknown) {
+        throw error as BackendErrorResponse;
+    }
+};
+
+/**
+ * Consume el api que valida si un email ya se encuentra registrado.
+ * @param email
+ * @returns
+ */
+export const fecthValidateRegisterEmail = async (email: string) => {
+    try {
+        const path = "/users/email/" + email;
+        // si el usuario no esta registrado retorna false por defecto
+        return await fetchJwtBaseApi(
+            path,
+            undefined,
+            undefined,
+            undefined,
+            "GET"
+        );
+    } catch (error: unknown) {
+        if (isBackendErrorResponse(error)) {
+            // Si se genera un error es por que el usuario ya esta registrado.
+            return true;
+        }
+        console.log("Error no registrado por el backend: ", error);
+    }
+};
+
+/**
+ * Valida que el error tengo el formato de los errores reportados por el backend.
+ * @param error
+ * @returns
+ */
+function isBackendErrorResponse(error: unknown): error is BackendErrorResponse {
+    return (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        "message" in error
+    );
+}
+
+/**
+ * Obtiene la URL base del sitio, adaptándose automáticamente
+ * al entorno (cliente o servidor).
+ *
+ * - En el cliente: usa `window.location`.
+ * - En el servidor: usa la variable de entorno `NEXT_PUBLIC_BASE_URL`.
+ *
+ * @returns {string} La URL base, incluyendo protocolo y host (ej. https://zenwk.com).
+ */
+export const getUrlServer = (): string => {
+    // Si estamos en el navegador
+    if (typeof window !== "undefined") {
+        return `${window.location.protocol}//${window.location.host}`;
+    }
+
+    // Si estamos en el servidor (ej. SSR o API)
+    return process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 };

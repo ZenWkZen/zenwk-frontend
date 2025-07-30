@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+
 import { useForm } from "react-hook-form";
 import { SetPassword, ClientErrorMessage } from "<app>/app/interfaces/auth";
 import { formValidate } from "../../../../../utils/formValidate.js";
@@ -10,12 +13,13 @@ import FormError from "../../../components/FormError";
 import HeaderText from "../../../components/HeaderText";
 import Button from "../../../components/Button";
 import InputDisabled from "../../../components/InputDisabled";
-import { useSearchParams } from "next/navigation";
-import { Password } from "@mui/icons-material";
+import useRedirectRegister from "../../../hooks/useRedirectRegister";
 
 const page = () => {
     const searchParams = useSearchParams();
     const email = searchParams.get("email") as string;
+    const uuid = searchParams.get("uuid") as string;
+    const [loading, setLoading] = useState(true);
     const { requiredPassword, patternPassword, validateEquals } =
         formValidate();
 
@@ -26,6 +30,16 @@ const page = () => {
         getValues,
         formState: { errors },
     } = useForm<SetPassword>({ mode: "all" });
+
+    /**
+     * useEffect del componente.
+     */
+    useRedirectRegister(email, uuid, setLoading);
+
+    /**
+     * Cargador ...
+     */
+    if (loading) return <span>Cargando ..... </span>;
 
     /**
      * Procesa el formulario de set-password. Consume el API de crear usuario.
@@ -49,11 +63,11 @@ const page = () => {
             );
 
             if (result) {
-                // Redirigir a dashboard del usuario
+                // recuperar jwt...
             }
         } catch (error: unknown) {
             const errors = error as ClientErrorMessage;
-            console.log(errors.message);
+            setError("repassword", { message: errors.message });
         }
     });
 
@@ -62,7 +76,7 @@ const page = () => {
             <div className="grid justify-center px-2">
                 <HeaderText text="Elige una contraseña" isCenter={false} />
                 <form onSubmit={onSubmit}>
-                    <InputDisabled text="caalegria666@gmail.com" />
+                    <InputDisabled text={email} />
 
                     <FormInput
                         label="Contraseña"
@@ -74,7 +88,7 @@ const page = () => {
                         })}
                         isError={Boolean(errors.password)}
                     >
-                        <FormError error={errors.password} />
+                        <FormError error={errors.password?.message ?? ""} />
                     </FormInput>
 
                     <FormInput
@@ -86,7 +100,7 @@ const page = () => {
                         })}
                         isError={Boolean(errors.repassword)}
                     >
-                        <FormError error={errors.repassword} />
+                        <FormError error={errors.repassword?.message ?? ""} />
                     </FormInput>
 
                     <Button type="submit" text="Registrate" />

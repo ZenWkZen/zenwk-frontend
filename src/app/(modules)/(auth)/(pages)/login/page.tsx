@@ -1,20 +1,24 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { formValidate } from "../../../../utils/formValidate.js";
-import { fetchJwtBaseApi } from "<app>/app/helpers/fecth-api";
+import { formValidate } from "../../../../utils/formValidate";
+import {
+    fetchJwtBaseApi,
+    fecthValidateRegisterEmail,
+} from "<app>/app/helpers/fecth-api";
 import { ClientErrorMessage, LoginForm } from "<app>/app/interfaces/auth";
-import { useSearchParams } from "next/navigation.js";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation.js";
+import { Messages } from "<app>/constants/messages";
 
 import Title from "../../components/Title";
 import FormInput from "../../components/FormInput";
 import FormError from "../../components/FormError";
 import ButtonLoading from "../../components/ButtonLoading";
 import Button from "../../components/Button";
-import Label from "../../components/Label";
 import HeaderText from "../../components/HeaderText";
 import LableLink from "../../components/LableLink";
-import Link from "next/link.js";
+import Link from "next/link";
 import Paragraph from "../../components/Paragraph";
 
 /**
@@ -22,15 +26,24 @@ import Paragraph from "../../components/Paragraph";
  * @returns
  */
 const Login = () => {
+    const router = useRouter();
     const searchParams = useSearchParams();
-    const emailParam = searchParams.get("email") as string;
-
-    const [resetPassword, setResetPassword] = useState(false);
+    const [emailParam, setEmailParam] = useState("");
     const { requiredEmail, requiredPassword, patternEmail, minLength } =
         formValidate();
     const [loading, setLoding] = useState(false);
+    const [isRegisteredUser, setRegisteredUser] = useState(false);
+
+    useEffect(() => {
+        const emailFromParam = searchParams.get("email");
+        if (emailFromParam) {
+            setEmailParam(emailFromParam);
+        }
+    }, [searchParams]);
 
     const {
+        getValues,
+        trigger,
         register,
         handleSubmit,
         setError,
@@ -38,11 +51,48 @@ const Login = () => {
     } = useForm<LoginForm>();
 
     /**
+     * useForm Login - Props para register password
+     */
+    const passwordRegister = register("password", {
+        required: requiredPassword,
+        minLength,
+    });
+
+    /**
+     * useForm Login - Props para register email / username
+     */
+    const usernameRegister = register("email", {
+        required: requiredEmail,
+        pattern: patternEmail,
+        value: emailParam || "",
+    });
+
+    /**
+     * userForm Login - Valida si un email esta registrado, si aplica habilita el forgot-password
+     */
+    const handleEmailBlur = async () => {
+        const isValid = await trigger("email");
+        const emailOnBlur = getValues("email");
+        if (isValid) {
+            const path = `/users/email/${emailOnBlur}`;
+            try {
+                // Validación si el email ya esta registrado
+                const res = await fecthValidateRegisterEmail(emailOnBlur);
+                if (res) {
+                    setEmailParam(emailOnBlur);
+                    setRegisteredUser(res);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    };
+
+    /**
      * Procesa el formulario de incio de sesión. Consume el API de login.
      * @oaram data
      */
     const onSubmit = handleSubmit(async (data) => {
-        setResetPassword(false);
         const path = "/auth/login";
         const loginJson = { username: data.email, password: data.password };
 
@@ -58,9 +108,8 @@ const Login = () => {
             const errors = error as ClientErrorMessage;
             switch (errors.code) {
                 case "FUNC_SEC_USER_0003":
-                    return setError("email", { message: errors.message });
+                    return router.push(`/register?email=${data.email}`);
                 case "FUNC_SEC_AUTH_0003":
-                    setResetPassword(true);
                     return setError("password", { message: errors.message });
                 default:
                     return setError("root", {
@@ -72,20 +121,26 @@ const Login = () => {
 
     return (
         <>
-            <Title title="Bienvenido a ZenWk" />
-            <HeaderText text="Inicia sesión y redescubre el equilibrio entre productividad y bienestar." />
+            <Title title={Messages.PAGE_LOGIN_TEXT.TITLE_WELCOME_GENERAL} />
+            <HeaderText
+                text={Messages.PAGE_LOGIN_TEXT.SUBTITLE_WELCOME_GENERAL}
+            />
             <div className="grid justify-items-center px-2">
                 <form onSubmit={onSubmit}>
                     <FormInput
-                        value="fsdfsfsfss"
                         type="root"
-                        label="Dirección de email"
+                        label={Messages.PAGE_LOGIN_TEXT.LABEL_EMAIL}
                         placeholder="name@your-email.com"
-                        {...register("email", {
-                            required: requiredEmail,
-                            pattern: patternEmail,
-                            value: emailParam && emailParam,
-                        })}
+                        {...usernameRegister}
+                        onBlur={async (e) => {
+                            usernameRegister.onBlur(e);
+                            handleEmailBlur();
+                        }}
+                        onChange={() => {
+                            if (isRegisteredUser) {
+                                setRegisteredUser(false);
+                            }
+                        }}
                         isError={Boolean(errors.email || errors.root)}
                     >
                         <FormError error={errors.email?.message ?? ""} />
@@ -93,18 +148,34 @@ const Login = () => {
 
                     <FormInput
                         type="password"
-                        {...register("password", {
-                            required: requiredPassword,
-                            minLength,
-                        })}
-                        label="Ingresa tu contraseña"
+                        {...passwordRegister}
+                        onChange={async (e) => {
+                            passwordRegister.onChange(e);
+                            await trigger("password");
+                        }}
+                        label={Messages.PAGE_LOGIN_TEXT.LABEL_PASSWORD}
                         isError={Boolean(errors.password || errors.root)}
                     >
-                        <FormError error={errors.password} />
+                        <FormError error={errors.password?.message ?? ""} />
 
-                        {resetPassword && (
-                            <div className="mt-3 text-center">
-                                <Label text="¿Olvidaste tu contraseña? Restablécela aquí. " />
+                        {isRegisteredUser && (
+                            <div className="text-center">
+                                <Paragraph
+                                    text={
+                                        <>
+                                            {Messages.AUTH.FORGOT_PASSWORD +
+                                                " "}
+                                            <Link
+                                                href={`/login/forgot-password?email=${emailParam}`}
+                                            >
+                                                <LableLink
+                                                    text=" aquí"
+                                                    textColor="text-cyan-800"
+                                                />
+                                            </Link>
+                                        </>
+                                    }
+                                />
                             </div>
                         )}
                     </FormInput>
@@ -117,10 +188,13 @@ const Login = () => {
                         <Paragraph
                             text={
                                 <>
-                                    ¿No tienes una cuenta?{" "}
+                                    {Messages.PAGE_LOGIN_TEXT.NOT_REGISTERED +
+                                        " "}
                                     <Link href="/register">
                                         <LableLink
-                                            text=" Regístrate"
+                                            text={
+                                                Messages.REGISTER.REGISTER_LABEL
+                                            }
                                             textColor="text-cyan-800"
                                         />
                                     </Link>
