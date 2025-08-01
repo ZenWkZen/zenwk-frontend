@@ -1,36 +1,55 @@
 "use client";
 
-import { useState } from "react";
-import { useSearchParams } from "next/navigation";
-
 import { useForm } from "react-hook-form";
 import { SetPassword, ClientErrorMessage } from "@app/shared/interfaces/auth";
 import { formValidate } from "@app/shared/utils/formValidate";
 import { fetchJwtBaseApi } from "@app/helpers/fetch-api";
+import { AuthMessages } from "@auth/constants/auth-messages";
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import FormInput from "@app/shared/components/FormInput";
 import FormError from "@app/shared/components/FormError";
 import HeaderText from "@app/shared/components/HeaderText";
 import Button from "@app/shared/components/Button";
 import InputDisabled from "@app/shared/components/InputDisabled";
-import useRedirectRegister from "@auth/hooks/useRedirectRegister";
-import { AuthMessages } from "@auth/constants/auth-messages";
 import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
 import Title from "@app/shared/components/Title";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Share } from "@mui/icons-material";
+import useRedirectRegister from "@auth/hooks/useRedirectRegister";
 
+/**
+ * Interface que prepsenta los valores permitidos en la desestructuración.
+ */
 interface Props {
     buttonText: string;
     title: string;
     headerText: string;
+    onSubmitPassword: (
+        email: string,
+        password: string,
+        uuid: string | "",
+        tokenCode: string | ""
+    ) => Promise<void>;
 }
 
-const SetPasswordUser = () => {
+/**
+ * Componente génerico con formulario para el reingreso de password.
+ * @param param0
+ * @returns
+ */
+const SetPasswordUser = ({
+    title,
+    headerText,
+    buttonText,
+    onSubmitPassword,
+}: Props) => {
     const searchParams = useSearchParams();
-    const email = searchParams.get("email") as string;
-    const uuid = searchParams.get("uuid") as string;
+    const email = searchParams.get("email") ?? "";
+    const uuid = searchParams.get("uuid") ?? "";
+    const tokenCode = searchParams.get("code") ?? "";
     const [loading, setLoading] = useState(true);
+
     const { requiredPassword, patternPassword, validateEquals } =
         formValidate();
 
@@ -47,7 +66,6 @@ const SetPasswordUser = () => {
      * useEffect del componente.
      */
     useRedirectRegister(email, uuid, setLoading);
-
     /**
      * Cargador ...
      */
@@ -61,28 +79,15 @@ const SetPasswordUser = () => {
         const path = "/users";
 
         try {
-            const createUserJson = {
-                username: email.split("@")[0],
-                password: data.password,
-                email,
-            };
-            const result = await fetchJwtBaseApi(
-                path,
-                undefined,
-                undefined,
-                createUserJson,
-                "POST"
-            );
-
-            if (result) {
-                // recuperar jwt...
-            }
+            await onSubmitPassword(email, data.password, uuid, tokenCode);
         } catch (error: unknown) {
             const errors = error as ClientErrorMessage;
+            console.log("-----------", errors);
             setError("repassword", { message: errors.message });
         }
     });
 
+    /** Componente JSX con el formulario para el reingreso de contraseña. */
     return (
         <>
             <CenteredHeaderWithBack
@@ -90,13 +95,10 @@ const SetPasswordUser = () => {
                     <ArrowBackIcon className="mb-2 inline cursor-pointer text-cyan-600 hover:text-cyan-900" />
                 }
             >
-                <Title title={AuthMessages.register.enterPassword} />
+                <Title title={title} />
             </CenteredHeaderWithBack>
             <div className="grid justify-center px-2">
-                <HeaderText
-                    text={AuthMessages.setPassword.title}
-                    isCenter={false}
-                />
+                <HeaderText text={headerText} isCenter={false} />
                 <form onSubmit={onSubmit}>
                     <InputDisabled text={email} />
 
@@ -129,7 +131,7 @@ const SetPasswordUser = () => {
                         <FormError error={errors.repassword?.message ?? ""} />
                     </FormInput>
 
-                    <Button type="submit" text="Registrate" />
+                    <Button type="submit" text={buttonText} />
                 </form>
             </div>
         </>

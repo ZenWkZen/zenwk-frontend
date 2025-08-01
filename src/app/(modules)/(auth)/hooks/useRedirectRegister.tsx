@@ -35,7 +35,7 @@ const useRedirectRegister = (
                     throw "";
                 }
             } catch (error) {
-                router.push("/register");
+                router.back();
             } finally {
                 setLoading(false);
             }

@@ -165,9 +165,13 @@ export const fetchJwtBaseApi = async (
     methodHttp = ""
 ) => {
     try {
+        console.log("-----------", bodyJson);
+
         const mergedOptions = getMergedOptions(methodHttp, tokenJwt, bodyJson);
         const queryString = getQueryString(urlParamObjects);
         const requestUrl = `${getBaseUrl(getUrl(queryString, path))}`;
+
+        console.log("-----------", requestUrl);
 
         const data = await getFetch(requestUrl, mergedOptions);
         return data;
