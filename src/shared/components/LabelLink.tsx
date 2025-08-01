@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 interface Props {
-    text: string;
+    text: React.ReactNode;
     textColor?: string;
 }
 

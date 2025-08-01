@@ -1,3 +1,5 @@
+import { error } from "console";
+
 /**
  * Errores y mensajes comunes reutilizables en toda la aplicación.
  */
@@ -11,6 +13,9 @@ export const Messages = {
         // Texto genérico reutilizable
         literalTexts: {
             here: "aquí",
+            confirmReturn: (errorMessage?: string) =>
+                `${errorMessage?.trim() || ""} ¿Desea volver al `,
+            register: "registro?",
         },
     },
     placeholder: {

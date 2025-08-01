@@ -14,12 +14,13 @@ export default function AuthLayout({
 }) {
     return (
         <RegisterFlowProvider>
-            <div className="min-h-screen bg-gray-100">
-                <div className="">
-                    <Header />
-                    <div className="mt-6">{children}</div>
-                    <Footer />
-                </div>
+            <div className="flex min-h-screen flex-col bg-gray-100">
+                <Header />
+                <main className="flex flex-1 items-start justify-center px-4 pt-12">
+                    {/* Contenido centrado vertical y horizontal */}
+                    <div className="w-full max-w-[860px]">{children}</div>
+                </main>
+                <Footer />
             </div>
         </RegisterFlowProvider>
     );

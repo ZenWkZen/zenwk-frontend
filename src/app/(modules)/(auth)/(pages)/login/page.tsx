@@ -5,12 +5,14 @@ import { useForm } from "react-hook-form";
 import { formValidate } from "@app/shared/utils/formValidate";
 import {
     fetchJwtBaseApi,
-    fecthValidateRegisterEmail,
-} from "@app/helpers/fecth-api";
+    fetchValidateRegisterEmail,
+} from "@app/helpers/fetch-api";
 import { ClientErrorMessage, LoginForm } from "@app/shared/interfaces/auth";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation.js";
 import { AuthMessages } from "@auth/constants/auth-messages";
+import { AuthErrors } from "../../constants/auth-errors";
+import { Messages } from "@app/shared/constants/messages";
 
 import Title from "@app/shared/components/Title";
 import FormInput from "@app/shared/components/FormInput";
@@ -21,7 +23,10 @@ import HeaderText from "@app/shared/components/HeaderText";
 import LabelLink from "@app/shared/components/LabelLink";
 import Paragraph from "@app/shared/components/Paragraph";
 import Link from "next/link";
-import { AuthErrors } from "../../constants/auth-errors";
+
+import CenteredHeaderWithBack from "../../components/CenteredHeaderWithBack";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import HomeIcon from "@mui/icons-material/Home";
 
 /**
  * Página login: ssta vista presenta un formulario de autenticación para que el usuario ingrese
@@ -85,7 +90,7 @@ const Login = () => {
             const path = `/users/email/${emailOnBlur}`;
             try {
                 // Validación si el email ya esta registrado
-                const res = await fecthValidateRegisterEmail(emailOnBlur);
+                const res = await fetchValidateRegisterEmail(emailOnBlur);
                 if (res) {
                     setEmailParam(emailOnBlur);
                     setRegisteredUser(res);
@@ -132,14 +137,21 @@ const Login = () => {
      */
     return (
         <>
-            <Title title={AuthMessages.login.title} />
+            <CenteredHeaderWithBack
+                icon={
+                    <HomeIcon className="mb-2 inline cursor-pointer text-cyan-600 hover:text-cyan-900" />
+                }
+                onBack={() => router.push("/")}
+            >
+                <Title title={AuthMessages.login.title} />
+            </CenteredHeaderWithBack>
             <HeaderText text={AuthMessages.login.subtitle} />
             <div className="grid justify-items-center px-2">
                 <form onSubmit={onSubmit}>
                     <FormInput
                         type="root"
                         label={AuthMessages.inputs.email}
-                        placeholder="name@your-email.com"
+                        placeholder={Messages.placeholder.emailExample}
                         {...usernameRegister}
                         onBlur={async (e) => {
                             usernameRegister.onBlur(e);

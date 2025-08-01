@@ -8,7 +8,7 @@ import Link from "next/link";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 
 /**
- * @abstract Componente home.Información general de ZenWk.
+ * Componente home.Información general de ZenWk.
  * @returns
  */
 

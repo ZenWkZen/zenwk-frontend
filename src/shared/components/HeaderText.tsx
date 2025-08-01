@@ -17,7 +17,7 @@ interface Props {
 const HeaderText = ({ text, isCenter = true }: Props) => {
     return (
         <h3
-            className={`my-5 px-10 text-xl font-medium text-gray-500 ${
+            className={`my-5 max-w-full px-4 text-sm font-light break-words text-gray-500 sm:text-sm md:max-w-[860px] md:text-base lg:text-lg xl:text-xl ${
                 isCenter && "text-center"
             }`}
         >

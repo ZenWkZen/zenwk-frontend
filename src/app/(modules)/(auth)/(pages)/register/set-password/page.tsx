@@ -8,16 +8,19 @@ import {
     SetPassword,
     ClientErrorMessage,
 } from "@app/shared/interfaces/auth.js";
-import { formValidate } from "@app/shared/utils/formValidate.js";
-import { fetchJwtBaseApi } from "@app/helpers/fecth-api";
+import { formValidate } from "@app/shared/utils/formValidate";
+import { fetchJwtBaseApi } from "@app/helpers/fetch-api";
 
-import FormInput from "@app/shared/components/FormInput.jsx";
-import FormError from "@app/shared/components/FormError.jsx";
-import HeaderText from "@app/shared/components/HeaderText.jsx";
-import Button from "@app/shared/components/Button.jsx";
-import InputDisabled from "@app/shared/components/InputDisabled.jsx";
+import FormInput from "@app/shared/components/FormInput";
+import FormError from "@app/shared/components/FormError";
+import HeaderText from "@app/shared/components/HeaderText";
+import Button from "@app/shared/components/Button";
+import InputDisabled from "@app/shared/components/InputDisabled";
 import useRedirectRegister from "@auth/hooks/useRedirectRegister";
-import { AuthMessages } from "../../../constants/auth-messages";
+import { AuthMessages } from "@auth/constants/auth-messages";
+import CenteredHeaderWithBack from "../../../components/CenteredHeaderWithBack";
+import Title from "@app/shared/components/Title";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const page = () => {
     const searchParams = useSearchParams();
@@ -29,6 +32,7 @@ const page = () => {
 
     const {
         setError,
+        trigger,
         handleSubmit,
         register,
         getValues,
@@ -77,6 +81,13 @@ const page = () => {
 
     return (
         <>
+            <CenteredHeaderWithBack
+                icon={
+                    <ArrowBackIcon className="mb-2 inline cursor-pointer text-cyan-600 hover:text-cyan-900" />
+                }
+            >
+                <Title title={AuthMessages.register.enterPassword} />
+            </CenteredHeaderWithBack>
             <div className="grid justify-center px-2">
                 <HeaderText
                     text={AuthMessages.setPassword.title}
@@ -93,6 +104,10 @@ const page = () => {
                             required: requiredPassword,
                             pattern: patternPassword,
                         })}
+                        onChange={async (e) => {
+                            register("password").onChange(e);
+                            await trigger("repassword");
+                        }}
                         isError={Boolean(errors.password)}
                     >
                         <FormError error={errors.password?.message ?? ""} />

@@ -185,7 +185,7 @@ export const fetchJwtBaseApi = async (
  * @param methodHttp - Método HTTP.
  * @returns Respuesta del backend o error.
  */
-export const fethStackVerifcation = async (
+export const fetchVerifcation = async (
     path: string,
     urlParamObjects?: Record<string, string>,
     bodyJson?: {},
@@ -209,7 +209,7 @@ export const fethStackVerifcation = async (
  * @param email - Correo a validar.
  * @returns `true` si ya está registrado, `false` si no.
  */
-export const fecthValidateRegisterEmail = async (email: string) => {
+export const fetchValidateRegisterEmail = async (email: string) => {
     try {
         const path = "/users/email/" + email;
         return await fetchJwtBaseApi(

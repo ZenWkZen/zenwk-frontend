@@ -5,15 +5,18 @@ import { useForm } from "react-hook-form";
 import { formValidate } from "@app/shared/utils/formValidate";
 import {
     fetchTokenApi,
-    fecthValidateRegisterEmail,
-} from "@app/helpers/fecth-api";
+    fetchValidateRegisterEmail,
+} from "@app/helpers/fetch-api";
 
 import HeaderText from "@app/shared/components/HeaderText";
+import Title from "@app/shared/components/Title";
 import FormInput from "@app/shared/components/FormInput";
 import FormError from "@app/shared/components/FormError";
 import Button from "@app/shared/components/Button";
 import { AuthMessages } from "../../constants/auth-messages";
 import { Messages } from "@app/shared/constants/messages";
+import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 /**
  * Registro del usuario, renderiza la pantalla para la gestión del OTP.
@@ -44,7 +47,7 @@ const Register = () => {
      */
     const onSubmit = handleSubmit(async (data) => {
         try {
-            const validateEmail = await fecthValidateRegisterEmail(data.email);
+            const validateEmail = await fetchValidateRegisterEmail(data.email);
             if (!validateEmail) {
                 const result = await fetchTokenApi(data.email);
                 console.log(result);
@@ -65,15 +68,23 @@ const Register = () => {
 
     return (
         <>
-            {/* Renderiza encabezado según si viene de login o no */}
-            {!emailFromLogin && (
-                <HeaderText text={AuthMessages.register.title} />
-            )}
-            {emailFromLogin && (
-                <>
-                    <HeaderText text={AuthMessages.register.subtitle} />
-                </>
-            )}
+            <CenteredHeaderWithBack
+                icon={
+                    <ArrowBackIcon className="mb-2 inline cursor-pointer text-cyan-600 hover:text-cyan-900" />
+                }
+            >
+                {/* Renderiza encabezado según si viene de login o no */}
+                {!emailFromLogin && (
+                    <Title title={AuthMessages.register.title} />
+                )}
+                {emailFromLogin && (
+                    <>
+                        <Title title={AuthMessages.register.subtitle} />
+                    </>
+                )}
+            </CenteredHeaderWithBack>
+            <HeaderText text={AuthMessages.register.welcome} />
+
             {/* Formulario de ingreso de correo */}
             <div className="grid justify-items-center px-2">
                 <form onSubmit={onSubmit}>

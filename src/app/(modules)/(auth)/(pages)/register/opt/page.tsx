@@ -2,24 +2,25 @@
 
 import OtpInput from "react-otp-input";
 import Link from "next/link";
+
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Title from "@app/shared/components/Title";
+import SubTitle from "@app/shared/components/SubTitle";
+import FormError from "@app/shared/components/FormError";
+import LabelLink from "@app/shared/components/LabelLink";
+import useRedirectRegister from "@auth/hooks/useRedirectRegister";
+import Paragraph from "@app/shared/components/Paragraph";
+import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
+
+import { fetchValidateTokenApi, fetchTokenApi } from "@app/helpers/fetch-api";
 import { ClientErrorMessage } from "@app/shared/interfaces/auth";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-
-import HeaderText from "@app/shared/components/HeaderText";
-import Label from "@app/shared/components/Label";
-import SubTitle from "@app/shared/components/SubTitle";
-import FormError from "@app/shared/components/FormError";
-import LabelLink from "@app/shared/components/LabelLink";
-import Paragraph from "@app/shared/components/Paragraph";
-import ButtonOpen from "@app/shared/components/ButtonOpen";
-import { fetchValidateTokenApi, fetchTokenApi } from "@app/helpers/fecth-api";
-
 import { AuthErrors } from "@auth/constants/auth-errors";
-import useRedirectRegister from "@auth/hooks/useRedirectRegister";
 import { AuthMessages } from "../../../constants/auth-messages";
 import { Messages } from "@app/shared/constants/messages";
+import OpenMailbox from "@auth/components/OpenMailbox";
 
 /**
  * Estilos CSS inline para el código OPT.
@@ -112,11 +113,18 @@ const Opt = () => {
      * mensajes de error, enlaces para reenviar código y acceso rápido a clientes de correo.
      */
     return (
-        <>
-            <HeaderText text={AuthMessages.otp.title} />
+        <div className="grid w-full max-w-[860px] justify-center">
+            <CenteredHeaderWithBack
+                icon={
+                    <ArrowBackIcon className="mb-2 inline cursor-pointer text-cyan-600 hover:text-cyan-900" />
+                }
+            >
+                <Title title={AuthMessages.otp.title} />
+            </CenteredHeaderWithBack>
+
             <SubTitle
                 text={
-                    <div className="px-4">
+                    <div className="px-6">
                         {AuthMessages.otp.subtitleSendEmail}
                         <label className="text-[#339989]"> {email}</label>,
                         {AuthMessages.otp.subtitleEnterCode}
@@ -142,17 +150,21 @@ const Opt = () => {
                     </div>
                 )}
 
+                {/* Error: cuando el código ingresado existe, pero el correo no coincide. */}
                 {codeError && (
                     <div className="mt-2 text-center">
                         <FormError
                             error={
                                 <>
-                                    {errorBack} ¿Desea volver al{" "}
+                                    {
+                                        Messages.commons.literalTexts
+                                            .confirmReturn
+                                    }
                                     <Link
                                         href="/register"
                                         className="font-medium hover:underline"
                                     >
-                                        registro?
+                                        {Messages.commons.literalTexts.register}
                                     </Link>
                                 </>
                             }
@@ -179,40 +191,9 @@ const Opt = () => {
                         }
                     />
                 </div>
-
-                <div className="mt-3 w-full text-center sm:w-[400px]">
-                    {isSuccessResend && (
-                        <>
-                            <Label text={AuthMessages.otp.codeResentSuccess} />
-                        </>
-                    )}
-                    <Paragraph
-                        text={
-                            <ul className="mt-2 flex justify-center space-x-2">
-                                <li>
-                                    <ButtonOpen
-                                        href="https://mail.google.com"
-                                        text={Messages.commons.gmail}
-                                    />
-                                </li>
-                                <li>
-                                    <ButtonOpen
-                                        href="https://outlook.live.com/mail"
-                                        text={Messages.commons.outlook}
-                                    />
-                                </li>
-                                <li>
-                                    <ButtonOpen
-                                        href="https://www.icloud.com/mail"
-                                        text={Messages.commons.iCloud}
-                                    />
-                                </li>
-                            </ul>
-                        }
-                    />
-                </div>
+                <OpenMailbox isSuccessResend={isSuccessResend} />
             </div>
-        </>
+        </div>
     );
 };
 
