@@ -4,10 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { useForm } from "react-hook-form";
-import {
-    SetPassword,
-    ClientErrorMessage,
-} from "@app/shared/interfaces/auth.js";
+import { SetPassword, ClientErrorMessage } from "@app/shared/interfaces/auth";
 import { formValidate } from "@app/shared/utils/formValidate";
 import { fetchJwtBaseApi } from "@app/helpers/fetch-api";
 
@@ -29,7 +26,7 @@ interface Props {
     headerText: string;
 }
 
-const page = () => {
+const SetPasswordUser = () => {
     const searchParams = useSearchParams();
     const email = searchParams.get("email") as string;
     const uuid = searchParams.get("uuid") as string;
@@ -139,4 +136,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default SetPasswordUser;
