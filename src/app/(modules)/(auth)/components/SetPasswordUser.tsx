@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { SetPassword, ClientErrorMessage } from "@app/shared/interfaces/auth";
 import { formValidate } from "@app/shared/utils/formValidate";
-import { fetchJwtBaseApi } from "@app/helpers/fetch-api";
 import { AuthMessages } from "@auth/constants/auth-messages";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -25,6 +24,7 @@ interface Props {
     buttonText: string;
     title: string;
     headerText: string;
+    isResetPassword?: boolean;
     onSubmitPassword: (
         email: string,
         password: string,
@@ -43,6 +43,7 @@ const SetPasswordUser = ({
     headerText,
     buttonText,
     onSubmitPassword,
+    isResetPassword,
 }: Props) => {
     const searchParams = useSearchParams();
     const email = searchParams.get("email") ?? "";
@@ -76,13 +77,10 @@ const SetPasswordUser = ({
      * @oaram data
      */
     const onSubmit = handleSubmit(async (data) => {
-        const path = "/users";
-
         try {
             await onSubmitPassword(email, data.password, uuid, tokenCode);
         } catch (error: unknown) {
             const errors = error as ClientErrorMessage;
-            console.log("-----------", errors);
             setError("repassword", { message: errors.message });
         }
     });
@@ -92,18 +90,26 @@ const SetPasswordUser = ({
         <>
             <CenteredHeaderWithBack
                 icon={
-                    <ArrowBackIcon className="mb-2 inline cursor-pointer text-cyan-600 hover:text-cyan-900" />
+                    !isResetPassword && (
+                        <ArrowBackIcon className="mb-2 inline cursor-pointer text-cyan-600 hover:text-cyan-900" />
+                    )
                 }
             >
                 <Title title={title} />
             </CenteredHeaderWithBack>
             <div className="grid justify-center px-2">
-                <HeaderText text={headerText} isCenter={false} />
+                {!isResetPassword && (
+                    <HeaderText text={headerText} isCenter={false} />
+                )}
                 <form onSubmit={onSubmit}>
-                    <InputDisabled text={email} />
+                    {!isResetPassword && <InputDisabled text={email} />}
 
                     <FormInput
-                        label={AuthMessages.inputs.password}
+                        label={
+                            isResetPassword
+                                ? AuthMessages.login.resetPassword.newPassword
+                                : AuthMessages.inputs.password
+                        }
                         type="password"
                         placeholder={AuthMessages.placeholder.password}
                         {...register("password", {
@@ -120,9 +126,13 @@ const SetPasswordUser = ({
                     </FormInput>
 
                     <FormInput
-                        label={AuthMessages.inputs.repasword}
+                        label={
+                            isResetPassword
+                                ? AuthMessages.login.resetPassword.newRePassword
+                                : AuthMessages.inputs.repasword
+                        }
                         type="password"
-                        placeholder={AuthMessages.placeholder.password}
+                        placeholder={AuthMessages.placeholder.repassword}
                         {...register("repassword", {
                             validate: validateEquals(getValues("password")),
                         })}

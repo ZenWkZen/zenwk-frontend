@@ -8,12 +8,9 @@ import Button from "@app/shared/components/Button";
 import Label from "@app/shared/components/Label";
 import Link from "next/link";
 import LabelLink from "@app/shared/components/LabelLink";
-import OpenMailbox from "@auth/components/OpenMailbox";
-import SubTitle from "@app/shared/components/SubTitle";
-import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
-import WestIcon from "@mui/icons-material/West";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
+import GeneralPageInfo from "@app/shared/components/GeneralPageInfo";
 
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -31,7 +28,6 @@ import { useState } from "react";
 import { AuthMessages } from "@auth/constants/auth-messages";
 import { Messages } from "@app/shared/constants/messages";
 import { CommonsErros } from "@app/shared/constants/commons-erros";
-import GeneralPageInfo from "@app/shared/components/GeneralPageInfo";
 
 /**
  * Página ForgotPassword: permite ingresar el email para recuperar contraseña.

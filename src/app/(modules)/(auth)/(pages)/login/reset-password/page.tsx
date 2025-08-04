@@ -5,13 +5,13 @@ import SetPasswordUser from "@auth/components/SetPasswordUser";
 import { AuthMessages } from "@auth/constants/auth-messages";
 
 /**
- * Componente para el formulario de reingreso de contraseña en el registro del usuario,
- * si la contraseña es valida consume el api de creación de usuario.
+ * Componente para el formulario de reingreso de contraseña en el registro del usuaro.
+ * si la contraseña es valida consume el api para la creación del usuario.
  * @returns - Componente JSX.
  */
 const SetChangePassword = () => {
     /**
-     * Recibe una contrseña válida y consume el API de registro de usuario.
+     * Recibe una contrseña válida y consume el API reset-password.
      */
     const changePassword = async (
         email: string,
@@ -41,9 +41,10 @@ const SetChangePassword = () => {
     /** Componente JSX con el formulario para el reingreso de contraseña. */
     return (
         <SetPasswordUser
-            title={AuthMessages.register.enterPassword}
-            headerText={AuthMessages.setPassword.title}
-            buttonText={AuthMessages.register.linkText}
+            isResetPassword={true}
+            title={AuthMessages.login.resetPassword.title}
+            headerText={AuthMessages.login.resetPassword.title}
+            buttonText={AuthMessages.buttons.saveContinue}
             onSubmitPassword={changePassword}
         />
     );

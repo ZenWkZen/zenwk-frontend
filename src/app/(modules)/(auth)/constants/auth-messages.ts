@@ -7,6 +7,11 @@ export const AuthMessages = {
         title: "Bienvenido a ZenWk",
         subtitle:
             "Inicia sesión y descubre el equilibrio entre productividad y bienestar.",
+        resetPassword: {
+            title: "Listo para seguir",
+            newPassword: "Nueva contraseña",
+            newRePassword: "Confirmar nueva contraseña",
+        },
     },
     register: {
         title: "Empieza a usar ZenWk",
@@ -47,7 +52,8 @@ export const AuthMessages = {
         },
     },
     placeholder: {
-        password: "Ingresa tu contraseña",
+        password: "Escribe tu contraseña",
+        repassword: "Confirma tu contraseña",
     },
     setPassword: {
         title: "Elige una contraseña",
@@ -61,5 +67,10 @@ export const AuthMessages = {
         forgotPassword: "Sí, olvidé mi contraseña",
         login: "Inicia tu momento",
         registerWithEmail: "Continuar con email",
+        saveContinue: "Guardar y seguir",
+    },
+    tooltip: {
+        showPassword: "Ver contraseña",
+        hidePassword: "Ocultar contraseña",
     },
 };

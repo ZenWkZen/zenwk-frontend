@@ -8,7 +8,7 @@
  */
 const Label = ({ text }: { text: React.ReactNode }) => {
     return (
-        <label className="mb-2 block text-base text-gray-500 sm:w-[400px] dark:text-gray-700">
+        <label className="mb-2 block font-light text-gray-700 sm:w-[400px] dark:text-gray-600">
             {text}
         </label>
     );

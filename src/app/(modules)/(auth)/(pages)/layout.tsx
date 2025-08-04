@@ -16,7 +16,7 @@ export default function AuthLayout({
         <RegisterFlowProvider>
             <div className="flex min-h-screen flex-col bg-gray-100">
                 <Header />
-                <main className="flex flex-1 items-start justify-center px-4 pt-12">
+                <main className="flex flex-1 items-start justify-center px-4 pt-15">
                     {/* Contenido centrado vertical y horizontal */}
                     <div className="w-full max-w-[860px]">{children}</div>
                 </main>
