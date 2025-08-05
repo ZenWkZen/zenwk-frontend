@@ -1,9 +1,9 @@
 "use client";
-
-import { useRouter } from "next/navigation";
-import LabelLink from "@app/shared/components/LabelLink";
+import React from "react";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Title from "@app/shared/components/Title";
+
+import { useRouter } from "next/navigation";
 
 /**
  * Tipos de propiedades que recibe el componente `CenteredHeaderWithBack`.
@@ -26,33 +26,35 @@ interface Props {
  * @param props - Propiedades del componente.
  * @returns JSX.Element con diseño responsivo para encabezados con opción de retroceso.
  */
-const CenteredHeaderWithBack = ({ onBack, icon, children, title }: Props) => {
-    const router = useRouter();
+const CenteredHeaderWithBack = React.memo(
+    ({ onBack, icon, children, title }: Props) => {
+        const router = useRouter();
 
-    const handleBack = () => {
-        if (onBack) {
-            onBack();
-        } else {
-            router.back();
-        }
-    };
+        const handleBack = () => {
+            if (onBack) {
+                onBack();
+            } else {
+                router.back();
+            }
+        };
 
-    return (
-        <div className="relative grid w-full place-items-center">
-            {/* Ícono a la izquierda */}
-            <div className="absolute top-[55%] left-5 -translate-y-1/2">
-                <button onClick={handleBack}>
-                    {icon ?? <ArrowBackIcon />}
-                </button>
+        return (
+            <div className="relative grid w-full place-items-center">
+                {/* Ícono a la izquierda */}
+                <div className="absolute top-[55%] left-5 -translate-y-1/2">
+                    <button onClick={handleBack}>
+                        {icon ?? <ArrowBackIcon />}
+                    </button>
+                </div>
+
+                {/* Título y contenido centrado */}
+                <div className="">
+                    {title && <Title title={title} />}
+                    {children}
+                </div>
             </div>
-
-            {/* Título y contenido centrado */}
-            <div className="">
-                {title && <Title title={title} />}
-                {children}
-            </div>
-        </div>
-    );
-};
+        );
+    }
+);
 
 export default CenteredHeaderWithBack;

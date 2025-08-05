@@ -3,6 +3,7 @@
 import { fetchJwtBaseApi } from "@app/helpers/fetch-api";
 import SetPasswordUser from "@auth/components/SetPasswordUser";
 import { AuthMessages } from "@auth/constants/auth-messages";
+import { useState } from "react";
 
 /**
  * Componente para el formulario de reingreso de contraseña en el registro del usuario,

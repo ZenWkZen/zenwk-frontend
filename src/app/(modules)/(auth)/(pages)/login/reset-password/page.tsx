@@ -1,8 +1,9 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import { fetchJwtBaseApi } from "@app/helpers/fetch-api";
-import SetPasswordUser from "@auth/components/SetPasswordUser";
 import { AuthMessages } from "@auth/constants/auth-messages";
+
+import SetPasswordUser from "@auth/components/SetPasswordUser";
 
 /**
  * Componente para el formulario de reingreso de contraseña en el registro del usuaro.
@@ -10,6 +11,7 @@ import { AuthMessages } from "@auth/constants/auth-messages";
  * @returns - Componente JSX.
  */
 const SetChangePassword = () => {
+    const router = useRouter();
     /**
      * Recibe una contrseña válida y consume el API reset-password.
      */
@@ -33,9 +35,11 @@ const SetChangePassword = () => {
             "POST"
         );
 
-        console.log(result);
         if (result) {
-            // recuperar jwt...
+            // Espera de 3 segundos
+            setTimeout(() => {
+                return router.push("/login");
+            }, 1000);
         }
     };
     /** Componente JSX con el formulario para el reingreso de contraseña. */

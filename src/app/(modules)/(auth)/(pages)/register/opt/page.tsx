@@ -21,6 +21,7 @@ import { AuthErrors } from "@auth/constants/auth-errors";
 import { AuthMessages } from "../../../constants/auth-messages";
 import { Messages } from "@app/shared/constants/messages";
 import OpenMailbox from "@auth/components/OpenMailbox";
+import Spinner from "@app/shared/components/Spinner";
 
 /**
  * Estilos CSS inline para el código OPT.
@@ -54,7 +55,12 @@ const Opt = () => {
     /**
      * Muestra un mensaje mientras se cargan los datos necesarios.
      */
-    if (loading) return <span>Cargando ..... </span>;
+    /**
+     * Cargador ...
+     */
+    if (loading) {
+        return <Spinner />;
+    }
 
     /**
      * Valida el código OTP cuando el usuario completa los 6 dígitos.

@@ -1,17 +1,5 @@
 "use client";
 
-import FormInput from "@app/shared/components/FormInput";
-import HeaderText from "@app/shared/components/HeaderText";
-import Title from "@app/shared/components/Title";
-import FormError from "@app/shared/components/FormError";
-import Button from "@app/shared/components/Button";
-import Label from "@app/shared/components/Label";
-import Link from "next/link";
-import LabelLink from "@app/shared/components/LabelLink";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
-import GeneralPageInfo from "@app/shared/components/GeneralPageInfo";
-
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { formValidate } from "@app/shared/utils/formValidate";
@@ -28,6 +16,20 @@ import { useState } from "react";
 import { AuthMessages } from "@auth/constants/auth-messages";
 import { Messages } from "@app/shared/constants/messages";
 import { CommonsErros } from "@app/shared/constants/commons-erros";
+
+import FormInput from "@app/shared/components/FormInput";
+import HeaderText from "@app/shared/components/HeaderText";
+import Title from "@app/shared/components/Title";
+import FormError from "@app/shared/components/FormError";
+import Label from "@app/shared/components/Label";
+import Link from "next/link";
+import LabelLink from "@app/shared/components/LabelLink";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
+import GeneralPageInfo from "@app/shared/components/GeneralPageInfo";
+import LoadButton from "../../../components/LoadButton";
+import Spinner from "@app/shared/components/Spinner";
+import { useRouter } from "next/navigation";
 
 /**
  * Página ForgotPassword: permite ingresar el email para recuperar contraseña.
@@ -46,8 +48,10 @@ const ForgotPassword = () => {
     const [email, setEmail] = useState("");
     const { patternEmail, requiredEmail } = formValidate();
     const [isRegistered, setRegistered] = useState(false);
-    const [isloading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [isSendEmail, setSendEmail] = useState(false);
+    const [isBtnLoading, setBtnLoading] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         const paramEmail = searchParams.get("email") as string;
@@ -61,10 +65,10 @@ const ForgotPassword = () => {
     }, [setEmail]);
 
     /**
-     * Cargador
+     * Cargador ...
      */
-    if (isloading) {
-        return <Label text="Cargando ...." />;
+    if (loading) {
+        return <Spinner />;
     }
 
     /**
@@ -72,6 +76,7 @@ const ForgotPassword = () => {
      * Valida si el email está registrado y envía el código de verificación.
      */
     const onSubmit = handleSubmit(async (data) => {
+        setBtnLoading(true);
         try {
             const email = data.email;
             const res = await fetchValidateRegisterEmail(email);
@@ -107,13 +112,23 @@ const ForgotPassword = () => {
         } catch (error) {
             const errorApi = error as ClientErrorMessage;
             setError("email", { message: errorApi.message });
+        } finally {
+            setLoading(false);
         }
     });
 
-    const regiserEmail = register("email", {
+    const registerEmail = register("email", {
         required: requiredEmail,
         pattern: patternEmail,
     });
+
+    /**
+     * Navegación hace atrás-
+     * @returns
+     */
+    const handleOnBack = () => {
+        return router.push(`/login?email=${email}`);
+    };
 
     /**
      * Renderiza el formulario de recuperación de contraseña.
@@ -124,6 +139,7 @@ const ForgotPassword = () => {
                 <>
                     {/** Formulario de email */}
                     <CenteredHeaderWithBack
+                        onBack={handleOnBack}
                         icon={
                             <ArrowBackIcon className="mb-2 inline cursor-pointer text-cyan-600 hover:text-cyan-900" />
                         }
@@ -138,7 +154,7 @@ const ForgotPassword = () => {
                                 type="root"
                                 label={AuthMessages.inputs.email}
                                 placeholder={Messages.placeholder.emailExample}
-                                {...regiserEmail}
+                                {...registerEmail}
                                 onChange={() => {
                                     if (!isRegistered) {
                                         setRegistered(true);
@@ -169,9 +185,9 @@ const ForgotPassword = () => {
                                     }
                                 />
                             )}
-                            <Button
-                                type="submit"
-                                text={AuthMessages.buttons.forgotPassword}
+                            <LoadButton
+                                textButton={AuthMessages.buttons.forgotPassword}
+                                loading={isBtnLoading}
                             />
                         </form>
                     </div>

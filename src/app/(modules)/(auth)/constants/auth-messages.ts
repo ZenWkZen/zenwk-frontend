@@ -68,6 +68,7 @@ export const AuthMessages = {
         login: "Inicia tu momento",
         registerWithEmail: "Continuar con email",
         saveContinue: "Guardar y seguir",
+        redirectLogin: "Redirigiendo al login ...",
     },
     tooltip: {
         showPassword: "Ver contraseña",

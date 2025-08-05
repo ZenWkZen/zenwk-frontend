@@ -12,7 +12,7 @@ export const Messages = {
 
         // Texto genérico reutilizable
         literalTexts: {
-            here: "aquí",
+            here: " aquí",
             confirmReturn: (errorMessage?: string) =>
                 `${errorMessage?.trim() || ""} ¿Desea volver al `,
             register: "registro?",

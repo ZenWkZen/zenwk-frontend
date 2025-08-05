@@ -17,16 +17,15 @@ import { Messages } from "@app/shared/constants/messages";
 import Title from "@app/shared/components/Title";
 import FormInput from "@app/shared/components/FormInput";
 import FormError from "@app/shared/components/FormError";
-import ButtonLoading from "@app/shared/components/ButtonLoading";
-import Button from "@app/shared/components/Button";
 import HeaderText from "@app/shared/components/HeaderText";
 import LabelLink from "@app/shared/components/LabelLink";
 import Paragraph from "@app/shared/components/Paragraph";
 import Link from "next/link";
 
 import CenteredHeaderWithBack from "../../components/CenteredHeaderWithBack";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import HomeIcon from "@mui/icons-material/Home";
+import LoadButton from "@auth/components/LoadButton";
+import Spinner from "@app/shared/components/Spinner";
 
 /**
  * Página login: ssta vista presenta un formulario de autenticación para que el usuario ingrese
@@ -40,8 +39,19 @@ const Login = () => {
     const [emailParam, setEmailParam] = useState("");
     const { requiredEmail, requiredPassword, patternEmail, minLength } =
         formValidate();
-    const [loading, setLoding] = useState(false);
+    const [loading, setLoding] = useState(true);
     const [isRegisteredUser, setRegisteredUser] = useState(false);
+    const [isBtnLoading, setBtnLoading] = useState(false);
+    const {
+        getValues,
+        trigger,
+        register,
+        handleSubmit,
+        setError,
+        setValue,
+        setFocus,
+        formState: { errors },
+    } = useForm<LoginForm>();
     /**
      * Prellena el campo de email si se recibe como parámetro en la URL (?email=).
      * Ejecutado en el primer render y al cambiar los searchParams.
@@ -52,17 +62,15 @@ const Login = () => {
             setEmailParam(emailFromParam);
             setValue("email", emailFromParam);
         }
-    }, [searchParams]);
+        setLoding(false);
+    }, []);
 
-    const {
-        getValues,
-        trigger,
-        register,
-        handleSubmit,
-        setError,
-        setValue,
-        formState: { errors },
-    } = useForm<LoginForm>();
+    /**
+     * Cargador ...
+     */
+    if (loading) {
+        return <Spinner />;
+    }
 
     /**
      * Configuración de validación para el campo de email.
@@ -105,32 +113,48 @@ const Login = () => {
      Envía las credenciales al backend para iniciar sesión.
      Redirige a registro si el usuario no existe o muestra errores según el código.
      */
-    const onSubmit = handleSubmit(async (data) => {
-        const path = "/auth/login";
-        const loginJson = { username: data.email, password: data.password };
+    const onSubmit = handleSubmit(
+        async (data) => {
+            const path = "/auth/login";
+            const loginJson = { username: data.email, password: data.password };
+            setBtnLoading(true);
 
-        try {
-            const result = await fetchJwtBaseApi(
-                path,
-                undefined,
-                undefined,
-                loginJson,
-                "POST"
-            );
-        } catch (error: unknown) {
-            const errors = error as ClientErrorMessage;
-            switch (errors.code) {
-                case AuthErrors.funciontal.login.notFoundUsername:
-                    return router.push(`/register?email=${data.email}`);
-                case AuthErrors.funciontal.login.badCredentials:
-                    return setError("password", { message: errors.message });
-                default:
-                    return setError("root", {
-                        message: (error as Error).message,
-                    });
+            try {
+                await fetchJwtBaseApi(
+                    path,
+                    undefined,
+                    undefined,
+                    loginJson,
+                    "POST"
+                );
+
+                await new Promise((resolve) => setTimeout(resolve, 1000));
+            } catch (error: unknown) {
+                const errors = error as ClientErrorMessage;
+                switch (errors.code) {
+                    case AuthErrors.funciontal.login.notFoundUsername:
+                        return router.push(`/register?email=${data.email}`);
+                    case AuthErrors.funciontal.login.badCredentials:
+                        setError("password", { message: errors.message });
+                        setFocus("password");
+                        return;
+                    default:
+                        return setError("root", {
+                            message: (error as Error).message,
+                        });
+                }
+            } finally {
+                setBtnLoading(false);
+            }
+        },
+        (clientErrors) => {
+            if (clientErrors.email) {
+                setFocus("email");
+            } else if (clientErrors.password) {
+                setFocus("password");
             }
         }
-    });
+    );
 
     /**
      * Componente React con el formulario de login.
@@ -192,7 +216,10 @@ const Login = () => {
                                                 href={`/login/forgot-password?email=${emailParam}`}
                                             >
                                                 <LabelLink
-                                                    text=" aquí"
+                                                    text={
+                                                        Messages.commons
+                                                            .literalTexts.here
+                                                    }
                                                     textColor="text-cyan-800"
                                                 />
                                             </Link>
@@ -202,14 +229,11 @@ const Login = () => {
                             </div>
                         )}
                     </FormInput>
-                    {loading ? (
-                        <ButtonLoading />
-                    ) : (
-                        <Button
-                            type="submit"
-                            text={AuthMessages.buttons.login}
-                        />
-                    )}
+                    <LoadButton
+                        loading={isBtnLoading}
+                        textButton={AuthMessages.buttons.login}
+                    />
+
                     <div className="mt-7 text-center">
                         <Paragraph
                             text={

@@ -14,7 +14,8 @@ import { fetchValidateTokenApi } from "@app/helpers/fetch-api";
 const useRedirectRegister = (
     email: string,
     uuid: string,
-    setLoading: Dispatch<SetStateAction<boolean>>
+    setLoading: Dispatch<SetStateAction<boolean>>,
+    isResetPassword: boolean = false
 ) => {
     const router = useRouter();
     /**
@@ -28,6 +29,7 @@ const useRedirectRegister = (
             try {
                 if (email && uuid) {
                     const res = await fetchValidateTokenApi("", email, uuid);
+
                     if (!res) {
                         throw "";
                     }
@@ -35,7 +37,11 @@ const useRedirectRegister = (
                     throw "";
                 }
             } catch (error) {
-                router.back();
+                if (isResetPassword) {
+                    return router.push(`/login/forgot-password?email=${email}`);
+                } else {
+                    return router.push("/login");
+                }
             } finally {
                 setLoading(false);
             }

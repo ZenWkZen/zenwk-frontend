@@ -42,6 +42,38 @@ const FormInput = forwardRef<HTMLInputElement, Props>((props, ref) => {
     const handleClick = () => setShowPassword((prev) => !prev);
 
     /**
+     * Funcion que evita atajos de teclado como Ctrl+X y Ctrl+V.
+     * @param e
+     */
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (
+            type === "password" &&
+            (e.ctrlKey || e.metaKey) &&
+            (e.key === "v" || e.key === "x")
+        ) {
+            e.preventDefault();
+        }
+    };
+    /**
+     * Funcion que bloquea pegar con clic derecho o menú del sistema.
+     * @param e
+     */
+    const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+        if (type === "password") {
+            e.preventDefault();
+        }
+    };
+    /**
+     * Funcion que bloquea cortar con clic derecho o menú del sistema.
+     * @param e
+     */
+    const handleCut = (e: React.ClipboardEvent<HTMLInputElement>) => {
+        if (type === "password") {
+            e.preventDefault();
+        }
+    };
+
+    /**
      * Conponente JSX - Input para formulario
      */
     return (
@@ -60,6 +92,9 @@ const FormInput = forwardRef<HTMLInputElement, Props>((props, ref) => {
                     onChange={onChange}
                     onBlur={onBlur}
                     name={name}
+                    onCut={handleCut}
+                    onPaste={handlePaste}
+                    onKeyDown={handleKeyDown}
                 />
                 {/** Si el input es tipo password se habilita el botón ver / ocultar password */}
                 {type === "password" && (

@@ -1,5 +1,5 @@
 "use client";
-
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { formValidate } from "@app/shared/utils/formValidate";
@@ -7,16 +7,16 @@ import {
     fetchTokenApi,
     fetchValidateRegisterEmail,
 } from "@app/helpers/fetch-api";
+import { AuthMessages } from "../../constants/auth-messages";
+import { Messages } from "@app/shared/constants/messages";
 
 import HeaderText from "@app/shared/components/HeaderText";
 import Title from "@app/shared/components/Title";
 import FormInput from "@app/shared/components/FormInput";
 import FormError from "@app/shared/components/FormError";
-import Button from "@app/shared/components/Button";
-import { AuthMessages } from "../../constants/auth-messages";
-import { Messages } from "@app/shared/constants/messages";
 import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import LoadButton from "@auth/components/LoadButton";
 
 /**
  * Registro del usuario, renderiza la pantalla para la gestión del OTP.
@@ -24,7 +24,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 const Register = () => {
     // Obtiene parámetros de la URL
     const searchParams = useSearchParams();
-    const emailFromLogin = searchParams.get("email") as string;
+    const email = searchParams.get("email") as string;
+    const [loading, setLoading] = useState(false);
 
     // Hook para navegación programática
     const router = useRouter();
@@ -46,38 +47,52 @@ const Register = () => {
      * @param data - Datos del formulario
      */
     const onSubmit = handleSubmit(async (data) => {
+        setLoading(true);
         try {
             const validateEmail = await fetchValidateRegisterEmail(data.email);
             if (!validateEmail) {
                 const result = await fetchTokenApi(data.email);
                 console.log(result);
                 if (result) {
-                    router.push(
+                    return router.push(
                         `/register/opt?email=${encodeURIComponent(result.email)}&uuid=${encodeURIComponent(result.uuid)}`
                     );
                 }
             } else {
-                router.push(`/login?email=${encodeURIComponent(data.email)}`);
+                return router.push(
+                    `/login?email=${encodeURIComponent(data.email)}`
+                );
             }
         } catch (error: unknown) {
             // Captura y muestra el error en el campo email
             const errorMessage = error as string;
             setError("email", { message: errorMessage || "Error unknown..." });
+        } finally {
+            setLoading(false);
         }
     });
 
+    /**
+     * Navegación hace atrás-
+     * @returns
+     */
+    const handleOnBack = () => {
+        if (email) {
+            return router.push(`/login?email=${email}`);
+        }
+        return router.push("/login");
+    };
     return (
         <>
             <CenteredHeaderWithBack
+                onBack={handleOnBack}
                 icon={
                     <ArrowBackIcon className="mb-2 inline cursor-pointer text-cyan-600 hover:text-cyan-900" />
                 }
             >
                 {/* Renderiza encabezado según si viene de login o no */}
-                {!emailFromLogin && (
-                    <Title title={AuthMessages.register.title} />
-                )}
-                {emailFromLogin && (
+                {!email && <Title title={AuthMessages.register.title} />}
+                {email && (
                     <>
                         <Title title={AuthMessages.register.subtitle} />
                     </>
@@ -95,15 +110,16 @@ const Register = () => {
                         {...register("email", {
                             required: requiredEmail,
                             pattern: patternEmail,
-                            value: emailFromLogin && emailFromLogin,
+                            value: email && email,
                         })}
                         isError={Boolean(errors.email || errors.root)}
                     >
                         <FormError error={errors.email?.message ?? ""} />
                     </FormInput>
-                    <Button
-                        type="submit"
-                        text={AuthMessages.buttons.registerWithEmail}
+
+                    <LoadButton
+                        loading={loading}
+                        textButton={AuthMessages.buttons.registerWithEmail}
                     />
                 </form>
             </div>
