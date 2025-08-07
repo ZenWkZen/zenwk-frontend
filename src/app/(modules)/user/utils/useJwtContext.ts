@@ -1,12 +1,12 @@
 import { useContext, Context } from "react";
-import { RegisterFlowContext } from "../context/RegisterFlowContext";
+import { JwtContext } from "@user/context/JwtContext";
 
 /**
  * Exporta el contexto para RegisterFlowContext.
  * @returns RegisterFlowContext
  */
-export const useRegisterFlowContext = () => {
-    return useSafeConext(RegisterFlowContext, "RegisterFlowContext");
+export const useJwtContext = () => {
+    return useSafeConext(JwtContext, "JwtContext");
 };
 
 /**

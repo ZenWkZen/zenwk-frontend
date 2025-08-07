@@ -13,12 +13,13 @@ import { useRouter } from "next/navigation.js";
 import { AuthMessages } from "@auth/constants/auth-messages";
 import { AuthErrors } from "../../constants/auth-errors";
 import { Messages } from "@app/shared/constants/messages";
+import { useJwtContext } from "@user/utils/useJwtContext";
 
-import Title from "@app/shared/components/Title";
-import FormInput from "@app/shared/components/FormInput";
+import Title from "@app/app/(modules)/(auth)/ui/Title";
+import FormInput from "@app/app/(modules)/(auth)/ui/FormInput";
 import FormError from "@app/shared/components/FormError";
-import HeaderText from "@app/shared/components/HeaderText";
-import LabelLink from "@app/shared/components/LabelLink";
+import HeaderText from "@app/app/(modules)/(auth)/ui/HeaderText";
+import LabelLink from "@app/app/(modules)/(auth)/ui/LabelLink";
 import Paragraph from "@app/shared/components/Paragraph";
 import Link from "next/link";
 
@@ -52,6 +53,7 @@ const Login = () => {
         setFocus,
         formState: { errors },
     } = useForm<LoginForm>();
+    const { user, setUser } = useJwtContext();
     /**
      * Prellena el campo de email si se recibe como parámetro en la URL (?email=).
      * Ejecutado en el primer render y al cambiar los searchParams.
@@ -62,8 +64,18 @@ const Login = () => {
             setEmailParam(emailFromParam);
             setValue("email", emailFromParam);
         }
+
+        // Registrar los datos para mantener la sesión del usuario.
+        // Se debe implementar desde el Backend Cookies httpOnly
+        // LocalStorage es vulnerable a ataques XSS
+        if (user.jwt && user.userId) {
+            // linea temporal mientras se httpOnly...
+            localStorage.setItem("jwt-user", JSON.stringify(user));
+            return router.push("/user");
+        }
+
         setLoding(false);
-    }, []);
+    }, [user, setUser]);
 
     /**
      * Cargador ...
@@ -95,8 +107,8 @@ const Login = () => {
         const isValid = await trigger("email");
         const emailOnBlur = getValues("email");
         if (isValid) {
-            const path = `/users/email/${emailOnBlur}`;
             try {
+                const path = `/users/email/${emailOnBlur}`;
                 // Validación si el email ya esta registrado
                 const res = await fetchValidateRegisterEmail(emailOnBlur);
                 if (res) {
@@ -120,16 +132,24 @@ const Login = () => {
             setBtnLoading(true);
 
             try {
-                await fetchJwtBaseApi(
+                const res = await fetchJwtBaseApi(
                     path,
                     undefined,
                     undefined,
                     loginJson,
                     "POST"
                 );
-
                 await new Promise((resolve) => setTimeout(resolve, 1000));
+
+                /**
+                 * Se carga el contexto para el módulo del usuario.
+                 */
+                if (res) {
+                    // Se carga en useEffect
+                    setUser({ jwt: res.token, userId: res.userId });
+                }
             } catch (error: unknown) {
+                console.log(error);
                 const errors = error as ClientErrorMessage;
                 switch (errors.code) {
                     case AuthErrors.funciontal.login.notFoundUsername:

@@ -1,6 +1,6 @@
 import React from "react";
-import Button from "@app/shared/components/Button";
-import ButtonLoading from "@app/shared/components/ButtonLoading";
+import Button from "@app/app/(modules)/(auth)/ui/Button";
+import ButtonLoading from "@app/app/(modules)/(auth)/ui/ButtonLoading";
 
 /**
  * Interface que representa los datos para LoadButttonLoading

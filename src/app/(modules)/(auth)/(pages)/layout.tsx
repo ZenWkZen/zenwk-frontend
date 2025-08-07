@@ -1,6 +1,5 @@
 import Footer from "@app/shared/components/Footer";
 import Header from "@app/shared/components/Header";
-import RegisterFlowProvider from "../context/RegisterFlowContext";
 
 /**
  * Layout general para las páginas de autenticación.
@@ -13,15 +12,13 @@ export default function AuthLayout({
     children: React.ReactNode;
 }) {
     return (
-        <RegisterFlowProvider>
-            <div className="flex min-h-screen flex-col bg-gray-100">
-                <Header />
-                <main className="flex flex-1 items-start justify-center px-4 pt-15">
-                    {/* Contenido centrado vertical y horizontal */}
-                    <div className="w-full max-w-[860px]">{children}</div>
-                </main>
-                <Footer />
-            </div>
-        </RegisterFlowProvider>
+        <div className="flex min-h-screen flex-col bg-gray-100">
+            <Header />
+            <main className="flex flex-1 items-start justify-center px-4 pt-15">
+                {/* Contenido centrado vertical y horizontal */}
+                <div className="w-full max-w-[860px]">{children}</div>
+            </main>
+            <Footer />
+        </div>
     );
 }

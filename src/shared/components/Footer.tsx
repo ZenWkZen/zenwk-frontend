@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import SubTitle from "@app/shared/components/SubTitle";
+import SubTitle from "@app/app/(modules)/(auth)/ui/SubTitle";
 
 interface Props {
     content?: React.ReactNode;

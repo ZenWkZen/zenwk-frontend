@@ -1,7 +1,7 @@
 import { Span } from "next/dist/trace";
-import HeaderText from "../shared/components/HeaderText";
-import SubTitle from "../shared/components/SubTitle";
-import Title from "../shared/components/Title";
+import HeaderText from "./(modules)/(auth)/ui/HeaderText";
+import SubTitle from "./(modules)/(auth)/ui/SubTitle";
+import Title from "./(modules)/(auth)/ui/Title";
 import Footer from "@app/shared/components/Footer";
 import Header from "@app/shared/components/Header";
 import Link from "next/link";

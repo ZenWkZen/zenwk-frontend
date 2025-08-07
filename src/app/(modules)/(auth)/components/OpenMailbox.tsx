@@ -1,4 +1,4 @@
-import Label from "@app/shared/components/Label";
+import Label from "@app/app/(modules)/(auth)/ui/Label";
 import Paragraph from "@app/shared/components/Paragraph";
 import ButtonOpen from "@app/shared/components/ButtonOpen";
 

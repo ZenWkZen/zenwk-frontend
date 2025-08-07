@@ -81,7 +81,7 @@ const FormInput = forwardRef<HTMLInputElement, Props>((props, ref) => {
             <Label text={label} />
             <div className="relative h-9 w-full">
                 <input
-                    className={`h-full w-full rounded-lg border p-2.5 ${type === "password" && "pr-10"} placeholder:text-gray-400 sm:w-[400px] ${
+                    className={`h-full w-full rounded-lg border p-2.5 ${type === "password" && "pr-8"} placeholder:text-gray-400 sm:w-[400px] ${
                         isError
                             ? "border-red-500 bg-red-50 text-sm text-red-900 placeholder-red-700 focus:border-red-500 focus:ring-red-500 dark:border-red-500 dark:bg-gray-700 dark:text-red-500 dark:placeholder-red-500"
                             : "border-gray-300 bg-gray-50 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
@@ -99,6 +99,7 @@ const FormInput = forwardRef<HTMLInputElement, Props>((props, ref) => {
                 {/** Si el input es tipo password se habilita el botón ver / ocultar password */}
                 {type === "password" && (
                     <button
+                        type="button"
                         className="absolute top-1/2 right-2 -translate-y-1/2 cursor-pointer"
                         onClick={handleClick}
                     >

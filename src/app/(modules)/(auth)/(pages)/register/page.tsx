@@ -10,9 +10,9 @@ import {
 import { AuthMessages } from "../../constants/auth-messages";
 import { Messages } from "@app/shared/constants/messages";
 
-import HeaderText from "@app/shared/components/HeaderText";
-import Title from "@app/shared/components/Title";
-import FormInput from "@app/shared/components/FormInput";
+import HeaderText from "@app/app/(modules)/(auth)/ui/HeaderText";
+import Title from "@app/app/(modules)/(auth)/ui/Title";
+import FormInput from "@app/app/(modules)/(auth)/ui/FormInput";
 import FormError from "@app/shared/components/FormError";
 import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";

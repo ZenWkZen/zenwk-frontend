@@ -1,6 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import Title from "./Title";
-import LablePageInfo from "./LablePageInfo";
+import Title from "../../app/(modules)/(auth)/ui/Title";
+import LablePageInfo from "../../app/(modules)/(auth)/ui/LablePageInfo";
 import CenteredHeaderWithBack from "@app/app/(modules)/(auth)/components/CenteredHeaderWithBack";
 import OpenMailbox from "@app/app/(modules)/(auth)/components/OpenMailbox";
 

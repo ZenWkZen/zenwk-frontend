@@ -7,7 +7,7 @@ import React from "react";
  */
 const LablePageInfo = ({ text }: { text: React.ReactNode }) => {
     return (
-        <h3 className="my-5 px-4 text-justify font-light text-gray-500 sm:text-sm md:text-[1.2rem]">
+        <h3 className="my-5 px-4 text-justify font-light text-gray-500 md:text-[1.1rem] lg:text-[1.2rem] xl:text-[1.3rem]">
             {text}
         </h3>
     );

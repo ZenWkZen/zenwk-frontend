@@ -4,10 +4,10 @@ import OtpInput from "react-otp-input";
 import Link from "next/link";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import Title from "@app/shared/components/Title";
-import SubTitle from "@app/shared/components/SubTitle";
+import Title from "@app/app/(modules)/(auth)/ui/Title";
+import SubTitle from "@app/app/(modules)/(auth)/ui/SubTitle";
 import FormError from "@app/shared/components/FormError";
-import LabelLink from "@app/shared/components/LabelLink";
+import LabelLink from "@app/app/(modules)/(auth)/ui/LabelLink";
 import useRedirectRegister from "@auth/hooks/useRedirectRegister";
 import Paragraph from "@app/shared/components/Paragraph";
 import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";

@@ -9,12 +9,12 @@ import { useSearchParams } from "next/navigation";
 
 import React, { useEffect, useState } from "react";
 
-import FormInput from "@app/shared/components/FormInput";
+import FormInput from "@app/app/(modules)/(auth)/ui/FormInput";
 import FormError from "@app/shared/components/FormError";
-import HeaderText from "@app/shared/components/HeaderText";
-import InputDisabled from "@app/shared/components/InputDisabled";
+import HeaderText from "@app/app/(modules)/(auth)/ui/HeaderText";
+import InputDisabled from "@app/app/(modules)/(auth)/ui/InputDisabled";
 import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
-import Title from "@app/shared/components/Title";
+import Title from "@app/app/(modules)/(auth)/ui/Title";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useRedirectRegister from "@auth/hooks/useRedirectRegister";
 import LoadButton from "@auth/components/LoadButton";
