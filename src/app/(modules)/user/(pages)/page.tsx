@@ -9,7 +9,6 @@ import Title from "@user/ui/user-feed/Title";
 import Spinner from "@app/shared/components/Spinner";
 import Subtitle from "@user/ui/user-feed/Subtitle";
 import InputText from "@user/ui/inputs/InputText";
-import SelectSex from "@user/ui/inputs/SelectSex";
 import Button from "@user/ui/Buttons/Button";
 import SelectGeneral from "@user/ui/inputs/SelectGeneral";
 import { ageGenerator } from "@app/shared/utils/userUtils";
@@ -105,17 +104,26 @@ const WelcomeUser = () => {
 
                                 <form className="mx-auto max-w-md">
                                     <Subtitle text="Cuéntanos cómo te llamas" />
-                                    <div className="mt-2 mb-3 grid grid-cols-2 gap-5">
-                                        <InputText placeholder="Primer nombre" />
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <InputText
+                                            placeholder="Primer nombre"
+                                            isError={true}
+                                        />
                                         <InputText placeholder="Segundo nombre" />
                                     </div>
                                     <Subtitle text="Y tus apellidos, por favor" />
-                                    <div className="mt-2 mb-3 grid grid-cols-2 gap-5">
-                                        <InputText placeholder="Primer apellido" />
+                                    <div className="grid grid-cols-2 gap-5">
+                                        <InputText
+                                            placeholder="Primer apellido"
+                                            isError={true}
+                                        />
                                         <InputText placeholder="Segundo apellido" />
                                     </div>
-                                    <Subtitle text="Ahora compártenos tu sexo y edad" />
-                                    <div className="mt-2 mb-6 grid grid-cols-2 gap-5">
+                                    <Subtitle
+                                        text="Ahora compártenos tu sexo y edad"
+                                        isError={true}
+                                    />
+                                    <div className="mb-6 grid grid-cols-2 gap-5">
                                         <div>
                                             {/**<Text text="Sexo" /> */}
 
@@ -129,6 +137,7 @@ const WelcomeUser = () => {
                                                     UserMessages.formComplete
                                                         .sex.labelOption
                                                 }
+                                                isError={true}
                                             />
                                         </div>
                                         <div>
@@ -146,9 +155,8 @@ const WelcomeUser = () => {
                                             />
                                         </div>
                                     </div>
-                                    <div className="mb-2">
-                                        <Button text="Guardar datos básicos" />
-                                    </div>
+
+                                    <Button text="Guardar datos básicos" />
                                 </form>
                             </article>
                         </div>

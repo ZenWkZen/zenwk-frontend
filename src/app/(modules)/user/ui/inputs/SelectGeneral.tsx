@@ -5,9 +5,8 @@ import Select, {
     DropdownIndicatorProps,
     ClearIndicatorProps,
 } from "react-select";
-
+import { ERROR_COLOR, BASE_TEXT_COLOR } from "@app/styles/constans-color";
 import { Messages } from "@app/shared/constants/messages";
-import { SexoSelectProps } from "@app/shared/utils/optionsSexUtils";
 
 /**
  *  Interface que representa los datoa a usar en este componente.
@@ -16,6 +15,7 @@ interface Props {
     data: Array<string>;
     placeholder: string;
     optionsLabel: string;
+    isError?: boolean;
 }
 
 // Tipos para las opciones
@@ -30,31 +30,34 @@ interface GroupedOption {
 }
 
 // Estilos del encabezado de grupo
-const groupStyles: CSSProperties = {
+const groupStyles = (isError?: boolean): CSSProperties => ({
     display: "flex",
     justifyContent: "center", // centrar: space-between;
     alignItems: "center",
-    fontWeight: "normal",
     textTransform: "none",
-    gap: "0.6em", // Seperación
+    gap: "0.6em",
     paddingBottom: "0.6em",
-};
+    color: isError ? ERROR_COLOR : "#494F5A",
+    fontWeight: isError ? "bold" : "normal",
+});
 
 // Estilos icono contador de las opciones 6a7282
-const groupBadgeStyles: CSSProperties = {
+const groupBadgeStyles = (isError?: boolean): CSSProperties => ({
     backgroundColor: "#E6E8ED",
     borderRadius: "0.5em",
-    color: "#494F5A",
+    color: isError ? ERROR_COLOR : "#494F5A", // texto rojo si hay error
     fontSize: "0.98em",
-    fontWeight: "normal",
+    fontWeight: isError ? "bold" : "normal",
     lineHeight: "1",
     minWidth: 1,
     padding: "0.5em",
     textAlign: "center",
-};
+});
 
 // Estilos personalizados con base en los componentes existes de rect-select.
-const customStyles: StylesConfig<Option, false, GroupedOption> = {
+const customStyles = (
+    isError?: boolean
+): StylesConfig<Option, false, GroupedOption> => ({
     // Input: tamaño, borde
     control: (provided, state) => ({
         ...provided,
@@ -63,11 +66,22 @@ const customStyles: StylesConfig<Option, false, GroupedOption> = {
         fontSize: "12px",
         padding: "0 2px",
         borderRadius: "0.5em",
-        borderColor: state.isFocused ? "#9ca3af" : "#d1d5dc", // equivale a hover border.
+        borderColor: isError
+            ? ERROR_COLOR
+            : state.isFocused
+              ? "#9ca3af"
+              : "#d1d5dc",
+
         boxShadow: "none",
         "&:hover": {
-            borderColor: "#9ca3af", // Borde gris al pasar el mouse.
+            borderColor: isError ? ERROR_COLOR : "#9ca3af",
         },
+    }),
+
+    placeholder: (provided) => ({
+        ...provided,
+        color: isError ? ERROR_COLOR : BASE_TEXT_COLOR,
+        textAlign: "center",
     }),
     // Input: background
     valueContainer: (provided) => ({
@@ -116,21 +130,23 @@ const customStyles: StylesConfig<Option, false, GroupedOption> = {
         ...provided,
         padding: "0.8px",
         color: "#9ca3af",
+        backgroundColor: isError
+            ? ERROR_COLOR
+            : (provided.backgroundColor ?? "#9ca3af"),
     }),
 
     /**
      * Opciones del select
      */
     option: (provided, state) => {
-        const baseColor: string = "#6a7282";
+        const baseColor: string = isError ? ERROR_COLOR : BASE_TEXT_COLOR;
         // pendiente configurar para modo dark.
         const isDarkGray = baseColor === "#333" || baseColor === "#444";
         return {
             ...provided,
             fontSize: state.isSelected ? "1.1em" : "0.95em",
-            padding: "5px 14px",
+            padding: "5px 12px",
             textAlign: "center",
-
             backgroundColor: state.isSelected
                 ? "#9FB0BC"
                 : state.isFocused
@@ -148,7 +164,7 @@ const customStyles: StylesConfig<Option, false, GroupedOption> = {
     singleValue: (provided) => ({
         ...provided,
         fontSize: "12px",
-        color: "#6a7282",
+        color: isError ? ERROR_COLOR : BASE_TEXT_COLOR,
     }),
 
     // Menú de opciones.
@@ -156,8 +172,21 @@ const customStyles: StylesConfig<Option, false, GroupedOption> = {
         ...provided,
         fontSize: "12px",
         borderRadius: "1em",
+        border: ` ${isError ? ERROR_COLOR + "1px solid" : "transparent"}`, // ✅ borde correcto
+        borderColor: isError ? ERROR_COLOR : "",
         backgroundColor: "rgba(255, 255, 255, 1)", // fondo semitransparente
-        boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)", // sombra hacia abajo, más difuminada
+        boxShadow: isError
+            ? `0 4px 12px #F5C5C2`
+            : "0 8px 16px rgba(0, 0, 0, 0.2)", // shadow
+    }),
+
+    // Lista interna del menú (elimina 4px extra)
+    menuList: (provided) => ({
+        ...provided,
+        paddingTop: 0,
+        paddingBottom: 0,
+        marginTop: 0,
+        marginBottom: 0,
     }),
 
     groupHeading: (provided) => ({
@@ -165,16 +194,29 @@ const customStyles: StylesConfig<Option, false, GroupedOption> = {
         textTransform: "none", // Evita mayúsculas forzadas
         fontSize: "0.98em",
         fontWeight: 600,
-        color: "#333",
+        color: "#red",
         align: "center",
         textAlign: "center",
     }),
-};
+});
+
+// Interface que representa los props para CustomClearIndicator
+interface CustomClearIndicatorProps
+    extends ClearIndicatorProps<Option, false, GroupedOption> {
+    isError?: boolean;
+}
+
+// Interface que representa los props para CustomDropdownIndicator
+interface CustomDropdownIndicatorProps
+    extends DropdownIndicatorProps<Option, false, GroupedOption> {
+    isError?: boolean;
+}
 
 // Icono personalizado para borrar el contenido.
-const CustomClearIndicator = (
-    props: ClearIndicatorProps<Option, false, GroupedOption>
-) => {
+const CustomClearIndicator = ({
+    isError = false,
+    ...props
+}: CustomClearIndicatorProps) => {
     return (
         <components.ClearIndicator {...props}>
             <svg
@@ -183,11 +225,11 @@ const CustomClearIndicator = (
                 height="15"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
+                stroke={isError ? ERROR_COLOR : "#9ca3af"} // ⬅️ aquí aplicamos color dinámico
                 strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="llucide lucide-x-icon lucide-x text-gray-400"
+                className="lucide lucide-x-icon"
             >
                 <path d="M18 6 6 18" />
                 <path d="m6 6 12 12" />
@@ -197,9 +239,10 @@ const CustomClearIndicator = (
 };
 
 // Icono personalizado.
-const CustomDropdownIndicator = (
-    props: DropdownIndicatorProps<Option, false, GroupedOption>
-) => {
+const CustomDropdownIndicator = ({
+    isError = false,
+    ...props
+}: CustomDropdownIndicatorProps) => {
     return (
         <components.DropdownIndicator {...props}>
             <svg
@@ -208,11 +251,11 @@ const CustomDropdownIndicator = (
                 height="14"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="currentColor"
+                stroke={isError ? ERROR_COLOR : "#9ca3af"} // ⬅️ aquí aplicamos color dinámico
                 strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="lucide lucide-circle-chevron-down text-gray-400"
+                className="lucide lucide-circle-chevron-down"
             >
                 <circle cx="12" cy="12" r="10" />
                 <path d="m16 10-4 4-4-4" />
@@ -222,10 +265,13 @@ const CustomDropdownIndicator = (
 };
 
 // Encabezado de grupo personalizado
-const formatGroupLabel = (data: GroupedOption): React.JSX.Element => (
-    <div style={groupStyles}>
+const formatGroupLabel = (
+    data: GroupedOption,
+    isError?: boolean
+): React.JSX.Element => (
+    <div style={groupStyles(isError)}>
         <span>{data.label}</span>
-        <span style={groupBadgeStyles}>
+        <span style={groupBadgeStyles(isError)}>
             {Messages.commons.literalTexts.options}
             <p className="inline-block font-medium"> {data.options.length}</p>
         </span>
@@ -233,16 +279,16 @@ const formatGroupLabel = (data: GroupedOption): React.JSX.Element => (
 );
 
 /**
- * Select general y personalizado para el componente users, se hace de la librería react-select.
+ * Select general y personalizado para el componente users, implementación de la librería react-select.
  * @param param0
  * @returns
  */
-const SelectGeneral = ({ data = [], optionsLabel, placeholder }: Props) => {
-    const dataObj = data as SexoSelectProps;
-
-    if (dataObj != null) {
-        console.log("data x......", data);
-    }
+const SelectGeneral = ({
+    data = [],
+    optionsLabel,
+    placeholder,
+    isError,
+}: Props) => {
     const groupedOptions: GroupedOption[] = [
         {
             label: optionsLabel,
@@ -262,14 +308,18 @@ const SelectGeneral = ({ data = [], optionsLabel, placeholder }: Props) => {
     return (
         <Select<Option, false, GroupedOption>
             options={groupedOptions}
-            formatGroupLabel={formatGroupLabel}
-            styles={customStyles}
+            formatGroupLabel={(data) => formatGroupLabel(data, isError)}
+            styles={customStyles(isError)}
             isClearable
             isSearchable
             placeholder={placeholder}
             components={{
-                DropdownIndicator: CustomDropdownIndicator,
-                ClearIndicator: CustomClearIndicator,
+                DropdownIndicator: (props) => (
+                    <CustomDropdownIndicator {...props} isError={isError} />
+                ),
+                ClearIndicator: (props) => (
+                    <CustomClearIndicator {...props} isError={isError} />
+                ),
             }}
         />
     );

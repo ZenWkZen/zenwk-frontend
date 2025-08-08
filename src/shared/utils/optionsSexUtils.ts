@@ -13,7 +13,7 @@ export interface SexoSelectProps {
 export const sexos: { label: string; value: Sexo }[] = [
     { label: "Masculino", value: "M" },
     { label: "Femenino", value: "F" },
-    { label: "Otro", value: "O" },
+    { label: "No binario", value: "O" },
 ];
 
 /**

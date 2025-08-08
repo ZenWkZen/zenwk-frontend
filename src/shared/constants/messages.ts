@@ -16,7 +16,7 @@ export const Messages = {
             confirmReturn: (errorMessage?: string) =>
                 `${errorMessage?.trim() || ""} ¿Desea volver al `,
             register: "registro?",
-            options: "opc. ",
+            options: "opcs. ",
         },
     },
     placeholder: {

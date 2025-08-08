@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef } from "react";
-import { CircleChevronDown } from "lucide-react";
 
 type Sexo = "M" | "F" | "O";
 
