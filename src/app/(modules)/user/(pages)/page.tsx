@@ -1,66 +1,29 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { fetchJwtBaseApi } from "@app/helpers/fetch-api";
 import { UserMessages } from "../constants/user-messages";
-import { UserDTO, UserStateEnum } from "@user/interfaces/user-dto";
-import React, { useEffect, useState } from "react";
-import Title from "@user/ui/user-feed/Title";
+import { UserStateEnum } from "@user/interfaces/user-dto";
+import { ageGenerator } from "@app/shared/utils/userUtils";
+import { sexoLabels } from "@app/shared/utils/optionsSexUtils";
+import { TEXT_CYAN_COLOR } from "@app/styles/constans-color";
+import { useFetchAuthenticatedUser } from "@user/hooks/useFetchAuthenticatedUser";
 
-import Spinner from "@app/shared/components/Spinner";
+import Title from "@user/ui/user-feed/Title";
+import ButtonCloseWindow from "../ui/Buttons/ButtonCloseWindow";
+import Spinner from "@app/shared/ui/Spinner";
 import Subtitle from "@user/ui/user-feed/Subtitle";
 import InputText from "@user/ui/inputs/InputText";
 import Button from "@user/ui/Buttons/Button";
 import SelectGeneral from "@user/ui/inputs/SelectGeneral";
-import { ageGenerator } from "@app/shared/utils/userUtils";
-
-import { sexoLabels } from "@app/shared/utils/optionsSexUtils";
 
 /** Componente encargado de consultar el usuario con los datos envidados después del login.
  * Si el jwt ha esxpirado retorna a la pagina del login.
  */
 const WelcomeUser = () => {
     const router = useRouter();
-    const [loading, setLoading] = useState(true);
-    //const { user } = useJwtContext(); // ineceario por el localStorage
-    const [userDTO, setUserDTO] = useState<UserDTO>();
-
     /**
      *  Use efect para recuperar el useJwtContext y consultar el usuario.
      **/
-    useEffect(() => {
-        // Se obtiene desde el LocalStorage
-        const userData = localStorage.getItem("jwt-user");
-        const userLocal = userData ? JSON.parse(userData) : "";
-
-        /**
-         * Consume el Api consulta afiliado por id.
-         * @returns
-         */
-        const fetchGetUser = async () => {
-            try {
-                const pathFindByIdUser = "/users/" + userLocal.userId;
-                const res = await fetchJwtBaseApi(
-                    pathFindByIdUser,
-                    undefined,
-                    userLocal.jwt,
-                    undefined,
-                    "GET"
-                );
-                setUserDTO(res);
-            } catch (error) {
-                return router.push("/login");
-            }
-        };
-
-        if (userLocal && userLocal.jwt) {
-            const pathFindByIdUser = "/user/" + userLocal.userId;
-            fetchGetUser();
-            setLoading(false);
-        } else {
-            return router.push("/login");
-        }
-    }, []);
-
+    const { userDTO, loading } = useFetchAuthenticatedUser();
     /**
      * Spinner para el render.
      */
@@ -74,8 +37,11 @@ const WelcomeUser = () => {
     return (
         <div className="mx-auto max-w-lg">
             <Title
+                sizeOffset={15}
                 text={
-                    <div className="mb-5 inline-block px-7 text-center font-medium text-cyan-800">
+                    <div
+                        className={`mb-5 inline-block text-center font-light ${TEXT_CYAN_COLOR}`}
+                    >
                         {UserMessages.welcome.title}
                         <label className="font-bold">{userDTO?.username}</label>
                         {UserMessages.welcome.subtitle}
@@ -87,12 +53,24 @@ const WelcomeUser = () => {
             <div className="grid place-items-center">
                 {userDTO != undefined &&
                     userDTO.state === UserStateEnum.INCOMPLETE_PERFIL && (
-                        <div className="max-w-[700px] rounded-xl border border-gray-200 shadow-xl shadow-gray-300">
-                            <article className="px-7 py-5">
-                                <div className="mb-4">
+                        <div className="max-w-[600px] rounded-xl border border-gray-200 shadow-xl shadow-gray-300">
+                            {/** Componetizar potencial "CARD" posible uso en el feed */}
+                            <article className="px-12 py-3">
+                                {/* Cerrar ventana */}
+                                <ButtonCloseWindow
+                                    text={
+                                        UserMessages.messageToolTip.closeWindow
+                                    }
+                                    watch={true}
+                                />
+
+                                <div className="mt-7 mb-3">
                                     <Title
+                                        sizeOffset={-1}
                                         text={
-                                            <label>
+                                            <label
+                                                className={`${TEXT_CYAN_COLOR}`}
+                                            >
                                                 {
                                                     UserMessages.welcome
                                                         .completeRegister
@@ -103,24 +81,47 @@ const WelcomeUser = () => {
                                 </div>
 
                                 <form className="mx-auto max-w-md">
-                                    <Subtitle text="Cuéntanos cómo te llamas" />
+                                    <Subtitle
+                                        text={
+                                            UserMessages.formComplete.labelNames
+                                        }
+                                    />
                                     <div className="grid grid-cols-2 gap-5">
                                         <InputText
-                                            placeholder="Primer nombre"
+                                            placeholder={
+                                                UserMessages.formComplete
+                                                    .placeholder.firstName
+                                            }
                                             isError={true}
                                         />
-                                        <InputText placeholder="Segundo nombre" />
+                                        <InputText
+                                            placeholder={
+                                                UserMessages.formComplete
+                                                    .placeholder.middleName
+                                            }
+                                        />
                                     </div>
-                                    <Subtitle text="Y tus apellidos, por favor" />
+                                    <Subtitle
+                                        text={
+                                            UserMessages.formComplete
+                                                .labelLastNames
+                                        }
+                                    />
                                     <div className="grid grid-cols-2 gap-5">
                                         <InputText
-                                            placeholder="Primer apellido"
+                                            placeholder={
+                                                UserMessages.formComplete
+                                                    .placeholder.middleLastName
+                                            }
                                             isError={true}
                                         />
                                         <InputText placeholder="Segundo apellido" />
                                     </div>
                                     <Subtitle
-                                        text="Ahora compártenos tu sexo y edad"
+                                        text={
+                                            UserMessages.formComplete
+                                                .labelSexAndAge
+                                        }
                                         isError={true}
                                     />
                                     <div className="mb-6 grid grid-cols-2 gap-5">
@@ -156,7 +157,12 @@ const WelcomeUser = () => {
                                         </div>
                                     </div>
 
-                                    <Button text="Guardar datos básicos" />
+                                    <Button
+                                        text={
+                                            UserMessages.buttons.welcome
+                                                .buttonSave
+                                        }
+                                    />
                                 </form>
                             </article>
                         </div>

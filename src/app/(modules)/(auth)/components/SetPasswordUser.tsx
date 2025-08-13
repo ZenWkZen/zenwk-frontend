@@ -10,7 +10,7 @@ import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 import FormInput from "@app/app/(modules)/(auth)/ui/FormInput";
-import FormError from "@app/shared/components/FormError";
+import FormError from "@app/shared/ui/FormError";
 import HeaderText from "@app/app/(modules)/(auth)/ui/HeaderText";
 import InputDisabled from "@app/app/(modules)/(auth)/ui/InputDisabled";
 import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
@@ -18,7 +18,7 @@ import Title from "@app/app/(modules)/(auth)/ui/Title";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import useRedirectRegister from "@auth/hooks/useRedirectRegister";
 import LoadButton from "@auth/components/LoadButton";
-import Spinner from "@app/shared/components/Spinner";
+import Spinner from "@app/shared/ui/Spinner";
 
 /**
  * Interface que prepsenta los valores permitidos en la desestructuración.

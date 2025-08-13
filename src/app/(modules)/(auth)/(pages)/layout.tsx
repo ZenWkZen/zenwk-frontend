@@ -1,5 +1,5 @@
-import Footer from "@app/shared/components/Footer";
-import Header from "@app/shared/components/Header";
+import Footer from "@app/shared/ui/Footer";
+import Header from "@app/shared/ui/Header";
 
 /**
  * Layout general para las páginas de autenticación.

@@ -17,16 +17,16 @@ import { useJwtContext } from "@user/utils/useJwtContext";
 
 import Title from "@app/app/(modules)/(auth)/ui/Title";
 import FormInput from "@app/app/(modules)/(auth)/ui/FormInput";
-import FormError from "@app/shared/components/FormError";
+import FormError from "@app/shared/ui/FormError";
 import HeaderText from "@app/app/(modules)/(auth)/ui/HeaderText";
 import LabelLink from "@app/app/(modules)/(auth)/ui/LabelLink";
-import Paragraph from "@app/shared/components/Paragraph";
+import Paragraph from "@app/shared/ui/Paragraph";
 import Link from "next/link";
 
 import CenteredHeaderWithBack from "../../components/CenteredHeaderWithBack";
 import HomeIcon from "@mui/icons-material/Home";
 import LoadButton from "@auth/components/LoadButton";
-import Spinner from "@app/shared/components/Spinner";
+import Spinner from "@app/shared/ui/Spinner";
 
 /**
  * Página login: ssta vista presenta un formulario de autenticación para que el usuario ingrese

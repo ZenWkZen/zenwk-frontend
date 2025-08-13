@@ -20,15 +20,15 @@ import { CommonsErros } from "@app/shared/constants/commons-erros";
 import FormInput from "@app/app/(modules)/(auth)/ui/FormInput";
 import HeaderText from "@app/app/(modules)/(auth)/ui/HeaderText";
 import Title from "@app/app/(modules)/(auth)/ui/Title";
-import FormError from "@app/shared/components/FormError";
+import FormError from "@app/shared/ui/FormError";
 import Label from "@app/app/(modules)/(auth)/ui/Label";
 import Link from "next/link";
 import LabelLink from "@app/app/(modules)/(auth)/ui/LabelLink";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
-import GeneralPageInfo from "@app/shared/components/GeneralPageInfo";
+import GeneralPageInfo from "@app/shared/ui/GeneralPageInfo";
 import LoadButton from "../../../components/LoadButton";
-import Spinner from "@app/shared/components/Spinner";
+import Spinner from "@app/shared/ui/Spinner";
 import { useRouter } from "next/navigation";
 
 /**

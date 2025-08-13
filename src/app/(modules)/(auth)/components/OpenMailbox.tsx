@@ -1,6 +1,6 @@
 import Label from "@app/app/(modules)/(auth)/ui/Label";
-import Paragraph from "@app/shared/components/Paragraph";
-import ButtonOpen from "@app/shared/components/ButtonOpen";
+import Paragraph from "@app/shared/ui/Paragraph";
+import ButtonOpen from "@app/shared/ui/ButtonOpen";
 
 import { Messages } from "@app/shared/constants/messages";
 import { AuthMessages } from "@auth/constants/auth-messages";

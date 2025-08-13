@@ -3,6 +3,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { AuthMessages } from "@auth/constants/auth-messages";
 
 import Label from "./Label";
+import Tooltip from "@app/shared/ui/Tooltip";
 
 /**
  * Props para el compomente FromInput
@@ -116,14 +117,11 @@ const FormInput = forwardRef<HTMLInputElement, Props>((props, ref) => {
                                 />
                             )}
                             {/** tooltip */}
-                            <div className="absolute -top-10 left-1/2 z-10 flex -translate-x-1/2 scale-0 flex-col items-center transition-transform group-hover:scale-100 group-hover:opacity-60">
-                                <div className="rounded bg-black px-3 py-1.5 text-xs whitespace-nowrap text-white">
-                                    {showPassword
-                                        ? AuthMessages.tooltip.hidePassword
-                                        : AuthMessages.tooltip.showPassword}
-                                </div>
-                                <div className="mt-[-4px] h-2 w-2 rotate-45 bg-black"></div>
-                            </div>
+                            <Tooltip>
+                                {showPassword
+                                    ? AuthMessages.tooltip.hidePassword
+                                    : AuthMessages.tooltip.showPassword}
+                            </Tooltip>
                         </div>
                     </button>
                 )}

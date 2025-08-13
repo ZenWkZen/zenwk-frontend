@@ -5,7 +5,11 @@ import Select, {
     DropdownIndicatorProps,
     ClearIndicatorProps,
 } from "react-select";
-import { ERROR_COLOR, BASE_TEXT_COLOR } from "@app/styles/constans-color";
+import {
+    ERROR_COLOR,
+    BASE_TEXT_COLOR,
+    BOLD_ERROR_COLOR,
+} from "@app/styles/constans-color";
 import { Messages } from "@app/shared/constants/messages";
 
 /**
@@ -37,17 +41,15 @@ const groupStyles = (isError?: boolean): CSSProperties => ({
     textTransform: "none",
     gap: "0.6em",
     paddingBottom: "0.6em",
-    color: isError ? ERROR_COLOR : "#494F5A",
-    fontWeight: isError ? "bold" : "normal",
+    color: isError ? BOLD_ERROR_COLOR : "#494F5A",
 });
 
 // Estilos icono contador de las opciones 6a7282
 const groupBadgeStyles = (isError?: boolean): CSSProperties => ({
     backgroundColor: "#E6E8ED",
     borderRadius: "0.5em",
-    color: isError ? ERROR_COLOR : "#494F5A", // texto rojo si hay error
+    color: isError ? BOLD_ERROR_COLOR : "#494F5A", // texto rojo si hay error
     fontSize: "0.98em",
-    fontWeight: isError ? "bold" : "normal",
     lineHeight: "1",
     minWidth: 1,
     padding: "0.5em",
@@ -271,10 +273,11 @@ const formatGroupLabel = (
 ): React.JSX.Element => (
     <div style={groupStyles(isError)}>
         <span>{data.label}</span>
+        {/** Se inactiva contador de opciones en el campo select.
         <span style={groupBadgeStyles(isError)}>
             {Messages.commons.literalTexts.options}
             <p className="inline-block font-medium"> {data.options.length}</p>
-        </span>
+        </span> */}
     </div>
 );
 

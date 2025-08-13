@@ -1,5 +1,3 @@
-import { Placeholder } from "react-select/animated";
-
 /**
  * Mensajes usados en el múdulo de usuarios.
  */
@@ -14,5 +12,31 @@ export const UserMessages = {
     formComplete: {
         age: { placeholder: "Selecciona una edad... ", labelOption: "Edad" },
         sex: { placeholder: "Selecciona un sexo...", labelOption: "Sexo" },
+        labelNames: "Cuéntanos cómo te llamas",
+        labelLastNames: "Y tus apellidos, por favor",
+        labelSexAndAge: "Ahora compártenos tu sexo y edad",
+        // Placeholders para los inputs
+        placeholder: {
+            firstName: "Primer nombre",
+            middleName: "Segundo nombre",
+            lastName: "Primer apellido",
+            middleLastName: "Segundo apellido",
+        },
+    },
+    buttons: {
+        welcome: {
+            buttonSave: "Guardar datos básicos",
+        },
+    },
+    messageToolTip: {
+        closeWindow: "Lo haré después",
+    },
+    header: {
+        userMenu: {
+            profile: "Perfil",
+            config: "Ajustes",
+            logout: "Cerrar sesión",
+            company: "My Company",
+        },
     },
 };

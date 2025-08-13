@@ -13,7 +13,7 @@ import { Messages } from "@app/shared/constants/messages";
 import HeaderText from "@app/app/(modules)/(auth)/ui/HeaderText";
 import Title from "@app/app/(modules)/(auth)/ui/Title";
 import FormInput from "@app/app/(modules)/(auth)/ui/FormInput";
-import FormError from "@app/shared/components/FormError";
+import FormError from "@app/shared/ui/FormError";
 import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import LoadButton from "@auth/components/LoadButton";

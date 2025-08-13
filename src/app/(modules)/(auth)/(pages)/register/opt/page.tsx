@@ -6,10 +6,10 @@ import Link from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Title from "@app/app/(modules)/(auth)/ui/Title";
 import SubTitle from "@app/app/(modules)/(auth)/ui/SubTitle";
-import FormError from "@app/shared/components/FormError";
+import FormError from "@app/shared/ui/FormError";
 import LabelLink from "@app/app/(modules)/(auth)/ui/LabelLink";
 import useRedirectRegister from "@auth/hooks/useRedirectRegister";
-import Paragraph from "@app/shared/components/Paragraph";
+import Paragraph from "@app/shared/ui/Paragraph";
 import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
 
 import { fetchValidateTokenApi, fetchTokenApi } from "@app/helpers/fetch-api";
@@ -21,7 +21,7 @@ import { AuthErrors } from "@auth/constants/auth-errors";
 import { AuthMessages } from "../../../constants/auth-messages";
 import { Messages } from "@app/shared/constants/messages";
 import OpenMailbox from "@auth/components/OpenMailbox";
-import Spinner from "@app/shared/components/Spinner";
+import Spinner from "@app/shared/ui/Spinner";
 
 /**
  * Estilos CSS inline para el código OPT.

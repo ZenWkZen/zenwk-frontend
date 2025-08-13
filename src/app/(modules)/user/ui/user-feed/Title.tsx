@@ -1,13 +1,31 @@
 import React from "react";
+import clsx from "clsx";
+import GenerateBaseText from "../../components/GenerateBaseText";
+import { base } from "framer-motion/client";
 
-const Title = ({ text }: { text: React.ReactNode }) => {
-    // max-w-lg
+interface TitleProps {
+    text: React.ReactNode;
+    sizeOffset?: number; // incremento en rem
+}
+
+const Title = ({ text, sizeOffset = 0 }: TitleProps) => {
+    /**
+     * Tamaño base parlos titulos del sistema.
+     */
+    const baseSizes = {
+        base: 0.86,
+        sm: 0.91,
+        md: 0.95,
+        lg: 0.99,
+        xl: 1.06,
+    };
+
     return (
-        <>
-            <label className="text-[0.83rem] leading-normal text-gray-900 sm:text-[0.88rem] md:text-[0.92rem] lg:text-[0.96rem] xl:text-[1rem] dark:text-white">
-                {text}
-            </label>
-        </>
+        <GenerateBaseText
+            text={text}
+            baseSizes={baseSizes}
+            sizeOffset={sizeOffset}
+        />
     );
 };
 

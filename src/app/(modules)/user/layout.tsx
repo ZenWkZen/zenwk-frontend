@@ -7,7 +7,10 @@ export default function UserLayout({
 }: {
     children: React.ReactNode;
 }) {
-    // Ejemplo de secciones con tres opciones cada una
+    /**
+     * Secciones con tres opciones cada una. Cargar menú desde backend
+     *  dependiendo los permisos del usuario.
+     **/
     const menuSections = [
         {
             title: "Perfil",
@@ -35,6 +38,9 @@ export default function UserLayout({
         },
     ];
 
+    /**
+     * Retorna el Layout del componente usuarios.
+     */
     return (
         <div className="flex min-h-screen flex-col bg-gray-100">
             {/* Encabezado */}

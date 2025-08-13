@@ -1,161 +1,168 @@
-import React from "react";
+"use client";
+import { ChevronDown, User } from "lucide-react";
+import { TEXT_CYAN_COLOR } from "@app/styles/constans-color";
+import { useFetchAuthenticatedUser } from "@user/hooks/useFetchAuthenticatedUser";
+import { useRef, MutableRefObject, Ref } from "react";
 
-const HeaderMenu = () => {
+import Link from "next/link";
+import FlyoutMenu from "@user/components/FlyoutMenu";
+import UserMenu from "@user/components/UserMenu";
+import UserProfilePhoto from "@user/components/UserProfilePhoto";
+
+const userMenuItems = [
+    { label: "Dashboard", href: "#" },
+    { label: "Settings", href: "#" },
+    { label: "Earnings", href: "#" },
+    { label: "Sign out", href: "#" },
+];
+
+/**
+ * Se deshabilitan opciones de navbar.
+ */
+const navLinks: any[] = [
+    /*{ label: "Home", href: "#", active: true },
+    { label: "About", href: "#" },
+    { label: "Services", href: "#" },
+    { label: "Pricing", href: "#" },
+    { label: "Contact", href: "#" },
+*/
+];
+
+/**
+ * Menú del header para usuario autenticado.
+ * @param param0
+ * @returns
+ */
+const HeaderMenu = ({ isPhoto = false }: { isPhoto?: boolean }) => {
+    const avatarBtnRef = useRef<HTMLButtonElement>(null);
+    /**
+     * Pasa el evento programaticamente.
+     */
+    const handleChevronClick = () => {
+        avatarBtnRef.current?.focus();
+    };
+
+    /**
+     * La función mergeRefs combina múltiples referencias (refs) de React en una sola. Esto permite
+     * asignar un mismo elemento DOM o componente a varias referencias, sean funciones o referencias
+     * creadas con useRef. Itera sobre cada referencia, validando si existe, y actualiza su valor
+     * actual (current) o ejecuta la función correspondiente. Es útil cuando un componente necesita
+     * exponer su referencia a varios consumidores, como integraciones con bibliotecas externas
+     * y lógica interna.
+     * @param refs
+     * @returns
+     */
+    const mergeRefs = <T,>(...refs: (Ref<T> | undefined)[]) => {
+        return (element: T) => {
+            refs.forEach((ref) => {
+                if (!ref) return;
+                if (typeof ref === "function") {
+                    ref(element);
+                } else {
+                    (ref as MutableRefObject<T | null>).current = element;
+                }
+            });
+        };
+    };
+
+    /**
+     *  Use efect para recuperar el useJwtContext y consultar el usuario.
+     **/
+    const { userDTO, loading } = useFetchAuthenticatedUser();
+    /**
+
+    /**
+     * Cargar la foto el usuario o un ícono por defecto si el usuario no ha cargado una imagen. 
+     * @returns
+     */
+    const isPhotoProfile = (isOpenMenu?: boolean) => {
+        return (
+            <UserProfilePhoto
+                isOpenMenu={isOpenMenu ?? false}
+                isPhoto={isPhoto}
+            />
+        );
+    };
+
     return (
-        <div>
-            <nav className="border-gray-200 bg-white dark:bg-gray-900">
-                <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
-                    <a
-                        href=""
-                        className="flex items-center space-x-3 rtl:space-x-reverse"
-                    >
-                        <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-                            ZenWK
-                        </span>
-                    </a>
-                    <div className="flex items-center space-x-3 md:order-2 md:space-x-0 rtl:space-x-reverse">
-                        <button
-                            type="button"
-                            className="flex rounded-full bg-gray-800 text-sm focus:ring-4 focus:ring-gray-300 md:me-0 dark:focus:ring-gray-600"
-                            id="user-menu-button"
-                            aria-expanded="false"
-                            data-dropdown-toggle="user-dropdown"
-                            data-dropdown-placement="bottom"
-                        >
-                            <span className="sr-only">Open user menu</span>
-                            <img
-                                className="h-8 w-8 rounded-full"
-                                src="/docs/images/people/profile-picture-3.jpg"
-                                alt="user photo"
-                            />
-                        </button>
-                        {/* Dropdown menu */}
-                        <div
-                            className="z-50 my-4 hidden list-none divide-y divide-gray-100 rounded-lg bg-white text-base shadow-sm dark:divide-gray-600 dark:bg-gray-700"
-                            id="user-dropdown"
-                        >
-                            <div className="px-4 py-3">
-                                <span className="block text-sm text-gray-900 dark:text-white">
-                                    Bonnie Green
-                                </span>
-                                <span className="block truncate text-sm text-gray-500 dark:text-gray-400">
-                                    name@flowbite.com
-                                </span>
+        <nav className="border-b border-b-gray-300 bg-white shadow-[0_4px_5px_-4px_rgba(0,0,0,0.10)] dark:bg-gray-900">
+            <div className="mx-auto flex max-w-screen-2xl flex-wrap items-center justify-between p-3">
+                {/* Logo */}
+                <Link
+                    href="/"
+                    className="flex items-center space-x-3 rtl:space-x-reverse"
+                >
+                    <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+                        ZenWK
+                    </span>
+                </Link>
+
+                {/* User menu & mobile toggle */}
+                <div className="flex items-center space-x-3 md:order-2 md:space-x-1 rtl:space-x-reverse">
+                    {/* Menú flotante disparado por el button profile de usuario */}
+                    <FlyoutMenu
+                        trigger={({ onClick, ref }) => (
+                            <div className="flex space-x-0.5">
+                                <button
+                                    type="button"
+                                    tabIndex={0}
+                                    ref={mergeRefs(ref, avatarBtnRef)}
+                                    className="flex cursor-pointer rounded-full bg-gradient-to-r hover:ring-2 hover:ring-gray-300 focus:ring-4 focus:ring-gray-300 focus:transition-shadow focus:duration-500"
+                                    onClick={onClick}
+                                >
+                                    {isPhotoProfile()}
+                                </button>
+                                <button
+                                    className={`${TEXT_CYAN_COLOR} cursor-pointer transition-transform duration-300 hover:scale-130`}
+                                    onClick={() => {
+                                        handleChevronClick();
+                                        onClick();
+                                    }}
+                                >
+                                    <ChevronDown size={15} strokeWidth={1.4} />
+                                </button>
                             </div>
-                            <ul
-                                className="py-2"
-                                aria-labelledby="user-menu-button"
-                            >
-                                <li>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-                                    >
-                                        Dashboard
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-                                    >
-                                        Settings
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-                                    >
-                                        Earnings
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="#"
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
-                                    >
-                                        Sign out
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <button
-                            data-collapse-toggle="navbar-user"
-                            type="button"
-                            className="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:ring-2 focus:ring-gray-200 focus:outline-none md:hidden dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                            aria-controls="navbar-user"
-                            aria-expanded="false"
-                        >
-                            <span className="sr-only">Open main menu</span>
-                            <svg
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 17 14"
-                            >
-                                <path
-                                    stroke="currentColor"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M1 1h15M1 7h15M1 13h15"
-                                />
-                            </svg>
-                        </button>
-                    </div>
-                    <div
-                        className="hidden w-full items-center justify-between md:order-1 md:flex md:w-auto"
-                        id="navbar-user"
+                        )}
+                        position="right"
                     >
-                        <ul className="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 font-medium md:mt-0 md:flex-row md:space-x-8 md:border-0 md:bg-white md:p-0 rtl:space-x-reverse dark:border-gray-700 dark:bg-gray-800 md:dark:bg-gray-900">
-                            <li>
-                                <a
-                                    href="#"
-                                    className="block rounded-sm bg-blue-700 px-3 py-2 text-white md:bg-transparent md:p-0 md:text-blue-700 md:dark:text-blue-500"
-                                    aria-current="page"
-                                >
-                                    Home
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    className="block rounded-sm px-3 py-2 text-gray-900 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
-                                >
-                                    About
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    className="block rounded-sm px-3 py-2 text-gray-900 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
-                                >
-                                    Services
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    className="block rounded-sm px-3 py-2 text-gray-900 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
-                                >
-                                    Pricing
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="#"
-                                    className="block rounded-sm px-3 py-2 text-gray-900 hover:bg-gray-100 md:p-0 md:hover:bg-transparent md:hover:text-blue-700 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
-                                >
-                                    Contact
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
+                        <UserMenu
+                            isPhoto={isPhoto}
+                            userEmail={userDTO?.email}
+                        />
+                    </FlyoutMenu>
+
+                    {/* Dropdown */}
+                    {/* Mobile menu button */}
                 </div>
-            </nav>
-        </div>
+
+                {/* Desktop navigation */}
+                <div
+                    className="hidden w-full items-center justify-between md:order-1 md:flex md:w-auto"
+                    id="navbar-user"
+                >
+                    <ul className="mt-4 flex flex-col rounded-lg border border-gray-100 bg-gray-50 p-4 font-medium md:mt-0 md:flex-row md:space-x-8 md:border-0 md:bg-white md:p-0 rtl:space-x-reverse dark:border-gray-700 dark:bg-gray-800 md:dark:bg-gray-900">
+                        {navLinks.length > 0 &&
+                            navLinks.map((link) => (
+                                <li key={link.label}>
+                                    <Link
+                                        href={link.href}
+                                        className={`block rounded-sm px-3 py-2 ${
+                                            link.active
+                                                ? "bg-blue-700 text-white md:bg-transparent md:text-blue-700 md:dark:text-blue-500"
+                                                : "text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
+                                        }`}
+                                        aria-current={
+                                            link.active ? "page" : undefined
+                                        }
+                                    >
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            ))}
+                    </ul>
+                </div>
+            </div>
+        </nav>
     );
 };
 

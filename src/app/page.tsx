@@ -2,8 +2,8 @@ import { Span } from "next/dist/trace";
 import HeaderText from "./(modules)/(auth)/ui/HeaderText";
 import SubTitle from "./(modules)/(auth)/ui/SubTitle";
 import Title from "./(modules)/(auth)/ui/Title";
-import Footer from "@app/shared/components/Footer";
-import Header from "@app/shared/components/Header";
+import Footer from "@app/shared/ui/Footer";
+import Header from "@app/shared/ui/Header";
 import Link from "next/link";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 
