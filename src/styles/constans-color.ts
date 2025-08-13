@@ -19,9 +19,11 @@ export const BG_CYAN_LIGH_HOVER = "hover:bg-[#9FB0BC]";
  */
 export const TEXT_CYAN_CUSTOM = "text-[#566C7B]";
 export const TEXT_VIOLET_REDDISH = "text-[#C470A0]";
+export const TEXT_VIOLET_REDDISH_HOVER = "hover:text-[#C470A0]";
 export const TEXT_CYAN_COLOR = "text-cyan-800";
 export const TEXT_ROSA_COLOR = "text-[#E1564C]";
 export const TEXT_BLUE_COLOR = "text-[#135CDC]";
+export const TEXT_BLUE_COLOR_HOVER = "hover:text-[#135CDC]";
 /**
  * Color bordes, pendiente
  */

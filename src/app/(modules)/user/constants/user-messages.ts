@@ -1,3 +1,5 @@
+import { Policy } from "@mui/icons-material";
+
 /**
  * Mensajes usados en el múdulo de usuarios.
  */
@@ -43,5 +45,11 @@ export const UserMessages = {
             zUpperCase: "Z",
             enwk: "enwk",
         },
+    },
+    footer: {
+        conditions: " Términos y condiciones",
+        polcies: "Política de privacidad",
+        copyrigth:
+            "Copyright © 2025 Alineumsoft™. Todos los derechos reservados.",
     },
 };

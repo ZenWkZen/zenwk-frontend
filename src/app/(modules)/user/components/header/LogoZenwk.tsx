@@ -13,7 +13,7 @@ import Link from "next/link";
  * Logo de de la aplicación (zenwk).
  * @returns
  */
-const LogoZenwk = () => {
+const LogoZenwk = ({ isToolTip = true }: { isToolTip?: boolean }) => {
     return (
         <Link href="/">
             <div className="group relative mb-[0.3rem] flex items-end gap-[0.1rem] drop-shadow-md select-none">
@@ -23,7 +23,9 @@ const LogoZenwk = () => {
                         <Title
                             sizeOffset={20}
                             text={
-                                <div className="cursor-pointer">
+                                <div
+                                    className={`${isToolTip && "cursor-pointer"}`}
+                                >
                                     <span
                                         className={`${TEXT_VIOLET_REDDISH} font-[300] tracking-[0.15rem]`}
                                         style={{
@@ -44,9 +46,11 @@ const LogoZenwk = () => {
                             }
                         />
                     </div>
-                    <Tooltip position="bottom">
-                        {UserMessages.messageToolTip.start}
-                    </Tooltip>
+                    {isToolTip && (
+                        <Tooltip position="bottom">
+                            {UserMessages.messageToolTip.start}
+                        </Tooltip>
+                    )}
                 </div>
             </div>
         </Link>

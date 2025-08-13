@@ -1,86 +1,97 @@
-import React from "react";
-import Link from "next/link";
-import Title from "@user/ui/user-feed/Title";
-import Subtitle from "@user/ui/user-feed/Subtitle";
-import Text from "@user/ui/user-feed/Text";
+import {
+    TEXT_VIOLET_REDDISH,
+    TEXT_CYAN_CUSTOM,
+    TEXT_VIOLET_REDDISH_HOVER,
+    TEXT_CYAN_COLOR,
+} from "@app/styles/constans-color";
+import { UserMessages } from "@user/constants/user-messages";
 
+import Link from "next/link";
+import Text from "@user/ui/user-feed/Text";
+import LotusIcon from "@user/components/icons/LotusIcon";
+
+/**
+ * Componente del footer para layout de usuario autenticado.
+ * @returns
+ */
 const Footer = () => {
     return (
-        <footer className="m-4 rounded-lg bg-white shadow-sm dark:bg-gray-900">
-            <div className="mx-auto w-full max-w-screen-xl p-4 md:py-8">
-                <div className="sm:flex sm:items-center sm:justify-between">
-                    <Title
-                        text={
-                            <span className="self-center text-2xl font-semibold whitespace-nowrap text-[#758E9F] dark:text-white">
-                                ZenWK
-                            </span>
-                        }
-                    />
+        <footer className="rounded-lg bg-white shadow-sm dark:bg-gray-900">
+            <div className="mx-auto grid w-full max-w-screen-2xl grid-cols-2 gap-10 p-2 py-7">
+                {/** Columna 1 */}
+                <div className="flex items-center justify-self-end text-sm text-gray-600">
+                    <ul className="flex items-center divide-x divide-gray-300">
+                        <li className="px-2">
+                            <Text
+                                sizeOffset={-17}
+                                text={
+                                    <div className="flex items-center justify-center">
+                                        <LotusIcon className="h-[0.7rem] w-[0.7rem]" />
+                                        <span
+                                            className={`${TEXT_CYAN_CUSTOM} px-[0.1rem] font-[350]`}
+                                        >
+                                            <label
+                                                className={`${TEXT_VIOLET_REDDISH} font-[350]`}
+                                            >
+                                                {
+                                                    UserMessages.header.logo
+                                                        .zUpperCase
+                                                }
+                                            </label>
+                                            {UserMessages.header.logo.enwk}
+                                        </span>
+                                    </div>
+                                }
+                            />
+                        </li>
+                        <li className="px-2">
+                            <Link href="#" className="">
+                                <Text
+                                    sizeOffset={-13}
+                                    text={
+                                        <span
+                                            className={` ${TEXT_VIOLET_REDDISH_HOVER} block cursor-pointer text-center font-[350] tracking-tighter text-gray-500`}
+                                        >
+                                            {UserMessages.footer.polcies}
+                                        </span>
+                                    }
+                                />
+                            </Link>
+                        </li>
+                        <li className="px-2">
+                            <Link href="#" className="">
+                                <Text
+                                    sizeOffset={-13}
+                                    text={
+                                        <span
+                                            className={` ${TEXT_VIOLET_REDDISH_HOVER} block cursor-pointer text-center font-[350] tracking-tighter text-gray-500`}
+                                        >
+                                            {UserMessages.footer.conditions}
+                                        </span>
+                                    }
+                                />
+                            </Link>
+                        </li>
+                    </ul>
+                </div>
 
-                    <ul className="mb-6 flex flex-wrap items-center text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
-                        <li>
+                {/** Columna 2 */}
+                <div className="flex items-center justify-self-start text-sm text-gray-600">
+                    <ul className="flex items-center divide-x divide-gray-300">
+                        <li className="px-2">
                             <Text
+                                sizeOffset={-17}
                                 text={
-                                    <Link
-                                        href="#"
-                                        className="me-4 hover:underline md:me-6"
+                                    <span
+                                        className={`${TEXT_CYAN_COLOR} font-[350] tracking-tighter`}
                                     >
-                                        Acerca de nosotros
-                                    </Link>
-                                }
-                            />
-                        </li>
-                        <li>
-                            <Text
-                                text={
-                                    <Link
-                                        href="#"
-                                        className="me-4 hover:underline md:me-6"
-                                    >
-                                        Política de privacidad
-                                    </Link>
-                                }
-                            />
-                        </li>
-                        <li>
-                            <Text
-                                text={
-                                    <Link
-                                        href="#"
-                                        className="me-4 hover:underline md:me-6"
-                                    >
-                                        Términos y licencia
-                                    </Link>
-                                }
-                            />
-                        </li>
-                        <li>
-                            <Text
-                                text={
-                                    <Link
-                                        href="#"
-                                        className="me-4 hover:underline md:me-6"
-                                    >
-                                        Contáctanos
-                                    </Link>
+                                        {UserMessages.footer.copyrigth}
+                                    </span>
                                 }
                             />
                         </li>
                     </ul>
                 </div>
-                <hr className="my-6 border-gray-200 sm:mx-auto lg:my-8 dark:border-gray-700" />
-                <Subtitle
-                    text={
-                        <div className="block text-center text-gray-900">
-                            {" "}
-                            © 2025{" "}
-                            <Link href="" className="hover:underline">
-                                Alineumsoft™. Innovando el futuro
-                            </Link>
-                            . Todos los derechos reservados.
-                        </div>
-                    }
-                />
             </div>
         </footer>
     );
