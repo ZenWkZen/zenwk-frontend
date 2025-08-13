@@ -5,6 +5,8 @@ export const ERROR_COLOR = "#E77B73";
 export const BOLD_ERROR_COLOR = "#E1564C";
 export const BASE_TEXT_COLOR = "#6a7282";
 export const BORDER_COLOR = "#d1d5dc";
+export const CYAN_CUSTOM_COLOR = "#566C7B";
+export const VIOLET_REDDISH_COLOR = "#C470A0";
 
 /**
  * Color de botontes
@@ -15,6 +17,8 @@ export const BG_CYAN_LIGH_HOVER = "hover:bg-[#9FB0BC]";
 /**
  * Color texto
  */
+export const TEXT_CYAN_CUSTOM = "text-[#566C7B]";
+export const TEXT_VIOLET_REDDISH = "text-[#C470A0]";
 export const TEXT_CYAN_COLOR = "text-cyan-800";
 export const TEXT_ROSA_COLOR = "text-[#E1564C]";
 export const TEXT_BLUE_COLOR = "text-[#135CDC]";

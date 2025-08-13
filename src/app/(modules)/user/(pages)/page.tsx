@@ -8,11 +8,11 @@ import { TEXT_CYAN_COLOR } from "@app/styles/constans-color";
 import { useFetchAuthenticatedUser } from "@user/hooks/useFetchAuthenticatedUser";
 
 import Title from "@user/ui/user-feed/Title";
-import ButtonCloseWindow from "../ui/Buttons/ButtonCloseWindow";
+import ButtonCloseWindow from "@user/ui/buttons/ButtonCloseWindow";
 import Spinner from "@app/shared/ui/Spinner";
 import Subtitle from "@user/ui/user-feed/Subtitle";
 import InputText from "@user/ui/inputs/InputText";
-import Button from "@user/ui/Buttons/Button";
+import Button from "@app/app/(modules)/user/ui/buttons/Button";
 import SelectGeneral from "@user/ui/inputs/SelectGeneral";
 
 /** Componente encargado de consultar el usuario con los datos envidados después del login.

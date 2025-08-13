@@ -30,6 +30,7 @@ export const UserMessages = {
     },
     messageToolTip: {
         closeWindow: "Lo haré después",
+        start: "inicio",
     },
     header: {
         userMenu: {
@@ -37,6 +38,10 @@ export const UserMessages = {
             config: "Ajustes",
             logout: "Cerrar sesión",
             company: "My Company",
+        },
+        logo: {
+            zUpperCase: "Z",
+            enwk: "enwk",
         },
     },
 };

@@ -6,7 +6,7 @@ import { TEXT_ROSA_COLOR, TEXT_BLUE_COLOR } from "@app/styles/constans-color";
 
 import Text from "@user/ui/user-feed/Text";
 import React from "react";
-import UserProfilePhoto from "@user/components/UserProfilePhoto";
+import UserProfilePhoto from "@user/components/general/UserProfilePhoto";
 
 interface Props {
     isPhoto: boolean;

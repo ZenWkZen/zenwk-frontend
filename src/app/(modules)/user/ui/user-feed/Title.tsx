@@ -1,11 +1,9 @@
 import React from "react";
-import clsx from "clsx";
-import GenerateBaseText from "../../components/GenerateBaseText";
-import { base } from "framer-motion/client";
+import GenerateBaseText from "@user/components/general/GenerateBaseText";
 
 interface TitleProps {
     text: React.ReactNode;
-    sizeOffset?: number; // incremento en rem
+    sizeOffset?: number;
 }
 
 const Title = ({ text, sizeOffset = 0 }: TitleProps) => {

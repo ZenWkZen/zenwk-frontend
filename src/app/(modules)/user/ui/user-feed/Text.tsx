@@ -1,4 +1,4 @@
-import GenerateBaseText from "@user/components/GenerateBaseText";
+import GenerateBaseText from "@user/components/general/GenerateBaseText";
 
 const Text = ({
     text,
