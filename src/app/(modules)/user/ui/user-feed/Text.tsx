@@ -3,9 +3,11 @@ import GenerateBaseText from "@user/components/general/GenerateBaseText";
 const Text = ({
     text,
     sizeOffset = 0,
+    className = "text-gray-500",
 }: {
     text: React.ReactNode;
     sizeOffset?: number;
+    className?: string;
 }) => {
     const baseSizes = {
         base: 0.72,
@@ -19,7 +21,7 @@ const Text = ({
 
     return (
         <GenerateBaseText
-            text={<label className="text-gray-500">{text}</label>}
+            text={<label className={className}>{text}</label>}
             baseSizes={baseSizes}
             sizeOffset={sizeOffset}
         />

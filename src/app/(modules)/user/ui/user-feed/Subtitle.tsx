@@ -1,19 +1,22 @@
 import React from "react";
+import Text from "@user/ui/user-feed/Text";
 
 const Subtitle = ({
     text,
     isError,
+    sizeOffset,
 }: {
     text: React.ReactNode;
     isError?: boolean;
+    sizeOffset?: number;
 }) => {
     return (
-        <div className="mt-2 mb-3">
-            <label
-                className={`text-[0.76rem] ${isError ? "font-medium text-[#E77B73]" : "text-gray-500"} sm:text-[0.8rem] md:text-[0.84rem] lg:text-[0.88rem] xl:text-[0.92rem] dark:text-white`}
-            >
-                {text}
-            </label>
+        <div className="mt-[0.6rem] mb-[0.4rem]">
+            <Text
+                sizeOffset={sizeOffset}
+                text={text}
+                className={`font-[350] ${isError ? "text-[#E77B73]" : "text-gray-500"} `}
+            />
         </div>
     );
 };

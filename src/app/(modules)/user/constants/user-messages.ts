@@ -48,8 +48,19 @@ export const UserMessages = {
     },
     footer: {
         conditions: " Términos y condiciones",
-        polcies: "Política de privacidad",
+        policies: "Política de privacidad",
         copyrigth:
             "Copyright © 2025 Alineumsoft™. Todos los derechos reservados.",
+    },
+    sidebar: {
+        options: {
+            myTime: "Mi tiempo",
+            pomodoro: " - Pomodoro",
+            ultradian: " - Ultradian",
+            flowtime: " - Flowtime",
+            tasks: "Tareas",
+            proyects: "Proyectos",
+            reports: "Análisis y Reportes",
+        },
     },
 };

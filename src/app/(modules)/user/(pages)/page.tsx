@@ -4,7 +4,11 @@ import { UserMessages } from "../constants/user-messages";
 import { UserStateEnum } from "@user/interfaces/user-dto";
 import { ageGenerator } from "@app/shared/utils/userUtils";
 import { sexoLabels } from "@app/shared/utils/optionsSexUtils";
-import { TEXT_CYAN_COLOR } from "@app/styles/constans-color";
+import {
+    TEXT_CYAN_COLOR,
+    TEXT_CYAN_CUSTOM,
+    TEXT_VIOLET_REDDISH,
+} from "@app/styles/constans-color";
 import { useFetchAuthenticatedUser } from "@user/hooks/useFetchAuthenticatedUser";
 
 import Title from "@user/ui/user-feed/Title";
@@ -14,6 +18,7 @@ import Subtitle from "@user/ui/user-feed/Subtitle";
 import InputText from "@user/ui/inputs/InputText";
 import Button from "@app/app/(modules)/user/ui/buttons/Button";
 import SelectGeneral from "@user/ui/inputs/SelectGeneral";
+import Text from "@user/ui/user-feed/Text";
 
 /** Componente encargado de consultar el usuario con los datos envidados después del login.
  * Si el jwt ha esxpirado retorna a la pagina del login.
@@ -37,13 +42,15 @@ const WelcomeUser = () => {
     return (
         <div className="mx-auto max-w-lg">
             <Title
-                sizeOffset={15}
+                sizeOffset={0}
                 text={
                     <div
-                        className={`mb-5 inline-block text-center font-light ${TEXT_CYAN_COLOR}`}
+                        className={`mb-5 inline-block text-center ${TEXT_CYAN_COLOR} font-[300] tracking-tight`}
                     >
                         {UserMessages.welcome.title}
-                        <label className="font-bold">{userDTO?.username}</label>
+                        <label className="font-medium">
+                            {userDTO?.username}
+                        </label>
                         {UserMessages.welcome.subtitle}
                     </div>
                 }
@@ -53,35 +60,25 @@ const WelcomeUser = () => {
             <div className="grid place-items-center">
                 {userDTO != undefined &&
                     userDTO.state === UserStateEnum.INCOMPLETE_PERFIL && (
-                        <div className="max-w-[600px] rounded-xl border border-gray-200 shadow-xl shadow-gray-300">
+                        <div className="rounded-xl bg-white shadow-xl shadow-gray-300 transition-all duration-200">
                             {/** Componetizar potencial "CARD" posible uso en el feed */}
-                            <article className="px-12 py-3">
-                                {/* Cerrar ventana */}
-                                <ButtonCloseWindow
-                                    text={
-                                        UserMessages.messageToolTip.closeWindow
-                                    }
-                                    watch={true}
-                                />
-
-                                <div className="mt-7 mb-3">
-                                    <Title
-                                        sizeOffset={-1}
+                            <article className="px-12">
+                                {/* Se deshabilita: cerrar ventana: UserMessages.messageToolTip.closeWindow*/}
+                                {/** Titulo ventana */}
+                                <div className="mt-4">
+                                    <Text
+                                        sizeOffset={4}
                                         text={
-                                            <label
-                                                className={`${TEXT_CYAN_COLOR}`}
-                                            >
-                                                {
-                                                    UserMessages.welcome
-                                                        .completeRegister
-                                                }
-                                            </label>
+                                            UserMessages.welcome
+                                                .completeRegister
                                         }
+                                        className={`font-normal ${TEXT_CYAN_COLOR}`}
                                     />
                                 </div>
-
+                                {/** Formulario */}
                                 <form className="mx-auto max-w-md">
                                     <Subtitle
+                                        sizeOffset={0}
                                         text={
                                             UserMessages.formComplete.labelNames
                                         }

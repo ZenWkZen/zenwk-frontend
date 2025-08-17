@@ -14,10 +14,13 @@ import LotusIcon from "@user/components/icons/LotusIcon";
  * Componente del footer para layout de usuario autenticado.
  * @returns
  */
-const Footer = () => {
+const Footer = ({ style }: { style?: React.CSSProperties }) => {
     return (
-        <footer className="rounded-lg bg-white shadow-sm dark:bg-gray-900">
-            <div className="mx-auto grid w-full max-w-screen-2xl grid-cols-2 gap-10 p-2 py-7">
+        <footer className="bg-white dark:bg-gray-900">
+            {/** bkp (anterior limite de la pantalla):  max-w-screen-2xl
+             * pl-[165px]: valor del ancho del sidebear. Pendiente implementar context para obtener el ancho actual con y sin sidebear y centrar dinámicamente.
+             */}
+            <div className="grid grid-cols-2 gap-10 p-2 py-5" style={style}>
                 {/** Columna 1 */}
                 <div className="flex items-center justify-self-end text-sm text-gray-600">
                     <ul className="flex items-center divide-x divide-gray-300">
@@ -26,7 +29,7 @@ const Footer = () => {
                                 sizeOffset={-17}
                                 text={
                                     <div className="flex items-center justify-center">
-                                        <LotusIcon className="h-[0.7rem] w-[0.7rem]" />
+                                        <LotusIcon width={10} sizeStroke={10} />
                                         <span
                                             className={`${TEXT_CYAN_CUSTOM} px-[0.1rem] font-[350]`}
                                         >
@@ -52,7 +55,7 @@ const Footer = () => {
                                         <span
                                             className={` ${TEXT_VIOLET_REDDISH_HOVER} block cursor-pointer text-center font-[350] tracking-tighter text-gray-500`}
                                         >
-                                            {UserMessages.footer.polcies}
+                                            {UserMessages.footer.policies}
                                         </span>
                                     }
                                 />

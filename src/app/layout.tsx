@@ -1,6 +1,18 @@
 import type { Metadata } from "next";
+import { Roboto } from "next/font/google";
 import "@app/styles/globals.css";
+
 import JwtContextProvider from "@user/context/JwtContext";
+import WidthSidebarContextProvider from "@user/context/WidthSidebarContext";
+
+/**
+ * Configuración de la fuente Roboto. (No se aplica por el momento)
+ */
+const roboto = Roboto({
+    subsets: ["latin"],
+    weight: ["400", "500", "700"],
+    display: "swap",
+});
 
 /**
  * Confinguración del SEO.
@@ -22,13 +34,15 @@ export default function RootLayout({
 }>) {
     return (
         <JwtContextProvider>
-            <html lang="en">
-                <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1.0"
-                />
-                <body className="">{children}</body>
-            </html>
+            <WidthSidebarContextProvider>
+                <html lang="en">
+                    <meta
+                        name="viewport"
+                        content="width=device-width, initial-scale=1.0"
+                    />
+                    <body className={""}>{children}</body>
+                </html>
+            </WidthSidebarContextProvider>
         </JwtContextProvider>
     );
 }
