@@ -78,7 +78,7 @@ const Sidebar = () => {
         }
     }, []);
 
-    // Propaga la medida de ancho.
+    // Se actualiza valor ancho del sidebar.
     useEffect(() => {
         setSidebarWidth(width);
     }, [width, setSidebarWidth]);
@@ -217,7 +217,7 @@ const Sidebar = () => {
                                         className={` ${
                                             idx === sections.length - 1 &&
                                             "hover: rounded-b-lg"
-                                        } flex w-full items-center gap-2 px-4 py-2 text-xs text-violet-700 transition-colors hover:bg-violet-50`}
+                                        } flex w-full gap-2 px-4 py-2 text-xs text-violet-700 transition-colors hover:bg-violet-50`}
                                     >
                                         <BrainIcon sizeStroke={1.2} size={18} />
                                         {section.aiAction}

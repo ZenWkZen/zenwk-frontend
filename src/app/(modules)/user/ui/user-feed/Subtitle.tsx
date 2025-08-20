@@ -1,5 +1,6 @@
-import React from "react";
-import Text from "@user/ui/user-feed/Text";
+import React from 'react';
+import Text from '@user/ui/user-feed/Text';
+import { TEXT_ROSA_COLOR } from '@app/styles/constans-color';
 
 const Subtitle = ({
     text,
@@ -15,7 +16,7 @@ const Subtitle = ({
             <Text
                 sizeOffset={sizeOffset}
                 text={text}
-                className={`font-[350] ${isError ? "text-[#E77B73]" : "text-gray-500"} `}
+                className={`${isError ? TEXT_ROSA_COLOR : 'font-[350] text-gray-500'}`}
             />
         </div>
     );

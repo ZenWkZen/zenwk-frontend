@@ -1,16 +1,19 @@
-"use client";
-import { ChevronDown } from "lucide-react";
-import FlyoutMenu from "@user/components/general/FlyoutMenu";
-import UserMenu from "@user/components/general/UserMenu";
-import { mergeRefs } from "@user/utils/utilsRef";
-import { TEXT_CYAN_COLOR } from "@app/styles/constans-color";
+'use client';
+import { ChevronDown } from 'lucide-react';
+import FlyoutMenu from '@user/components/general/FlyoutMenu';
+import UserMenu from '@user/components/general/UserMenu';
+import { mergeRefs } from '@user/utils/utilsRef';
+import { TEXT_CYAN_COLOR } from '@app/styles/constans-color';
+import { User } from '@user/context/JwtContext';
+import { UserDTO } from '@user/interfaces/user-dto';
 
 interface Props {
     isPhotoProfile: () => React.ReactNode;
     handleChevronClick: () => void;
     avatarBtnRef: React.Ref<HTMLButtonElement>;
-    userDTO?: { email?: string };
+    userDTO?: UserDTO;
     isPhoto: boolean;
+    userData?: User;
 }
 
 /**
@@ -24,6 +27,7 @@ const ProfileMenu = ({
     avatarBtnRef,
     userDTO,
     isPhoto,
+    userData,
 }: Props) => {
     return (
         <FlyoutMenu
@@ -51,7 +55,7 @@ const ProfileMenu = ({
             )}
             position="right"
         >
-            <UserMenu isPhoto={isPhoto} userEmail={userDTO?.email} />
+            <UserMenu isPhoto={isPhoto} userDTO={userDTO} userData={userData} />
         </FlyoutMenu>
     );
 };

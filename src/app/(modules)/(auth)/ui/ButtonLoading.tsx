@@ -1,17 +1,19 @@
+import clsx from 'clsx';
+
 /**
  * Componente ButtonLoading
  * Botón de carga deshabilitado con ícono animado de "loading".
  * Se utiliza para mostrar una indicación visual de que una operación está en proceso.
  */
 const ButtonLoading = ({ text }: { text: string }) => {
+    const defaultClassName = clsx(
+        'relative mb-2 block h-9.5 w-full rounded-lg bg-[#3BB79F] px-5 text-center text-sm font-medium text-white hover:bg-[#32A18C] focus:ring-4 focus:ring-[#6ADBC5] focus:outline-none sm:w-[400px] dark:bg-[#339989] dark:hover:bg-[#2E887B] dark:focus:ring-[#5CC6B2]'
+    );
+
     return (
         <div className="mt-7 mb-3">
             {/* Botón deshabilitado con estilos de Tailwind CSS para indicar estado de carga */}
-            <button
-                disabled
-                type="submit"
-                className="relative mb-2 block h-9.5 w-full rounded-lg bg-[#3BB79F] px-5 text-center text-sm font-medium text-white hover:bg-[#32A18C] focus:ring-4 focus:ring-[#6ADBC5] focus:outline-none sm:w-[400px] dark:bg-[#339989] dark:hover:bg-[#2E887B] dark:focus:ring-[#5CC6B2]"
-            >
+            <button disabled type="submit" className={defaultClassName}>
                 {/* Texto centrado */}
                 <span className="block text-center">{text}</span>
 

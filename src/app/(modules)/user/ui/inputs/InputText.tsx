@@ -1,35 +1,62 @@
-import React from "react";
+import clsx from 'clsx';
+import { forwardRef } from 'react';
+
 import {
     ERROR_COLOR,
     BASE_TEXT_COLOR,
     BORDER_COLOR,
-} from "@app/styles/constans-color";
-import Subtitle from "@user/ui/user-feed/Subtitle";
+} from '@app/styles/constans-color';
+import { div } from 'framer-motion/client';
 
-interface Props {
+interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
     placeholder: string;
     isError?: boolean;
-    label?: string;
+    children: React.ReactNode;
 }
 
-const InputText = ({ placeholder, isError, label }: Props) => {
-    const borderColor = isError ? ERROR_COLOR : BORDER_COLOR;
-    const textColor = isError ? ERROR_COLOR : BASE_TEXT_COLOR;
+const InputText = forwardRef<HTMLInputElement, Props>(
+    ({ children, placeholder, isError, ...props }, ref) => {
+        const containerClass = clsx(
+            'rounded-lg',
+            'has-[input:focus-within]:shadow-sm',
+            'has-[input:focus-within]:ring-1',
+            'has-[input:focus-within]:outline-1',
+            'has-[input:focus-within]:-outline-offset-1',
+            isError
+                ? 'has-[input:focus-within]:ring-red-200 has-[input:focus-within]:outline-[#e77b73]'
+                : 'has-[input:focus-within]:ring-blue-100 has-[input:focus-within]:outline-[#9FB0BC]'
+        );
 
-    return (
-        <div>
-            <input
-                style={{
-                    color: textColor,
-                    borderColor: borderColor,
-                }}
-                type="text"
-                className={`block w-full rounded-lg border-[1px] border-gray-300 bg-white px-2 py-[0.33rem] text-center text-xs text-gray-500 ${isError ? "placeholder:text-[#E77B73]" : "placeholder:text-gray-500"} focus:border focus:border-gray-400 focus:ring-0 focus:outline-none`}
-                placeholder={placeholder}
-                required
-            />
-        </div>
-    );
-};
+        const inputClass = clsx(
+            'block w-full rounded-lg border-[1px] bg-white px-2 py-[0.33rem]',
+            'text-center text-xs focus:outline-none',
+            isError
+                ? 'text-[#E77B73] placeholder:text-[#E77B73]'
+                : 'text-gray-500 placeholder:text-gray-500'
+        );
+
+        const borderColor = isError ? ERROR_COLOR : BORDER_COLOR;
+        const textColor = isError ? ERROR_COLOR : BASE_TEXT_COLOR;
+
+        return (
+            <div>
+                <div className={containerClass}>
+                    <input
+                        ref={ref}
+                        {...props}
+                        style={{
+                            color: textColor,
+                            borderColor: borderColor,
+                        }}
+                        type="text"
+                        className={inputClass}
+                        placeholder={placeholder}
+                    />
+                </div>
+                {children}
+            </div>
+        );
+    }
+);
 
 export default InputText;

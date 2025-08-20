@@ -13,6 +13,7 @@ export const VIOLET_REDDISH_COLOR_BOLD = "#B54A87";
  * Color de botontes
  */
 export const BG_CYAN = "bg-[#758E9F]";
+export const BG_CYAN_BOLD = "bg-[#566C7B]";
 export const BG_CYAN_HOVER = "hover:bg-[#566C7B]";
 export const BG_CYAN_LIGH_HOVER = "hover:bg-[#9FB0BC]";
 /**

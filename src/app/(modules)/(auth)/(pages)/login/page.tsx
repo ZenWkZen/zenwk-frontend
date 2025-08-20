@@ -1,32 +1,32 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { formValidate } from "@app/shared/utils/formValidate";
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { formValidate } from '@app/shared/utils/formValidate';
 import {
     fetchJwtBaseApi,
     fetchValidateRegisterEmail,
-} from "@app/helpers/fetch-api";
-import { ClientErrorMessage, LoginForm } from "@app/shared/interfaces/auth";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation.js";
-import { AuthMessages } from "@auth/constants/auth-messages";
-import { AuthErrors } from "../../constants/auth-errors";
-import { Messages } from "@app/shared/constants/messages";
-import { useJwtContext } from "@user/utils/useJwtContext";
+} from '@app/helpers/fetch-api';
+import { ClientErrorMessage, LoginForm } from '@app/shared/interfaces/auth';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation.js';
+import { AuthMessages } from '@auth/constants/auth-messages';
+import { AuthErrors } from '../../constants/auth-errors';
+import { Messages } from '@app/shared/constants/messages';
+import { useJwtContext } from '@user/utils/useJwtContext';
 
-import Title from "@app/app/(modules)/(auth)/ui/Title";
-import FormInput from "@app/app/(modules)/(auth)/ui/FormInput";
-import FormError from "@app/shared/ui/FormError";
-import HeaderText from "@app/app/(modules)/(auth)/ui/HeaderText";
-import LabelLink from "@app/app/(modules)/(auth)/ui/LabelLink";
-import Paragraph from "@app/shared/ui/Paragraph";
-import Link from "next/link";
+import Title from '@app/app/(modules)/(auth)/ui/Title';
+import FormInput from '@app/app/(modules)/(auth)/ui/FormInput';
+import FormError from '@app/shared/ui/FormError';
+import HeaderText from '@app/app/(modules)/(auth)/ui/HeaderText';
+import LabelLink from '@app/app/(modules)/(auth)/ui/LabelLink';
+import Paragraph from '@app/shared/ui/Paragraph';
+import Link from 'next/link';
 
-import CenteredHeaderWithBack from "../../components/CenteredHeaderWithBack";
-import HomeIcon from "@mui/icons-material/Home";
-import LoadButton from "@auth/components/LoadButton";
-import Spinner from "@app/shared/ui/Spinner";
+import CenteredHeaderWithBack from '../../components/CenteredHeaderWithBack';
+import HomeIcon from '@mui/icons-material/Home';
+import LoadButton from '@auth/components/LoadButton';
+import Spinner from '@app/shared/ui/Spinner';
 
 /**
  * Página login: ssta vista presenta un formulario de autenticación para que el usuario ingrese
@@ -37,7 +37,7 @@ import Spinner from "@app/shared/ui/Spinner";
 const Login = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [emailParam, setEmailParam] = useState("");
+    const [emailParam, setEmailParam] = useState('');
     const { requiredEmail, requiredPassword, patternEmail, minLength } =
         formValidate();
     const [loading, setLoding] = useState(true);
@@ -59,10 +59,10 @@ const Login = () => {
      * Ejecutado en el primer render y al cambiar los searchParams.
      */
     useEffect(() => {
-        const emailFromParam = searchParams.get("email");
+        const emailFromParam = searchParams.get('email');
         if (emailFromParam) {
             setEmailParam(emailFromParam);
-            setValue("email", emailFromParam);
+            setValue('email', emailFromParam);
         }
 
         // Registrar los datos para mantener la sesión del usuario.
@@ -70,8 +70,8 @@ const Login = () => {
         // LocalStorage es vulnerable a ataques XSS
         if (user.jwt && user.userId) {
             // linea temporal mientras se httpOnly...
-            localStorage.setItem("jwt-user", JSON.stringify(user));
-            return router.push("/user");
+            localStorage.setItem('jwt-user', JSON.stringify(user));
+            return router.push('/user');
         }
 
         setLoding(false);
@@ -87,7 +87,7 @@ const Login = () => {
     /**
      * Configuración de validación para el campo de email.
      */
-    const passwordRegister = register("password", {
+    const passwordRegister = register('password', {
         required: requiredPassword,
         minLength,
     });
@@ -95,7 +95,7 @@ const Login = () => {
     /**
      * Configuración de validación para el campo de contraseña.
      */
-    const usernameRegister = register("email", {
+    const usernameRegister = register('email', {
         required: requiredEmail,
         pattern: patternEmail,
     });
@@ -104,8 +104,8 @@ const Login = () => {
      * para habilitar la opción de recuperación de contraseña.
      */
     const handleEmailBlur = async () => {
-        const isValid = await trigger("email");
-        const emailOnBlur = getValues("email");
+        const isValid = await trigger('email');
+        const emailOnBlur = getValues('email');
         if (isValid) {
             try {
                 const path = `/users/email/${emailOnBlur}`;
@@ -127,7 +127,7 @@ const Login = () => {
      */
     const onSubmit = handleSubmit(
         async (data) => {
-            const path = "/auth/login";
+            const path = '/auth/login';
             const loginJson = { username: data.email, password: data.password };
             setBtnLoading(true);
 
@@ -137,7 +137,7 @@ const Login = () => {
                     undefined,
                     undefined,
                     loginJson,
-                    "POST"
+                    'POST'
                 );
                 await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -155,11 +155,11 @@ const Login = () => {
                     case AuthErrors.funciontal.login.notFoundUsername:
                         return router.push(`/register?email=${data.email}`);
                     case AuthErrors.funciontal.login.badCredentials:
-                        setError("password", { message: errors.message });
-                        setFocus("password");
+                        setError('password', { message: errors.message });
+                        setFocus('password');
                         return;
                     default:
-                        return setError("root", {
+                        return setError('root', {
                             message: (error as Error).message,
                         });
                 }
@@ -169,9 +169,9 @@ const Login = () => {
         },
         (clientErrors) => {
             if (clientErrors.email) {
-                setFocus("email");
+                setFocus('email');
             } else if (clientErrors.password) {
-                setFocus("password");
+                setFocus('password');
             }
         }
     );
@@ -185,7 +185,7 @@ const Login = () => {
                 icon={
                     <HomeIcon className="mb-2 inline cursor-pointer text-cyan-600 hover:text-cyan-900" />
                 }
-                onBack={() => router.push("/")}
+                onBack={() => router.push('/')}
             >
                 <Title title={AuthMessages.login.title} />
             </CenteredHeaderWithBack>
@@ -208,7 +208,7 @@ const Login = () => {
                         }}
                         isError={Boolean(errors.email || errors.root)}
                     >
-                        <FormError error={errors.email?.message ?? ""} />
+                        <FormError error={errors.email?.message ?? ''} />
                     </FormInput>
 
                     <FormInput
@@ -216,12 +216,12 @@ const Login = () => {
                         {...passwordRegister}
                         onChange={async (e) => {
                             passwordRegister.onChange(e);
-                            await trigger("password");
+                            await trigger('password');
                         }}
                         label={AuthMessages.inputs.password}
                         isError={Boolean(errors.password || errors.root)}
                     >
-                        <FormError error={errors.password?.message ?? ""} />
+                        <FormError error={errors.password?.message ?? ''} />
 
                         {isRegisteredUser && (
                             <div className="text-center">

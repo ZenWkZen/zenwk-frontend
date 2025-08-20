@@ -1,5 +1,5 @@
-import { FieldError, Merge, FieldErrorsImpl } from "react-hook-form";
-import React, { useState } from "react";
+import { FieldError, Merge, FieldErrorsImpl } from 'react-hook-form';
+import React, { useState } from 'react';
 
 interface Props {
     error?: React.ReactNode;

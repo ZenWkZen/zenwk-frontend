@@ -1,17 +1,17 @@
-"use client";
-import { useFetchAuthenticatedUser } from "@user/hooks/useFetchAuthenticatedUser";
-import { useRef } from "react";
+'use client';
+import { useFetchAuthenticatedUser } from '@user/hooks/useFetchAuthenticatedUser';
+import { useRef } from 'react';
 
-import Link from "next/link";
-import UserProfilePhoto from "@user/components/general/UserProfilePhoto";
-import LogoZenwk from "@user/components/header/LogoZenwk";
-import ProfileMenu from "@user/components/header/ProfileMenu";
+import Link from 'next/link';
+import UserProfilePhoto from '@user/components/general/UserProfilePhoto';
+import LogoZenwk from '@user/components/header/LogoZenwk';
+import ProfileMenu from '@user/components/header/ProfileMenu';
 
 const userMenuItems = [
-    { label: "Dashboard", href: "#" },
-    { label: "Settings", href: "#" },
-    { label: "Earnings", href: "#" },
-    { label: "Sign out", href: "#" },
+    { label: 'Dashboard', href: '#' },
+    { label: 'Settings', href: '#' },
+    { label: 'Earnings', href: '#' },
+    { label: 'Sign out', href: '#' },
 ];
 
 /**
@@ -43,7 +43,8 @@ const HeaderMenu = ({ isPhoto = false }: { isPhoto?: boolean }) => {
     /**
      *  Use efect para recuperar el useJwtContext y consultar el usuario.
      **/
-    const { userDTO, loading } = useFetchAuthenticatedUser();
+    //console.log('HeaderMenu: useFetchAuthenticatedUser: [OK]>');
+    const { userDTO, loading, userData } = useFetchAuthenticatedUser();
     /**
 
     /**
@@ -72,6 +73,7 @@ const HeaderMenu = ({ isPhoto = false }: { isPhoto?: boolean }) => {
                         avatarBtnRef={avatarBtnRef}
                         isPhotoProfile={isPhotoProfile}
                         userDTO={userDTO}
+                        userData={userData}
                         isPhoto={isPhoto}
                         handleChevronClick={handleChevronClick}
                     />
@@ -92,11 +94,11 @@ const HeaderMenu = ({ isPhoto = false }: { isPhoto?: boolean }) => {
                                         href={link.href}
                                         className={`block rounded-sm px-3 py-2 ${
                                             link.active
-                                                ? "bg-blue-700 text-white md:bg-transparent md:text-blue-700 md:dark:text-blue-500"
-                                                : "text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500"
+                                                ? 'bg-blue-700 text-white md:bg-transparent md:text-blue-700 md:dark:text-blue-500'
+                                                : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 md:dark:hover:bg-transparent md:dark:hover:text-blue-500'
                                         }`}
                                         aria-current={
-                                            link.active ? "page" : undefined
+                                            link.active ? 'page' : undefined
                                         }
                                     >
                                         {link.label}

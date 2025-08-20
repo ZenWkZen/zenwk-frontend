@@ -1,34 +1,39 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { UserMessages } from "../constants/user-messages";
-import { UserStateEnum } from "@user/interfaces/user-dto";
-import { ageGenerator } from "@app/shared/utils/userUtils";
-import { sexoLabels } from "@app/shared/utils/optionsSexUtils";
+'use client';
+import { useEffect, useState } from 'react';
+import { UserMessages } from '../constants/user-messages';
+import { UserStateEnum } from '@user/interfaces/user-dto';
 import {
     TEXT_CYAN_COLOR,
-    TEXT_CYAN_CUSTOM,
     TEXT_VIOLET_REDDISH,
-} from "@app/styles/constans-color";
-import { useFetchAuthenticatedUser } from "@user/hooks/useFetchAuthenticatedUser";
+} from '@app/styles/constans-color';
+import { useFetchAuthenticatedUser } from '@user/hooks/useFetchAuthenticatedUser';
+import { useJwtContext } from '@user/utils/useJwtContext';
 
-import Title from "@user/ui/user-feed/Title";
-import ButtonCloseWindow from "@user/ui/buttons/ButtonCloseWindow";
-import Spinner from "@app/shared/ui/Spinner";
-import Subtitle from "@user/ui/user-feed/Subtitle";
-import InputText from "@user/ui/inputs/InputText";
-import Button from "@app/app/(modules)/user/ui/buttons/Button";
-import SelectGeneral from "@user/ui/inputs/SelectGeneral";
-import Text from "@user/ui/user-feed/Text";
+import Title from '@user/ui/user-feed/Title';
+import Spinner from '@app/shared/ui/Spinner';
+import CompleteRegisterForm from '@user/ui/forms/CompleteRegisterForm';
+import Text from '@user/ui/user-feed/Text';
+import AlertInfo from '@app/shared/components/AlertInfo';
 
 /** Componente encargado de consultar el usuario con los datos envidados después del login.
  * Si el jwt ha esxpirado retorna a la pagina del login.
  */
 const WelcomeUser = () => {
-    const router = useRouter();
+    const [isCreatePerson, setIsCreatePerson] = useState(false);
+    const { setUser } = useJwtContext();
     /**
      *  Use efect para recuperar el useJwtContext y consultar el usuario.
      **/
+    //console.log('WelcomeUser: useFetchAuthenticatedUser: [OK]>');
     const { userDTO, loading } = useFetchAuthenticatedUser();
+
+    // actualizamo el contexto del usuario
+    useEffect(() => {
+        if (userDTO != null && userDTO.jwt != null) {
+            setUser(userDTO);
+        }
+    }, []);
+
     /**
      * Spinner para el render.
      */
@@ -36,11 +41,15 @@ const WelcomeUser = () => {
         return <Spinner />;
     }
 
+    const createPersonHandle = (isCreate: boolean) => {
+        setIsCreatePerson(isCreate);
+    };
+
     /**
      * Componente JSX con la pagina del usuario
      */
     return (
-        <div className="mx-auto max-w-lg">
+        <div className="mx-auto grid max-w-lg select-none">
             <Title
                 sizeOffset={0}
                 text={
@@ -58,112 +67,30 @@ const WelcomeUser = () => {
 
             {/** Formulario para completar los datos personales */}
             <div className="grid place-items-center">
-                {userDTO != undefined &&
+                {!isCreatePerson &&
+                    userDTO != undefined &&
                     userDTO.state === UserStateEnum.INCOMPLETE_PERFIL && (
-                        <div className="rounded-xl bg-white shadow-xl shadow-gray-300 transition-all duration-200">
-                            {/** Componetizar potencial "CARD" posible uso en el feed */}
-                            <article className="px-12">
-                                {/* Se deshabilita: cerrar ventana: UserMessages.messageToolTip.closeWindow*/}
-                                {/** Titulo ventana */}
-                                <div className="mt-4">
-                                    <Text
-                                        sizeOffset={4}
-                                        text={
-                                            UserMessages.welcome
-                                                .completeRegister
-                                        }
-                                        className={`font-normal ${TEXT_CYAN_COLOR}`}
-                                    />
-                                </div>
-                                {/** Formulario */}
-                                <form className="mx-auto max-w-md">
-                                    <Subtitle
-                                        sizeOffset={0}
-                                        text={
-                                            UserMessages.formComplete.labelNames
-                                        }
-                                    />
-                                    <div className="grid grid-cols-2 gap-5">
-                                        <InputText
-                                            placeholder={
-                                                UserMessages.formComplete
-                                                    .placeholder.firstName
-                                            }
-                                            isError={true}
-                                        />
-                                        <InputText
-                                            placeholder={
-                                                UserMessages.formComplete
-                                                    .placeholder.middleName
-                                            }
-                                        />
-                                    </div>
-                                    <Subtitle
-                                        text={
-                                            UserMessages.formComplete
-                                                .labelLastNames
-                                        }
-                                    />
-                                    <div className="grid grid-cols-2 gap-5">
-                                        <InputText
-                                            placeholder={
-                                                UserMessages.formComplete
-                                                    .placeholder.middleLastName
-                                            }
-                                            isError={true}
-                                        />
-                                        <InputText placeholder="Segundo apellido" />
-                                    </div>
-                                    <Subtitle
-                                        text={
-                                            UserMessages.formComplete
-                                                .labelSexAndAge
-                                        }
-                                        isError={true}
-                                    />
-                                    <div className="mb-6 grid grid-cols-2 gap-5">
-                                        <div>
-                                            {/**<Text text="Sexo" /> */}
-
-                                            <SelectGeneral
-                                                data={sexoLabels}
-                                                placeholder={
-                                                    UserMessages.formComplete
-                                                        .sex.placeholder
-                                                }
-                                                optionsLabel={
-                                                    UserMessages.formComplete
-                                                        .sex.labelOption
-                                                }
-                                                isError={true}
-                                            />
-                                        </div>
-                                        <div>
-                                            {/** <Text text="Edad" /> */}
-                                            <SelectGeneral
-                                                data={ageGenerator}
-                                                placeholder={
-                                                    UserMessages.formComplete
-                                                        .age.placeholder
-                                                }
-                                                optionsLabel={
-                                                    UserMessages.formComplete
-                                                        .age.labelOption
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <Button
-                                        text={
-                                            UserMessages.buttons.welcome
-                                                .buttonSave
-                                        }
-                                    />
-                                </form>
-                            </article>
-                        </div>
+                        <CompleteRegisterForm
+                            setIsCreatePerson={setIsCreatePerson}
+                        />
                     )}
+
+                {isCreatePerson && (
+                    <AlertInfo duration={3}>
+                        <Text
+                            sizeOffset={4}
+                            text={
+                                <div
+                                    className={`font-[350] ${TEXT_VIOLET_REDDISH} rounded-xl bg-white p-5 text-center shadow-xl`}
+                                >
+                                    {
+                                        'Tus datos personales se han actualizado correctamente. ¡Gracias por mantener tu información al día!'
+                                    }
+                                </div>
+                            }
+                        />
+                    </AlertInfo>
+                )}
             </div>
         </div>
     );

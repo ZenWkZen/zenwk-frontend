@@ -1,17 +1,28 @@
-"use client";
+'use client';
 
-import { CircleUser, Cog, Bolt, CircleX } from "lucide-react";
-import { UserMessages } from "@user/constants/user-messages";
-import { TEXT_ROSA_COLOR, TEXT_BLUE_COLOR } from "@app/styles/constans-color";
+import { CircleUser, Cog, LoaderCircle, CircleX } from 'lucide-react';
+import { UserMessages } from '@user/constants/user-messages';
+import { TEXT_ROSA_COLOR, TEXT_BLUE_COLOR } from '@app/styles/constans-color';
+import { useJwtContext } from '@user/utils/useJwtContext';
+import { RingLoader } from 'react-spinners';
+import { fetchJwtBaseApi } from '@app/helpers/fetch-api';
+import { User } from '@user/context/JwtContext';
+import { LOCAL_STORAGE_JWT_ITEM } from '@app/shared/constants/common-constants';
+import { useRouter } from 'next/navigation';
+import { UserDTO } from '@user/interfaces/user-dto';
+import React, { useEffect, useState } from 'react';
 
-import Text from "@user/ui/user-feed/Text";
-import React from "react";
-import UserProfilePhoto from "@user/components/general/UserProfilePhoto";
+import Text from '@user/ui/user-feed/Text';
+import UserProfilePhoto from '@user/components/general/UserProfilePhoto';
 
+/**
+ * Interface que representa los props usados por el componente.
+ */
 interface Props {
     isPhoto: boolean;
-    userEmail?: string;
+    userDTO?: UserDTO;
     isPhotoMenuOpen?: boolean;
+    userData?: User;
 }
 
 /**
@@ -19,7 +30,54 @@ interface Props {
  * @param param0
  * @returns
  */
-const UserMenu = ({ isPhoto, userEmail, isPhotoMenuOpen = true }: Props) => {
+const UserMenu = ({
+    isPhoto,
+    userDTO,
+    isPhotoMenuOpen = true,
+    userData,
+}: Props) => {
+    const [click, setClick] = useState(false);
+    const { user, setUser } = useJwtContext();
+    const router = useRouter();
+
+    // Objetos requerido para el contexto del usuario.
+    // Se obtienen en la autenticación.
+    // console.log(
+    //     'UserMenu: userDTO / userData: ................>',
+    //     userDTO,
+    //     userData
+    // );
+
+    /**
+     * Manejador para el logOut
+     */
+    const handleClicLogOut = async () => {
+        try {
+            setClick((prev) => !prev);
+
+            if (true) {
+                localStorage.removeItem(LOCAL_STORAGE_JWT_ITEM);
+
+                const path = '/auth/logout';
+                const res = await fetchJwtBaseApi(
+                    path,
+                    undefined,
+                    user.jwt,
+                    undefined,
+                    'DELETE'
+                );
+                // Se actualiza el contexto.
+                setUser({ jwt: '', userId: 0 });
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            // Pausa, para animación
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            router.push('/login');
+        }
+    };
+
     /**
      * Genera botón de user profile.
      * @returns
@@ -46,7 +104,11 @@ const UserMenu = ({ isPhoto, userEmail, isPhotoMenuOpen = true }: Props) => {
                     />
                     <Text
                         sizeOffset={-8}
-                        text={<label className="font-light">{userEmail}</label>}
+                        text={
+                            <label className="font-light">
+                                {userDTO?.email}
+                            </label>
+                        }
                     />
                 </div>
             </li>
@@ -74,15 +136,31 @@ const UserMenu = ({ isPhoto, userEmail, isPhotoMenuOpen = true }: Props) => {
                     }
                 />
             </li>
-            <li className="relative flex cursor-pointer items-center rounded-b-xl px-4 py-3 hover:bg-gray-100">
-                <span className="absolute top-0 left-1/2 w-[93%] -translate-x-1/2 border-t border-gray-300 shadow-[0_2px_2px_-2px_rgba(0,0,0,0.2)]"></span>
+            {/** Cierre de sesión */}
+            <li
+                className="relative flex cursor-pointer items-center rounded-b-xl px-4 py-3 hover:bg-gray-100"
+                onClick={handleClicLogOut}
+            >
+                <span className="absolute top-0 left-1/2 w-[93%] -translate-x-1/2 border-t border-gray-300 shadow-[0_2px_2px_-2px_rgba(0,0,0,0.2)]" />
+
                 <Text
                     sizeOffset={-5}
                     text={
                         <span
-                            className={`flex items-center gap-x-1 ${TEXT_ROSA_COLOR}`}
+                            className={`flex cursor-pointer items-center gap-x-1 ${
+                                TEXT_ROSA_COLOR
+                            }`}
                         >
-                            <CircleX size={17} strokeWidth={1.7} />
+                            {click ? (
+                                <RingLoader
+                                    color="#E1564C"
+                                    size={17}
+                                    speedMultiplier={1.5}
+                                />
+                            ) : (
+                                // Ícono original
+                                <CircleX size={17} strokeWidth={1.7} />
+                            )}
                             {UserMessages.header.userMenu.logout}
                         </span>
                     }

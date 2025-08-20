@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import React, { useState, useRef, useEffect, ReactNode } from "react";
+import React, { useState, useRef, useEffect, ReactNode } from 'react';
 
 /**
  * Interface que representa los parametros usados para el componente FlyoutMenu
@@ -14,7 +14,7 @@ interface Props {
     /** Contenido del menú */
     children: ReactNode;
     /**  Posición relativa al trigger */
-    position?: "left" | "right";
+    position?: 'left' | 'right';
     /** Cerrar el menú al hacer click en una opción */
     closeOnSelect?: boolean;
 }
@@ -46,7 +46,7 @@ interface Props {
 const FlyoutMenu = ({
     trigger,
     children,
-    position = "left",
+    position = 'left',
     closeOnSelect = true,
 }: Props) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -63,24 +63,26 @@ const FlyoutMenu = ({
                 setIsOpen(false);
             }
         };
-        document.addEventListener("mousedown", handleClickOutside);
+        document.addEventListener('mousedown', handleClickOutside);
         return () =>
-            document.removeEventListener("mousedown", handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     // Cierra el menú al presionar ESC
     useEffect(() => {
         const handleEscape = (event: KeyboardEvent) => {
-            if (event.key === "Escape") {
+            if (event.key === 'Escape') {
                 setIsOpen(false);
             }
         };
-        document.addEventListener("keydown", handleEscape);
-        return () => document.removeEventListener("keydown", handleEscape);
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
     }, []);
 
-    const handleItemClick = () => {
+    const handleItemClick = async () => {
         if (closeOnSelect) {
+            // Pausa para animación
+            await new Promise((resolve) => setTimeout(resolve, 500));
             setIsOpen(false);
         }
     };
@@ -95,19 +97,19 @@ const FlyoutMenu = ({
             <div
                 aria-hidden={!isOpen}
                 className={[
-                    "absolute z-50 mt-2 w-45 max-w-[500px] rounded-xl border border-gray-200 bg-white",
-                    "shadow-xl shadow-gray-300",
+                    'absolute z-50 mt-2 w-45 max-w-[500px] rounded-xl border border-gray-200 bg-white',
+                    'shadow-xl shadow-gray-300',
                     // origen de la animación en la esquina del trigger
-                    position === "right"
-                        ? "right-0 origin-top-right"
-                        : "left-0 origin-top-left",
+                    position === 'right'
+                        ? 'right-0 origin-top-right'
+                        : 'left-0 origin-top-left',
                     // transición suave
-                    "transform-gpu transition-transform duration-300",
+                    'transform-gpu transition-transform duration-300',
                     // estados
                     isOpen
-                        ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
-                        : "pointer-events-none -translate-y-1 scale-95 opacity-0",
-                ].join(" ")}
+                        ? 'pointer-events-auto translate-y-0 scale-100 opacity-100'
+                        : 'pointer-events-none -translate-y-1 scale-95 opacity-0',
+                ].join(' ')}
                 onClick={handleItemClick}
             >
                 {children}

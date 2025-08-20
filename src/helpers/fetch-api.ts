@@ -1,6 +1,75 @@
 import { getTokenUrl, getBaseUrl } from "./api-helper";
-import { BackendErrorResponse } from "@app/shared/interfaces/auth";
+import {
+    BackendErrorResponse,
+    ClientErrorMessage,
+} from "@app/shared/interfaces/auth";
 import qs from "qs";
+
+/**
+ * Interface que representa el objeto que retorna el back cuando se presenta un error en el DTO el api create person.
+ */
+export interface ApiFieldError {
+    field: string;
+    code: string;
+    error: string;
+}
+
+/**
+ * Tipo para manejar los errores del Back por validaciones del DTO
+ */
+export type BadRequestErrorResponse = ApiFieldError[] | string;
+
+/**
+ * Valida si el error es del tipo ApiFieldError
+ * @param data
+ * @returns
+ */
+export const isApiFieldErrorArray = (
+    data: unknown
+): data is ApiFieldError[] => {
+    return (
+        Array.isArray(data) &&
+        data.every(
+            (item) =>
+                typeof item.field === "string" &&
+                typeof item.code === "string" &&
+                (typeof item.error === "string" || item.error === null)
+        )
+    );
+};
+/**
+ * Verifica si el objeto de error corresponde a un error del backend.
+ *
+ * @param error - Objeto a validar.
+ * @returns `true` si el error es del tipo `BackendErrorResponse`.
+ */
+export function isBackendErrorResponse(
+    error: unknown
+): error is BackendErrorResponse {
+    return (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        "message" in error
+    );
+}
+
+/**
+ * Verifica si el objeto de error ya tiene la conversión a ClientErrorMessage.
+ *
+ * @param error - Objeto a validar.
+ * @returns `true` si el error es del tipo `BackendErrorResponse`.
+ */
+export function isClientErrorMessage(
+    error: unknown
+): error is ClientErrorMessage {
+    return (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        "message" in error
+    );
+}
 
 /**
  * Construye y retorna un objeto de configuración para `fetch` con headers, método y body.
@@ -75,28 +144,35 @@ export const getFetch = async (
     try {
         const res = await fetch(requestUrl, mergedOptions);
 
-        if (res.status === 404 || res.status === 500) {
-            const errorBackend = await res.json();
-            throw {
-                code: errorBackend.code,
-                message: errorBackend.error,
-            };
-        }
+        switch (res.status) {
+            case 201:
+            case 204:
+                return true;
 
-        if (res.status === 400) {
-            throw "400 (Bad request)";
-        }
+            case 400: {
+                const response = await res.json();
+                if (isApiFieldErrorArray(response)) {
+                    throw response;
+                }
+                throw "400 (Bad request)";
+            }
 
-        if (res.status === 204 || res.status === 201) {
-            return true;
-        }
+            case 404:
+            case 500: {
+                const response = await res.json();
+                throw {
+                    code: response.code,
+                    message: response.error,
+                };
+            }
 
-        return await res.json();
+            default:
+                return await res.json();
+        }
     } catch (error: unknown) {
         throw error;
     }
 };
-
 /**
  * Genera un token asociado al email del usuario.
  *
@@ -171,6 +247,7 @@ export const fetchJwtBaseApi = async (
         const data = await getFetch(requestUrl, mergedOptions);
         return data;
     } catch (error: unknown) {
+        // console.log("error fetchJwtBaseApi...... ", error);
         throw error as BackendErrorResponse;
     }
 };
@@ -222,24 +299,9 @@ export const fetchValidateRegisterEmail = async (email: string) => {
         if (isBackendErrorResponse(error)) {
             return true;
         }
-        console.log("Error no registrado por el backend: ", error);
+        //  console.log("Error no registrado por el backend: ", error);
     }
 };
-
-/**
- * Verifica si el objeto de error corresponde a un error del backend.
- *
- * @param error - Objeto a validar.
- * @returns `true` si el error es del tipo `BackendErrorResponse`.
- */
-function isBackendErrorResponse(error: unknown): error is BackendErrorResponse {
-    return (
-        typeof error === "object" &&
-        error !== null &&
-        "code" in error &&
-        "message" in error
-    );
-}
 
 /**
  * Obtiene la URL base del sitio, adaptándose automáticamente
