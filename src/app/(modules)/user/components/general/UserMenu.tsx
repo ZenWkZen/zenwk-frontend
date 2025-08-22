@@ -10,7 +10,7 @@ import { User } from '@user/context/JwtContext';
 import { LOCAL_STORAGE_JWT_ITEM } from '@app/shared/constants/common-constants';
 import { useRouter } from 'next/navigation';
 import { UserDTO } from '@user/interfaces/user-dto';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import Text from '@user/ui/user-feed/Text';
 import UserProfilePhoto from '@user/components/general/UserProfilePhoto';
@@ -56,21 +56,22 @@ const UserMenu = ({
             setClick((prev) => !prev);
 
             if (true) {
+                // console.log('UserMenu --  user.jwt: ', userData?.jwt);
                 localStorage.removeItem(LOCAL_STORAGE_JWT_ITEM);
-
                 const path = '/auth/logout';
                 const res = await fetchJwtBaseApi(
                     path,
                     undefined,
-                    user.jwt,
+                    userData?.jwt,
                     undefined,
                     'DELETE'
                 );
-                // Se actualiza el contexto.
+                // console.log('UserMenu -- handleClicLogOut: ', res);
+                // Se actualiza el contexto, si no genera un loop render.
                 setUser({ jwt: '', userId: 0 });
             }
         } catch (error) {
-            console.log(error);
+            console.log('UserMenu -- error: ', error);
         } finally {
             // Pausa, para animación
             await new Promise((resolve) => setTimeout(resolve, 500));

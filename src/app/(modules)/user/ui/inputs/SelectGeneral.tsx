@@ -13,25 +13,17 @@ import {
 } from '@app/styles/constans-color';
 
 /**
- * Constante para select de opciones
- */
-export interface InterfaceSelectOption {
-    label: string;
-    value: string;
-}
-
-/**
  *  Interface que representa los datoa a usar en este componente.
  */
 interface Props {
-    data: Array<string>;
+    data: Array<Option>;
     placeholder: string;
     optionsLabel: string;
     isError?: boolean;
 }
 
 // Tipos para las opciones
-interface Option {
+export interface Option {
     label: string;
     value: string;
 }
@@ -318,15 +310,14 @@ const SelectGeneral = ({
     name?: string;
     children?: React.ReactNode;
 }) => {
+    // console.log('SelectGeneral -- value:', value);
+    // console.log('SelectGeneral -- data:', data);
     const groupedOptions: GroupedOption[] = [
         {
             label: optionsLabel,
             options: data.map((item) => ({
-                label: item,
-                value:
-                    item !== undefined && typeof item === 'string'
-                        ? item.toLowerCase().replace(/\s+/g, '-')
-                        : item,
+                label: item.label,
+                value: item.value,
             })),
         },
     ];
@@ -335,7 +326,7 @@ const SelectGeneral = ({
     const selectedOption = value
         ? {
               label: value.label,
-              value: value.value.toLowerCase().replace(/\s+/g, '-'),
+              value: value.value,
           }
         : null;
 

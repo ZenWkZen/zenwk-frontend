@@ -1,20 +1,18 @@
 import { ageGenerator } from '@app/shared/utils/userUtils';
-import { sexoLabels } from '@app/shared/utils/optionsSexUtils';
+import { loadSexLabels } from '@app/shared/utils/optionsSexUtils';
 import { UserMessages } from '@user/constants/user-messages';
 import { TEXT_CYAN_COLOR } from '@app/styles/constans-color';
 import { Controller, useForm } from 'react-hook-form';
 import { formValidateUser } from '@user/utils/formValidateUser';
-import { useJwtContext } from '@user/utils/useJwtContext';
+import { User } from '@user/context/JwtContext';
 import {
     fetchJwtBaseApi,
     isApiFieldErrorArray,
     isClientErrorMessage,
 } from '@app/helpers/fetch-api';
 import { safeValue } from '@app/shared/utils/stringUtils';
-import SelectGeneral, {
-    InterfaceSelectOption,
-} from '@user/ui/inputs/SelectGeneral';
-import { useState, Dispatch, SetStateAction } from 'react';
+import SelectGeneral, { Option } from '@user/ui/inputs/SelectGeneral';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 
 import Subtitle from '@user/ui/user-feed/Subtitle';
 import InputText from '@user/ui/inputs/InputText';
@@ -22,6 +20,7 @@ import Button from '@app/app/(modules)/user/ui/buttons/Button';
 
 import Text from '@user/ui/user-feed/Text';
 import FormErrorUser from '@user/ui/forms/FormErrorUser';
+import Spinner from '@app/shared/ui/Spinner';
 
 /**
  * Componente con el formulario de registro de la persona por primera vez. Se despliega en el primera autentiación.
@@ -30,8 +29,10 @@ import FormErrorUser from '@user/ui/forms/FormErrorUser';
  */
 const CompleteRegisterForm = ({
     setIsCreatePerson,
+    user,
 }: {
     setIsCreatePerson: Dispatch<SetStateAction<boolean>>;
+    user: User;
 }) => {
     const {
         control,
@@ -43,8 +44,8 @@ const CompleteRegisterForm = ({
         middleName: string;
         lastName: string;
         middleLastName: string;
-        sex: InterfaceSelectOption;
-        age: InterfaceSelectOption;
+        sex: Option;
+        age: Option;
     }>();
 
     const {
@@ -58,11 +59,26 @@ const CompleteRegisterForm = ({
         validateTrim,
     } = formValidateUser();
 
-    const { user } = useJwtContext();
     const [errorBack, setErrorBack] = useState('');
     const [isBtnLoading, setBtnLoading] = useState(false);
+    const [optionsSex, setOptionsSex] = useState<Option[]>([]);
 
-    console.log('CompleteRegisterForm - user: ', user);
+    //  console.log('CompleteRegisterForm - userDTO: ', user);
+    useEffect(() => {
+        const fetchOptions = async () => {
+            try {
+                const options: Option[] = await loadSexLabels(); // trae los objetos completos
+                setOptionsSex(options);
+            } catch (error) {}
+        };
+
+        fetchOptions();
+    }, []);
+
+    // Cargador
+    if (optionsSex.length === 0) {
+        return <Spinner />;
+    }
 
     /**
      * manejador envio de formulario.
@@ -71,14 +87,17 @@ const CompleteRegisterForm = ({
      * de toca la aplicación.
      */
     const onSubmit = handleSubmit(async (data) => {
-        // console.log('CompleteRegisterForm - data: ', data);
+        // console.log(data);
         setBtnLoading(true);
+
         try {
             const path = '/persons';
             const personJson: Record<string, string | number> = {
                 idUser: user.userId,
                 firstName: data.firstName,
                 lastName: data.lastName,
+                age: Number(data.age.value),
+                idSex: Number(data.sex.value),
             };
             // Segundo nombre. Si es diferente de nulo.
             if (safeValue(data.middleName)) {
@@ -88,6 +107,8 @@ const CompleteRegisterForm = ({
             if (safeValue(data.middleLastName)) {
                 personJson.middleLastName = data.middleLastName;
             }
+
+            console.log('CompleteRegisterForm - personJson: ', personJson);
 
             if (user) {
                 const res = await fetchJwtBaseApi(
@@ -100,11 +121,14 @@ const CompleteRegisterForm = ({
                 await new Promise((resolve) => setTimeout(resolve, 1000));
 
                 if (res) {
+                    // Se renueva el jwt. Retorna: ({token, userId})
+                    //  Guardar nuevo jwt en localstorage
+                    // Actualizar {setUser} jwtContest()
+
                     // Estado 201
                     setIsCreatePerson(true);
                 }
             }
-            console.log(data);
         } catch (error) {
             if (isApiFieldErrorArray(error)) {
                 // Se indican los campo del back solo si un error 401.
@@ -250,7 +274,7 @@ const CompleteRegisterForm = ({
                                 render={({ field }) => {
                                     return (
                                         <SelectGeneral
-                                            data={sexoLabels}
+                                            data={optionsSex ?? []}
                                             placeholder={
                                                 UserMessages.formComplete.sex
                                                     .placeholder

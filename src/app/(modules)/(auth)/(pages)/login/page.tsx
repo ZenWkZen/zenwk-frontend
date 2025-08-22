@@ -14,6 +14,7 @@ import { AuthMessages } from '@auth/constants/auth-messages';
 import { AuthErrors } from '../../constants/auth-errors';
 import { Messages } from '@app/shared/constants/messages';
 import { useJwtContext } from '@user/utils/useJwtContext';
+import { loginApi } from '@auth/utils/authUtils';
 
 import Title from '@app/app/(modules)/(auth)/ui/Title';
 import FormInput from '@app/app/(modules)/(auth)/ui/FormInput';
@@ -127,25 +128,15 @@ const Login = () => {
      */
     const onSubmit = handleSubmit(
         async (data) => {
-            const path = '/auth/login';
-            const loginJson = { username: data.email, password: data.password };
             setBtnLoading(true);
-
             try {
-                const res = await fetchJwtBaseApi(
-                    path,
-                    undefined,
-                    undefined,
-                    loginJson,
-                    'POST'
-                );
-                await new Promise((resolve) => setTimeout(resolve, 1000));
+                // Utilidad loginApi
+                const res = await loginApi(data.email, data.password);
+                // Pausa para mejorar la interacción con el usuario
+                await new Promise((resolve) => setTimeout(resolve, 500));
 
-                /**
-                 * Se carga el contexto para el módulo del usuario.
-                 */
                 if (res) {
-                    // Se carga en useEffect
+                    // Se actualiza contexto
                     setUser({ jwt: res.token, userId: res.userId });
                 }
             } catch (error: unknown) {

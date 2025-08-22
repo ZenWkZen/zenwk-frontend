@@ -20,19 +20,11 @@ import AlertInfo from '@app/shared/components/AlertInfo';
  */
 const WelcomeUser = () => {
     const [isCreatePerson, setIsCreatePerson] = useState(false);
-    const { setUser } = useJwtContext();
     /**
      *  Use efect para recuperar el useJwtContext y consultar el usuario.
      **/
-    //console.log('WelcomeUser: useFetchAuthenticatedUser: [OK]>');
-    const { userDTO, loading } = useFetchAuthenticatedUser();
-
-    // actualizamo el contexto del usuario
-    useEffect(() => {
-        if (userDTO != null && userDTO.jwt != null) {
-            setUser(userDTO);
-        }
-    }, []);
+    // console.log('WelcomeUser: useFetchAuthenticatedUser: [OK]>')
+    const { userDTO, loading, userData } = useFetchAuthenticatedUser();
 
     /**
      * Spinner para el render.
@@ -40,10 +32,6 @@ const WelcomeUser = () => {
     if (loading) {
         return <Spinner />;
     }
-
-    const createPersonHandle = (isCreate: boolean) => {
-        setIsCreatePerson(isCreate);
-    };
 
     /**
      * Componente JSX con la pagina del usuario
@@ -72,6 +60,7 @@ const WelcomeUser = () => {
                     userDTO.state === UserStateEnum.INCOMPLETE_PERFIL && (
                         <CompleteRegisterForm
                             setIsCreatePerson={setIsCreatePerson}
+                            user={userData}
                         />
                     )}
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { fetchJwtBaseApi } from "@app/helpers/fetch-api";
 import { LOCAL_STORAGE_JWT_ITEM } from "@app/shared/constants/common-constants";
+import { fetchGetUser } from "@auth/utils/authUtils";
 
 /**
  * Hook para carga de usuario autenticado, permite que otros componentes puedan
@@ -20,32 +20,21 @@ export function useFetchAuthenticatedUser() {
         setUserData(userLocal);
 
         //console.log("useFetchAuthenticatedUser - userLocal: ", userLocal);
-
-        const fetchGetUser = async () => {
+        const loadUser = async () => {
             try {
-                // Api consulta usuario por id. /api/users/{idUser}
-                const pathFindByIdUser = "/users/" + userLocal.userId;
-                const res = await fetchJwtBaseApi(
-                    pathFindByIdUser,
-                    undefined,
-                    userLocal.jwt,
-                    undefined,
-                    "GET"
-                );
-                // se guarda el objecto userDTO
-                setUserDTO(res);
+                if (userLocal && userLocal.jwt) {
+                    const user = await fetchGetUser(userLocal);
+                    setUserDTO(user);
+                } else {
+                    router.push("/login");
+                }
             } catch (error) {
                 router.push("/login");
             } finally {
                 setLoading(false);
             }
         };
-
-        if (userLocal && userLocal.jwt) {
-            fetchGetUser();
-        } else {
-            return router.push("/login");
-        }
+        loadUser();
     }, []);
 
     return { userDTO, loading, userData };

@@ -3,6 +3,8 @@ import { useSidebarContext } from '@user/utils/UseWidthSidebarContext';
 import { LOCAL_STORAGE_JWT_ITEM } from '@app/shared/constants/common-constants';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { fetchGetUser } from '@auth/utils/authUtils';
+import { UserDTO } from './interfaces/user-dto';
 
 import Footer from '@user/ui/user-feed/Footer';
 import HeaderMenu from '@user/ui/user-feed/HeaderMenu';
@@ -25,20 +27,51 @@ export default function UserLayout({
     useEffect(() => {
         const userDataTemp = localStorage.getItem(LOCAL_STORAGE_JWT_ITEM);
         const userLocal = userDataTemp ? JSON.parse(userDataTemp) : null;
-        document.body.style.overflow = 'hidden';
 
-        // console.log('UserLayout - userLocal', userLocal);
+        const loadUser = async (): Promise<UserDTO | false> => {
+            try {
+                return await fetchGetUser(userLocal);
+            } catch (error) {
+                return false;
+            }
+        };
 
-        if (userLocal && userLocal.jwt) {
-            document.body.style.overflow = '';
+        // Cubre los dos escenarios posibles:
+        // 1. Cierre de sesión
+        // 2. Expiración del token (no importa si queda guardado en localstorage)
+        const validateSession = async () => {
+            if (userLocal && userLocal.jwt) {
+                const result = await loadUser();
+                if (!result) {
+                    setAuthorized(false);
+                    router.push('/login');
+                } else {
+                    setAuthorized(true);
+                }
+            } else {
+                setAuthorized(false);
+                router.push('/login');
+            }
+        };
 
-            // console.log('UserLayout autorizado:', userLocal);
-            setAuthorized(true);
+        validateSession();
+    }, []);
+
+    /**
+     * Bloquea scroll mientras está cargando autorización.
+     * Evita warning generado en el navegador.
+     */
+    useEffect(() => {
+        if (authorized === null) {
+            document.body.style.overflow = 'hidden';
         } else {
-            setAuthorized(false);
-            router.push('/login'); // redirige si no hay sesión
+            document.body.style.overflow = '';
         }
-    }, [router]);
+
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [authorized, router]);
 
     /**
      * Cargador.
