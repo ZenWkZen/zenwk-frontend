@@ -1,9 +1,9 @@
-import GenerateBaseText from "@user/components/general/GenerateBaseText";
+import GenerateBaseText from '@user/components/general/GenerateBaseText';
 
 const Text = ({
     text,
     sizeOffset = 0,
-    className = "text-gray-500",
+    className = 'text-gray-500',
 }: {
     text: React.ReactNode;
     sizeOffset?: number;

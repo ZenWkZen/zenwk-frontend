@@ -1,12 +1,13 @@
-import React from "react";
-import GenerateBaseText from "@user/components/general/GenerateBaseText";
+import React from 'react';
+import GenerateBaseText from '@user/components/general/GenerateBaseText';
 
 interface TitleProps {
     text: React.ReactNode;
     sizeOffset?: number;
+    className?: string;
 }
 
-const Title = ({ text, sizeOffset = 0 }: TitleProps) => {
+const Title = ({ text, sizeOffset = 0, className = '' }: TitleProps) => {
     /**
      * Tamaño base parlos titulos del sistema.
      */
@@ -23,6 +24,7 @@ const Title = ({ text, sizeOffset = 0 }: TitleProps) => {
             text={text}
             baseSizes={baseSizes}
             sizeOffset={sizeOffset}
+            className={className}
         />
     );
 };

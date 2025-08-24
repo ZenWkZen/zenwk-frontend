@@ -1,5 +1,5 @@
-import React from "react";
-import clsx from "clsx";
+import React from 'react';
+import clsx from 'clsx';
 
 interface SizeMap {
     base: number;
@@ -13,9 +13,15 @@ interface Props {
     text: React.ReactNode;
     sizeOffset?: number; // incremento en rem (por ejemplo 50 = 0.50 rem)
     baseSizes: SizeMap;
+    className?: string;
 }
 
-const GenerateBaseText = ({ text, sizeOffset = 0, baseSizes }: Props) => {
+const GenerateBaseText = ({
+    text,
+    sizeOffset = 0,
+    baseSizes,
+    className,
+}: Props) => {
     /**
      * Función de calculo.
      * @param val
@@ -26,8 +32,8 @@ const GenerateBaseText = ({ text, sizeOffset = 0, baseSizes }: Props) => {
     return (
         <label
             className={clsx(
-                "leading-normal text-gray-900 dark:text-white",
-                "block"
+                'block leading-normal text-gray-900 dark:text-white',
+                className // si llega, se agrega; si no, no rompe lo existente
             )}
             style={{ fontSize: calc(baseSizes.base) }}
         >

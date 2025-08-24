@@ -14,6 +14,8 @@ import React, { useState } from 'react';
 
 import Text from '@user/ui/user-feed/Text';
 import UserProfilePhoto from '@user/components/general/UserProfilePhoto';
+import Link from 'next/link';
+import { resolve } from 'path';
 
 /**
  * Interface que representa los props usados por el componente.
@@ -37,6 +39,7 @@ const UserMenu = ({
     userData,
 }: Props) => {
     const [click, setClick] = useState(false);
+    const [clickProfile, setClickProfile] = useState(false);
     const { user, setUser } = useJwtContext();
     const router = useRouter();
 
@@ -89,6 +92,15 @@ const UserMenu = ({
         );
     };
 
+    /**
+     * Animación click en Icono.
+     */
+    const handleClick = async () => {
+        setClickProfile((prev) => !prev);
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        setClickProfile(false);
+    };
+
     return (
         <ul className="select-none">
             <li className="grid items-center justify-items-center rounded-t-xl border-b-[0.04rem] border-b-gray-300 bg-gray-100 py-4 shadow-2xs shadow-gray-200">
@@ -113,17 +125,33 @@ const UserMenu = ({
                     />
                 </div>
             </li>
-            <li className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100">
-                <Text
-                    sizeOffset={-5}
-                    text={
-                        <span className="flex items-center gap-x-1 text-cyan-950">
-                            <CircleUser size={17} strokeWidth={1.4} />
-                            {UserMessages.header.userMenu.profile}
-                        </span>
-                    }
-                />
-            </li>
+            {/** Item: perfil */}
+            <Link href="/user/profile">
+                <li
+                    className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100"
+                    onClick={handleClick}
+                >
+                    <Text
+                        sizeOffset={-5}
+                        text={
+                            <span className="flex items-center gap-x-1 text-cyan-950">
+                                {clickProfile ? (
+                                    <RingLoader
+                                        color="#000000"
+                                        size={17}
+                                        speedMultiplier={1.5}
+                                    />
+                                ) : (
+                                    // Ícono original
+                                    <CircleUser size={17} strokeWidth={1.4} />
+                                )}
+                                {UserMessages.header.userMenu.profile}
+                            </span>
+                        }
+                    />
+                </li>
+            </Link>
+            {/** Item: ajustes */}
             <li className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100">
                 <Text
                     sizeOffset={-5}
@@ -137,7 +165,7 @@ const UserMenu = ({
                     }
                 />
             </li>
-            {/** Cierre de sesión */}
+            {/** Item: cierre de sesión */}
             <li
                 className="relative flex cursor-pointer items-center rounded-b-xl px-4 py-3 hover:bg-gray-100"
                 onClick={handleClicLogOut}

@@ -44,7 +44,7 @@ const HeaderMenu = ({ isPhoto = false }: { isPhoto?: boolean }) => {
      *  Use efect para recuperar el useJwtContext y consultar el usuario.
      **/
     //console.log('HeaderMenu: useFetchAuthenticatedUser: [OK]>');
-    const { userDTO, loading, userData } = useFetchAuthenticatedUser();
+    const { userDTO, userData } = useFetchAuthenticatedUser();
     /**
 
     /**
@@ -77,8 +77,6 @@ const HeaderMenu = ({ isPhoto = false }: { isPhoto?: boolean }) => {
                         isPhoto={isPhoto}
                         handleChevronClick={handleChevronClick}
                     />
-                    {/* Dropdown */}
-                    {/* Mobile menu button */}
                 </div>
 
                 {/* Opciones del navbar esta parte por ahora no se utiliza es posible que solo se agregue una barra de búsquedad. */}
