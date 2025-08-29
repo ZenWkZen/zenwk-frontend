@@ -21,9 +21,10 @@ const Text = ({
 
     return (
         <GenerateBaseText
-            text={<label className={className}>{text}</label>}
+            text={text}
             baseSizes={baseSizes}
             sizeOffset={sizeOffset}
+            className={className}
         />
     );
 };

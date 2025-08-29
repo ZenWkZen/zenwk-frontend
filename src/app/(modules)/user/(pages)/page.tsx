@@ -54,15 +54,22 @@ const WelcomeUser = () => {
             />
 
             {/** Formulario para completar los datos personales */}
-            <div className="grid place-items-center">
-                {!isCreatePerson &&
-                    userDTO != undefined &&
-                    userDTO.state === UserStateEnum.INCOMPLETE_PERFIL && (
-                        <CompleteRegisterForm
-                            setIsCreatePerson={setIsCreatePerson}
-                            user={userData}
-                        />
-                    )}
+            <div className="">
+                {true && (
+                    <div className="mx-auto max-w-lg place-items-center rounded-xl bg-white px-5 py-5 shadow-2xs">
+                        <article className="mb-4 px-12">
+                            <Title
+                                sizeOffset={-5}
+                                text={UserMessages.welcome.completeRegister}
+                                className={`text-center font-[370] text-cyan-800`}
+                            />
+                            <CompleteRegisterForm
+                                setIsCreatePerson={setIsCreatePerson}
+                                user={userData}
+                            />
+                        </article>
+                    </div>
+                )}
 
                 {isCreatePerson && (
                     <AlertInfo duration={3}>

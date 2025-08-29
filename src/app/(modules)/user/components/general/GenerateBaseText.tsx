@@ -32,7 +32,7 @@ const GenerateBaseText = ({
     return (
         <label
             className={clsx(
-                'block leading-normal text-gray-900 dark:text-white',
+                'block leading-normal dark:text-white',
                 className // si llega, se agrega; si no, no rompe lo existente
             )}
             style={{ fontSize: calc(baseSizes.base) }}

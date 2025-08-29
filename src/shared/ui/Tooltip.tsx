@@ -3,33 +3,33 @@
  */
 type Props = {
     children: React.ReactNode;
-    position?: "top" | "bottom" | "left" | "right";
+    position?: 'top' | 'bottom' | 'left' | 'right';
     hiddenArrow?: boolean;
 };
 
 const Tooltip = ({
     children,
-    position = "top",
+    position = 'top',
     hiddenArrow = false,
 }: Props) => {
     /**
      * Posición de la caja del mensaje
      */
     const positionClasses: Record<typeof position, string> = {
-        top: "-top-8 left-1/2 -translate-x-1/2 flex-col",
-        bottom: "top-full mt-2 left-1/2 -translate-x-1/2 flex-col-reverse",
-        left: "right-full mr-2 top-1/2 -translate-y-1/2 flex-row-reverse",
-        right: "left-full ml-2 top-1/2 -translate-y-1/2 flex-row-reverse",
+        top: '-top-8 left-1/2 -translate-x-1/2 flex-col',
+        bottom: 'top-full mt-2 left-1/2 -translate-x-1/2 flex-col-reverse',
+        left: 'right-full mr-2 top-1/2 -translate-y-1/2 flex-row',
+        right: 'left-full ml-2 top-1/2 -translate-y-1/2 flex-row-reverse',
     };
 
     /**
      * Ubicación de la flecha
      */
     const arrowPosition: Record<typeof position, string> = {
-        top: "mt-[-4px] rotate-45",
-        bottom: "mb-[-4px] rotate-45",
-        left: "ml-[-4px] rotate-45",
-        right: "mr-[-4px] rotate-45",
+        top: 'mt-[-4px] rotate-45',
+        bottom: 'mb-[-4px] rotate-45',
+        left: 'ml-[-4px] rotate-45',
+        right: 'mr-[-4px] rotate-45',
     };
 
     return (

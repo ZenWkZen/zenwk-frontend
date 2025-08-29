@@ -157,6 +157,7 @@ export const getFetch = async (
                 throw "400 (Bad request)";
             }
 
+            case 403:
             case 404:
             case 500: {
                 const response = await res.json();

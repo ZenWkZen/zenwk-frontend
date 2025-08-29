@@ -7,7 +7,10 @@ import { useJwtContext } from '@user/utils/useJwtContext';
 import { RingLoader } from 'react-spinners';
 import { fetchJwtBaseApi } from '@app/helpers/fetch-api';
 import { User } from '@user/context/JwtContext';
-import { LOCAL_STORAGE_JWT_ITEM } from '@app/shared/constants/common-constants';
+import {
+    LOCAL_STORAGE_JWT_ITEM,
+    LOCAL_STORAGE_SEX_OPTIONS,
+} from '@app/shared/constants/common-constants';
 import { useRouter } from 'next/navigation';
 import { UserDTO } from '@user/interfaces/user-dto';
 import React, { useState } from 'react';
@@ -61,6 +64,7 @@ const UserMenu = ({
             if (true) {
                 // console.log('UserMenu --  user.jwt: ', userData?.jwt);
                 localStorage.removeItem(LOCAL_STORAGE_JWT_ITEM);
+                localStorage.removeItem(LOCAL_STORAGE_SEX_OPTIONS);
                 const path = '/auth/logout';
                 const res = await fetchJwtBaseApi(
                     path,

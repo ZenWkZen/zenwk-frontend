@@ -23,7 +23,7 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
  */
 const Button = ({ loading, text, ...props }: Props) => {
     const defaultClassName = clsx(
-        `relative mb-4 w-full max-w-[700px] rounded-lg ${loading ? BG_CYAN_BOLD : BG_CYAN} px-3 py-[0.45rem] align-middle font-light text-white opacity-100 ${BG_CYAN_HOVER} ocus:ring-[#6ADBC5] focus:ring-4 focus:outline-none`
+        `relative w-full max-w-[700px] rounded-lg ${loading ? BG_CYAN_BOLD : BG_CYAN} px-3 py-[0.45rem] align-middle font-light text-white opacity-100 ${BG_CYAN_HOVER} focus:ring-4 focus:ring-[#6ADBC5] focus:outline-none`
     );
 
     return loading ? (

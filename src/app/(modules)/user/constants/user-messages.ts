@@ -12,22 +12,22 @@ export const UserMessages = {
             "¡Completa tu registro, ya casi estás listo para empezar! ",
     },
     formComplete: {
-        age: { placeholder: "Selecciona una edad... ", labelOption: "Edad" },
-        sex: { placeholder: "Selecciona un sexo...", labelOption: "Sexo" },
+        age: { placeholder: "Edad... ", labelOption: "Edad" },
+        sex: { placeholder: "Sexo...", labelOption: "Sexo" },
         labelNames: "Cuéntanos cómo te llamas",
         labelLastNames: "Y tus apellidos, por favor",
         labelSexAndAge: "Ahora compártenos tu sexo y edad",
         // Placeholders para los inputs
         placeholder: {
-            firstName: "Primer nombre",
-            middleName: "Segundo nombre",
-            lastName: "Primer apellido",
-            middleLastName: "Segundo apellido",
+            firstName: "Primer nombre...",
+            middleName: "Segundo nombre...",
+            lastName: "Primer apellido...",
+            middleLastName: "Segundo apellido...",
         },
     },
     buttons: {
         welcome: {
-            buttonSave: "Guardar datos básicos",
+            buttonSave: "Guardar información personal",
         },
     },
     messageToolTip: {

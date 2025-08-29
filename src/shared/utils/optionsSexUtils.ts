@@ -43,3 +43,17 @@ export const personSexOptionApi = async (): Promise<[dataPersonSex]> => {
         throw error;
     }
 };
+
+/**
+ * Retorna el label correspondiente a un id dado dentro de la lista de opciones.
+ * @param options Lista de opciones (Option[])
+ * @param id Identificador a buscar
+ * @returns Label asociado al id o string vacío si no existe
+ */
+export const getLabelById = (
+    options: Option[],
+    id: number | string
+): string => {
+    const option = options.find((opt) => opt.value === id.toString());
+    return option ? option.label : "";
+};

@@ -18,33 +18,33 @@ const ProfileItemConfiguration = ({
 
     return (
         <li
-            className="group mb-3 flex cursor-pointer items-center gap-3"
+            className="group mb-1 flex cursor-pointer items-center gap-3"
             onClick={() => {
                 setClick((prev) => !prev);
                 setClickOption && setClickOption((prev) => !prev);
             }}
         >
             <Text
-                sizeOffset={14}
+                sizeOffset={13}
                 text={text}
-                className={`font-[300] group-hover:text-[#C470A0] ${
-                    click ? 'font-[370] text-[#943D6E]' : 'text-[#566C7B]'
+                className={`font-[380] group-hover:text-[#C470A0] ${
+                    click ? 'font-[370] text-[#B54A87]' : 'text-cyan-800'
                 }`}
             />
             {click ? (
                 <ChevronUpIcon
-                    size={20}
+                    size={17}
                     sizeStroke={2}
                     className={`group-hover:text-[#C470A0] ${
-                        click ? 'font-[370] text-[#943D6E]' : 'text-[#566C7B]'
+                        click ? 'font-[370] text-[#B54A87]' : 'text-cyan-800'
                     }`}
                 />
             ) : (
                 <ChevronDownIcon
-                    size={20}
+                    size={17}
                     sizeStroke={2}
                     className={`group-hover:text-[#C470A0] ${
-                        click ? 'font-[370] text-[#943D6E]' : 'text-[#566C7B]'
+                        click ? 'font-[370] text-[#B54A87]' : 'text-cyan-800'
                     }`}
                 />
             )}

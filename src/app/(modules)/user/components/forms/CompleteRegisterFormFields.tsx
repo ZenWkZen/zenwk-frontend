@@ -1,21 +1,28 @@
 import { Controller, UseFormReturn } from 'react-hook-form';
 import { UserMessages } from '@user/constants/user-messages';
 import { ageGenerator } from '@app/shared/utils/userUtils';
+import { Dispatch, SetStateAction } from 'react';
+import { Save, Ban } from 'lucide-react';
+import SelectGeneral, { Option } from '@user/ui/inputs/SelectGeneral';
 
 import InputText from '@user/ui/inputs/InputText';
 import FormErrorUser from '@user/ui/forms/FormErrorUser';
 import Subtitle from '@user/ui/user-feed/Subtitle';
-import SelectGeneral, { Option } from '@user/ui/inputs/SelectGeneral';
-import Button from '@app/app/(modules)/user/ui/buttons/Button';
+import Button from '@user/ui/buttons/Button';
+import FirstNameField from '@user/components/forms/iputs/FirstNameField';
+import Tooltip from '@app/shared/ui/Tooltip';
 
-type FormValues = {
+/**
+ * Interrace que representa los valores del formulario.
+ */
+export interface FormValues {
     firstName: string;
     middleName: string;
     lastName: string;
     middleLastName: string;
     sex: Option;
     age: Option;
-};
+}
 
 interface Props {
     form: UseFormReturn<FormValues>;
@@ -23,23 +30,29 @@ interface Props {
     onSubmit: () => void;
     errorBack: string;
     isBtnLoading: boolean;
-    requiredFirstName: string;
     requiredLastName: string;
     requiredAge: string;
     requiredSex: string;
     minLengthName: { value: number; message: string };
     maxLengthName: { value: number; message: string };
     patternName: { value: RegExp; message: string };
-    validateTrim: (value: string) => true | string;
+    validateTrim?: (value: string) => true | string;
+    editDataBasic?: boolean;
+    setEditDataBasic?: Dispatch<SetStateAction<boolean>>;
+    loadingLineClick?: () => Promise<void>;
 }
 
+/**
+ * Componente que representa el formulario de persona.
+ * @param param0
+ * @returns
+ */
 const CompleteRegisterFormFields = ({
     form,
     optionsSex,
     onSubmit,
     errorBack,
     isBtnLoading,
-    requiredFirstName,
     requiredLastName,
     requiredAge,
     requiredSex,
@@ -47,6 +60,9 @@ const CompleteRegisterFormFields = ({
     maxLengthName,
     patternName,
     validateTrim,
+    editDataBasic,
+    setEditDataBasic,
+    loadingLineClick,
 }: Props) => {
     const {
         control,
@@ -62,24 +78,7 @@ const CompleteRegisterFormFields = ({
                 text={UserMessages.formComplete.labelNames}
             />
             <div className="grid grid-cols-2 gap-5">
-                <InputText
-                    placeholder={
-                        UserMessages.formComplete.placeholder.firstName
-                    }
-                    {...register('firstName', {
-                        required: requiredFirstName,
-                        pattern: patternName,
-                        minLength: minLengthName,
-                        maxLength: maxLengthName,
-                        validate: validateTrim,
-                    })}
-                    isError={Boolean(errors.firstName || errors.root)}
-                >
-                    <FormErrorUser
-                        sizeOffset={-15}
-                        error={errors.firstName?.message ?? ''}
-                    />
-                </InputText>
+                <FirstNameField form={form} />
 
                 <InputText
                     placeholder={
@@ -106,9 +105,7 @@ const CompleteRegisterFormFields = ({
             />
             <div className="grid grid-cols-2 gap-5">
                 <InputText
-                    placeholder={
-                        UserMessages.formComplete.placeholder.middleLastName
-                    }
+                    placeholder={UserMessages.formComplete.placeholder.lastName}
                     {...register('lastName', {
                         required: requiredLastName,
                         pattern: patternName,
@@ -125,7 +122,9 @@ const CompleteRegisterFormFields = ({
                 </InputText>
 
                 <InputText
-                    placeholder="Segundo apellido"
+                    placeholder={
+                        UserMessages.formComplete.placeholder.middleLastName
+                    }
                     {...register('middleLastName', {
                         minLength: minLengthName,
                         maxLength: maxLengthName,
@@ -209,11 +208,39 @@ const CompleteRegisterFormFields = ({
                 </div>
             )}
 
-            <Button
-                type="submit"
-                loading={isBtnLoading}
-                text={UserMessages.buttons.welcome.buttonSave}
-            />
+            {/** Botón crear o editar*/}
+            {editDataBasic ? (
+                <div className="mb-17">
+                    <div className="absolute flex gap-5">
+                        <button
+                            className="group relative cursor-pointer rounded-lg border border-cyan-800 bg-gray-100 p-[0.4rem] text-cyan-800 hover:bg-gray-200"
+                            type="submit"
+                        >
+                            <Save size={18} strokeWidth={1.5} />
+                            <Tooltip position="top">Guardar</Tooltip>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                if (setEditDataBasic) {
+                                    await loadingLineClick?.();
+                                    setEditDataBasic((prev) => !prev);
+                                }
+                            }}
+                            className="group relative cursor-pointer rounded-lg border border-cyan-800 bg-gray-100 p-[0.4rem] text-cyan-800 hover:bg-gray-200"
+                        >
+                            <Ban size={18} strokeWidth={1.5} />
+                            <Tooltip position="top">Cancelar</Tooltip>
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <Button
+                    type="submit"
+                    loading={isBtnLoading}
+                    text={UserMessages.buttons.welcome.buttonSave}
+                />
+            )}
         </form>
     );
 };

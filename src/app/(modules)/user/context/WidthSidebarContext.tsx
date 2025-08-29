@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
     ReactNode,
@@ -6,9 +6,8 @@ import {
     useState,
     SetStateAction,
     Dispatch,
-} from "react";
+} from 'react';
 
-// Interface requerida por .ts
 interface WidthSidebarContextType {
     sidebarWidth: number;
     setSidebarWidth: Dispatch<SetStateAction<number>>;

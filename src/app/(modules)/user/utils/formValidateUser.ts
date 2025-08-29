@@ -46,11 +46,16 @@ export const formValidateUser = () => {
     };
 
     // Validación de espacios vacíos
-    const validateTrim: RegisterOptions["validate"] = {
-        trim: (v: string) => {
-            if (!v.trim()) return "El campo no puede estar vacío.";
-            return true;
-        },
+    // const validateTrim: RegisterOptions["validate"] = {
+    //     trim: (v: string) => {
+    //         if (!v.trim()) return "El campo no puede estar vacío.";
+    //         return true;
+    //     },
+    // };
+
+    const validateTrim = (v: string): string | true => {
+        if (!v.trim()) return "El campo no puede estar vacío.";
+        return true;
     };
 
     // Retorna todas las validaciones disponibles para los formularios

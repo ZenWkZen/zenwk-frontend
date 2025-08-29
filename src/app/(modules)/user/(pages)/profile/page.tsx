@@ -1,58 +1,102 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useFetchAuthenticatedUser } from '@user/hooks/useFetchAuthenticatedUser';
+import { fetchJwtBaseApi } from '@app/helpers/fetch-api';
+import { PersonDTO } from '@user/interfaces/person-dto';
+import { getPerson } from '@user/utils/personUtils';
+import { useSearchParams } from 'next/navigation';
 
 import Title from '@user/ui/user-feed/Title';
 import ProfileItemConfiguration from '@user/components/profile/ProfileItemConfiguration';
-import CompleteRegisterForm from '@user/ui/forms/CompleteRegisterForm';
+import ViewDataBasicProfile from '@user/ui/profile/ViewDataBasicProfile';
+import Spinner from '@app/shared/ui/Spinner';
 
 /**
  *Componente principal para la configuración del perfil
  * @returns
  */
 const ProfileConfiguration = () => {
-    const [updateInfoBasic, setUpdateInfoBasic] = useState(false);
+    const searchParams = useSearchParams();
+    const paramInfoBasic = searchParams.get('infoBasic') === 'true';
+
+    const [updateInfoBasic, setUpdateInfoBasic] = useState(paramInfoBasic);
     const [updateEmail, setUdapteEmail] = useState(false);
     const [updatePassword, setUpdatePassword] = useState(false);
     const [deleteAccount, setDeteleteAccount] = useState(false);
+    const [personDTO, setPersonDTO] = useState<PersonDTO | undefined>();
 
     /**
      *  Use efect para recuperar el useJwtContext y consultar el usuario.
      **/
-    // console.log('WelcomeUser: useFetchAuthenticatedUser: [OK]>')
     const { userDTO, loading, userData } = useFetchAuthenticatedUser();
-    /**
-     * Manejador del oncick
-     */
-    const handleOnClick = () => {
-        console.log('Manejador de click');
-    };
 
+    /**
+     * Carga DTO con la información de la persona.
+     */
+    useEffect(() => {
+        const getPersonData = async () => {
+            if (userDTO && userDTO.idPerson && userData.jwt) {
+                try {
+                    const data = await getPerson(
+                        userDTO.idPerson,
+                        userData.jwt
+                    );
+                    setPersonDTO(data);
+                } catch (error) {
+                    throw error;
+                }
+            }
+        };
+
+        getPersonData();
+    }, [userDTO]);
+
+    /**
+     * Spinner para el render.
+     */
+    if (loading && personDTO === undefined) {
+        return <Spinner />;
+    }
+
+    // console.log(
+    //     'ProfileConfiguration -- userData, userDTO:',
+    //     userData,
+    //     userDTO
+    // );
     return (
         <div className="mx-auto max-w-lg place-items-center rounded-xl bg-white px-7 py-5 shadow-2xs">
             <div className="text-center">
                 <Title
                     sizeOffset={10}
                     text="Configuración de Perfil"
-                    className="font-[350]"
+                    className="font-[380] text-cyan-800"
                 />
                 {/** contenido para el frame actualización de perfil */}
                 <div className="px-7 py-5 text-justify">
                     <ul>
-                        <ProfileItemConfiguration
-                            text="Información personal & imagen"
-                            setClickOption={setUpdateInfoBasic}
-                        />
-                        {updateInfoBasic && (
-                            <CompleteRegisterForm
-                                user={userData}
-                                setIsCreatePerson={() => {}}
+                        <div className="mb-3">
+                            <ProfileItemConfiguration
+                                text="Información personal & imagen"
+                                setClickOption={setUpdateInfoBasic}
                             />
-                        )}
-
-                        <ProfileItemConfiguration text="Cambia tu email" />
-                        <ProfileItemConfiguration text="Cambia tu constraseña" />
-                        <ProfileItemConfiguration text="Eliminar tu cuenta" />
+                            {updateInfoBasic && personDTO && (
+                                <ViewDataBasicProfile
+                                    personDTO={personDTO}
+                                    setPersonDTO={setPersonDTO}
+                                    updateInfoBasic={updateInfoBasic}
+                                    userData={userData}
+                                />
+                            )}
+                        </div>
+                        <div className="mb-3">
+                            <ProfileItemConfiguration text="Cambia tu email" />
+                        </div>
+                        <div className="mb-3">
+                            <ProfileItemConfiguration text="Cambia tu constraseña" />
+                        </div>
+                        <div className="mb-3">
+                            <ProfileItemConfiguration text="Eliminar tu cuenta" />
+                        </div>
                     </ul>
                 </div>
             </div>

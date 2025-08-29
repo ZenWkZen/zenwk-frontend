@@ -10,6 +10,7 @@ import Footer from '@user/ui/user-feed/Footer';
 import HeaderMenu from '@user/ui/user-feed/HeaderMenu';
 import Sidebar from '@user/ui/user-feed/Sidebar';
 import Spinner from '@app/shared/ui/Spinner';
+import SexOptionsContextProvider from '@user/context/SexOptionsContext';
 
 export default function UserLayout({
     children,
@@ -81,21 +82,23 @@ export default function UserLayout({
     }
 
     return (
-        <div className="flex min-h-screen flex-col bg-gray-100">
-            {/* Encabezado */}
-            <HeaderMenu />
+        <SexOptionsContextProvider>
+            <div className="flex min-h-screen flex-col bg-gray-100">
+                {/* Encabezado */}
+                <HeaderMenu />
 
-            {/* Contenido con sidebar */}
-            <main className="flex flex-1">
-                <Sidebar />
+                {/* Contenido con sidebar */}
+                <main className="flex flex-1">
+                    <Sidebar />
 
-                <div className="flex-1 gap-6 px-4 py-10 transition-all duration-400 ease-in-out sm:px-6 md:px-8">
-                    <div>{children}</div>
-                </div>
-            </main>
+                    <div className="flex-1 gap-6 px-4 py-10 transition-all duration-400 ease-in-out sm:px-6 md:px-8">
+                        <div>{children}</div>
+                    </div>
+                </main>
 
-            {/* Pie de página */}
-            <Footer style={{ marginLeft: `${sidebarWidth}px` }} />
-        </div>
+                {/* Pie de página */}
+                <Footer style={{ marginLeft: `${sidebarWidth}px` }} />
+            </div>
+        </SexOptionsContextProvider>
     );
 }
