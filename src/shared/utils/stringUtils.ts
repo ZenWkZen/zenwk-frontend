@@ -16,7 +16,8 @@ export const safeValue = (value?: string) => {
 };
 
 /**
- * Obtiene las inciales del nombre.
+ * Obtiene las inciales del nombre cuando el  usuario no ha cargado una foto de perfil.
+ *
  * @param firstName
  * @param lastName
  * @returns

@@ -1,10 +1,10 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useFetchAuthenticatedUser } from '@user/hooks/useFetchAuthenticatedUser';
-import { fetchJwtBaseApi } from '@app/helpers/fetch-api';
 import { PersonDTO } from '@user/interfaces/person-dto';
 import { getPerson } from '@user/utils/personUtils';
 import { useSearchParams } from 'next/navigation';
+import { UsePersonContext } from '@user/utils/UsePersonContext';
 
 import Title from '@user/ui/user-feed/Title';
 import ProfileItemConfiguration from '@user/components/profile/ProfileItemConfiguration';
@@ -24,6 +24,7 @@ const ProfileConfiguration = () => {
     const [updatePassword, setUpdatePassword] = useState(false);
     const [deleteAccount, setDeteleteAccount] = useState(false);
     const [personDTO, setPersonDTO] = useState<PersonDTO | undefined>();
+    const { person, setPerson } = UsePersonContext();
 
     /**
      *  Use efect para recuperar el useJwtContext y consultar el usuario.
@@ -41,14 +42,17 @@ const ProfileConfiguration = () => {
                         userDTO.idPerson,
                         userData.jwt
                     );
-                    setPersonDTO(data);
+                    //setPersonDTO(data);
+                    setPerson(data);
                 } catch (error) {
                     throw error;
                 }
             }
         };
 
-        getPersonData();
+        if (!person) {
+            getPersonData();
+        }
     }, [userDTO]);
 
     /**
@@ -58,11 +62,8 @@ const ProfileConfiguration = () => {
         return <Spinner />;
     }
 
-    // console.log(
-    //     'ProfileConfiguration -- userData, userDTO:',
-    //     userData,
-    //     userDTO
-    // );
+    // console.log('ProfileConfiguration -- person:', person);
+
     return (
         <div className="mx-auto max-w-lg place-items-center rounded-xl bg-white px-7 py-5 shadow-2xs">
             <div className="text-center">
@@ -79,10 +80,10 @@ const ProfileConfiguration = () => {
                                 text="Información personal & imagen"
                                 setClickOption={setUpdateInfoBasic}
                             />
-                            {updateInfoBasic && personDTO && (
+                            {updateInfoBasic && person && (
                                 <ViewDataBasicProfile
-                                    personDTO={personDTO}
-                                    setPersonDTO={setPersonDTO}
+                                    personDTO={person}
+                                    setPersonDTO={setPerson}
                                     updateInfoBasic={updateInfoBasic}
                                     userData={userData}
                                 />

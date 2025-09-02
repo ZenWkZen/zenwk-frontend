@@ -12,7 +12,7 @@ interface Props {
     handleChevronClick: () => void;
     avatarBtnRef: React.Ref<HTMLButtonElement>;
     userDTO?: UserDTO;
-    isPhoto: boolean;
+    profilePicture?: boolean | string;
     userData?: User;
 }
 
@@ -26,7 +26,7 @@ const ProfileMenu = ({
     handleChevronClick,
     avatarBtnRef,
     userDTO,
-    isPhoto,
+    profilePicture,
     userData,
 }: Props) => {
     return (
@@ -55,7 +55,11 @@ const ProfileMenu = ({
             )}
             position="right"
         >
-            <UserMenu isPhoto={isPhoto} userDTO={userDTO} userData={userData} />
+            <UserMenu
+                profilePicture={profilePicture}
+                userDTO={userDTO}
+                userData={userData}
+            />
         </FlyoutMenu>
     );
 };

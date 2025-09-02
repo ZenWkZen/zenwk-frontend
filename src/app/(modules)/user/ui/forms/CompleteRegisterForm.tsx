@@ -4,15 +4,10 @@ import { User } from '@user/context/JwtContext';
 import { formValidateUser } from '@user/utils/formValidateUser';
 import { PersonDTO } from '@user/interfaces/person-dto';
 import { getLabelById } from '@app/shared/utils/optionsSexUtils';
-import { getPerson } from '@user/utils/personUtils';
-
+import { getPerson, updateOrCreatePerson } from '@user/utils/personUtils';
 import { safeValue } from '@app/shared/utils/stringUtils';
 import { useSexOptionsContext } from '@user/utils/useSexOptionsContext';
-import {
-    fetchJwtBaseApi,
-    isApiFieldErrorArray,
-    isClientErrorMessage,
-} from '@app/helpers/fetch-api';
+import { handleApiErrors } from '@app/shared/utils/formValidate';
 
 import CompleteRegisterFormFields from '@user/components/forms/CompleteRegisterFormFields';
 
@@ -23,6 +18,7 @@ type FormValues = {
     middleLastName: string;
     sex: any;
     age: any;
+    profilePicture?: string | boolean | undefined;
 };
 
 /**
@@ -57,6 +53,7 @@ const CompleteRegisterForm = ({
      * Formulario principal
      */
     const form = useForm<FormValues>({
+        // Se inicializan valores por defecto
         defaultValues: {
             firstName: personDTO && personDTO.firstName,
             middleName: personDTO && personDTO.middleName,
@@ -70,6 +67,7 @@ const CompleteRegisterForm = ({
                 label: personDTO.age,
                 value: personDTO.age,
             },
+            profilePicture: personDTO?.profilePicture,
         },
     });
     const {
@@ -89,89 +87,37 @@ const CompleteRegisterForm = ({
      * de toca la aplicación.
      */
     const onSubmit = form.handleSubmit(async (data) => {
-        console.log(data);
         setBtnLoading(true);
-        setLineLoading && setLineLoading(true);
+        setLineLoading?.(true);
 
         try {
-            const path = editDataBasic
-                ? '/persons/' + personDTO?.id
-                : '/persons';
-            const personJson: Record<string, string | number> = {
-                firstName: data.firstName,
-                lastName: data.lastName,
-                age: Number(data.age.value),
-                idSex: Number(data.sex.value),
-            };
-            // El userId solo requerido en la creación.
-            if (!editDataBasic) {
-                personJson.idUser = user.userId;
-            }
-            // Segundo nombre. Si es diferente de nulo.
-            if (safeValue(data.middleName)) {
-                personJson.middleName = data.middleName;
-            }
-            // Segundo apellido. Si es diferente de nulo.
-            if (safeValue(data.middleLastName)) {
-                personJson.middleLastName = data.middleLastName;
-            }
-
-            // console.log('CompleteRegisterForm - personJson: ', personJson);
-
             if (user) {
-                const res = await fetchJwtBaseApi(
-                    path,
-                    undefined,
+                const res = await updateOrCreatePerson(
                     user.jwt,
-                    personJson,
-                    editDataBasic ? 'PUT' : 'POST'
+                    data,
+                    editDataBasic,
+                    personDTO?.id
                 );
-                await new Promise((resolve) => setTimeout(resolve, 1000));
+
                 if (res) {
                     if (editDataBasic && personDTO) {
-                        const data = await getPerson(personDTO.id, user.jwt);
-                        if (data && setPersonDTO && setEditDataBasic) {
-                            setPersonDTO(data);
+                        const freshData = await getPerson(
+                            personDTO.id,
+                            user.jwt
+                        );
+                        if (freshData && setPersonDTO && setEditDataBasic) {
+                            setPersonDTO(freshData);
                             setEditDataBasic(false);
                         }
                     }
-
-                    // Se renueva el jwt. Retorna: ({token, userId})
-                    //  Guardar nuevo jwt en localstorage
-                    // Actualizar {setUser} jwtContest()
-
-                    // Estado 201
-                    setIsCreatePerson && setIsCreatePerson(true);
+                    setIsCreatePerson?.(true);
                 }
-                // console.log('CompleteRegisterForm - res: ', res);
             }
         } catch (error) {
-            //console.log('CompleteRegisterForm - error: ', error);
-
-            if (isApiFieldErrorArray(error)) {
-                // Se indican los campo del back solo si un error 401.
-                const errors = error
-                    .map((err) => {
-                        const message =
-                            'Campo: ' +
-                            safeValue(err.field) +
-                            '.  ' +
-                            safeValue(err.code) +
-                            ' ' +
-                            safeValue(err.error);
-                        return message;
-                    })
-                    .join('\n');
-                setErrorBack(errors);
-            } else if (isClientErrorMessage(error)) {
-                /** Este error no se muestra, expone información sensible. habilitar a nivel de desarrollo. */
-                setErrorBack(error.message);
-            } else {
-                setErrorBack(String(error));
-            }
+            handleApiErrors(error, setErrorBack, safeValue);
         } finally {
             setBtnLoading(false);
-            setLineLoading && setLineLoading(false);
+            setLineLoading?.(false);
         }
     });
 

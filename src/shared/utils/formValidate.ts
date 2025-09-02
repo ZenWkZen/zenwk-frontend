@@ -1,4 +1,8 @@
 import { RegisterOptions } from "react-hook-form";
+import {
+    isApiFieldErrorArray,
+    isClientErrorMessage,
+} from "@app/helpers/fetch-api";
 
 /**
  * Define y retorna un conjunto de validaciones comunes para formularios de autenticación,
@@ -47,4 +51,33 @@ export const formValidate = () => {
         validateTrim, // Validación que evita espacios vacíos
         validateEquals, // Validación para comprobar igualdad entre contraseñas
     };
+};
+
+/**
+ * Manejo de error generado por el api.
+ *
+ * @param error
+ * @param setErrorBack
+ * @param safeValue
+ */
+export const handleApiErrors = (
+    error: unknown,
+    setErrorBack: (msg: string) => void,
+    safeValue: (v: any) => string | undefined
+) => {
+    if (isApiFieldErrorArray(error)) {
+        const errors = error
+            .map(
+                (err) =>
+                    `Campo: ${safeValue(err.field)}. ${safeValue(err.code)} ${safeValue(
+                        err.error
+                    )}`
+            )
+            .join("\n");
+        setErrorBack(errors);
+    } else if (isClientErrorMessage(error)) {
+        setErrorBack(error.message);
+    } else {
+        setErrorBack(String(error));
+    }
 };

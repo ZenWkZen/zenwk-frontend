@@ -30,16 +30,16 @@ export const loginApi = async (
 
 /**
  * Valida si un jwt esta vigente, si lo esta devuelve el userDTO (backend)
- * @param userLocal
+ * @param userData
  * @returns
  */
-export const fetchGetUser = async (userLocal: User) => {
+export const fetchGetUser = async (userData: User) => {
     try {
-        const pathFindByIdUser = `/users/${userLocal.userId}`;
+        const pathFindByIdUser = `/users/${userData.userId}`;
         const res = await fetchJwtBaseApi(
             pathFindByIdUser,
             undefined,
-            userLocal.jwt,
+            userData.jwt,
             undefined,
             "GET"
         );

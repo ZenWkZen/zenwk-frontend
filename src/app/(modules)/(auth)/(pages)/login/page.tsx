@@ -15,6 +15,9 @@ import { AuthErrors } from '../../constants/auth-errors';
 import { Messages } from '@app/shared/constants/messages';
 import { useJwtContext } from '@user/utils/useJwtContext';
 import { loginApi } from '@auth/utils/authUtils';
+import { UsePersonContext } from '@user/utils/UsePersonContext';
+import { fetchGetUser } from '@auth/utils/authUtils';
+import { getPerson } from '@user/utils/personUtils';
 
 import Title from '@app/app/(modules)/(auth)/ui/Title';
 import FormInput from '@app/app/(modules)/(auth)/ui/FormInput';
@@ -55,12 +58,15 @@ const Login = () => {
         formState: { errors },
     } = useForm<LoginForm>();
     const { user, setUser } = useJwtContext();
+    const { setPerson } = UsePersonContext();
+
     /**
      * Prellena el campo de email si se recibe como parámetro en la URL (?email=).
      * Ejecutado en el primer render y al cambiar los searchParams.
      */
     useEffect(() => {
         const emailFromParam = searchParams.get('email');
+
         if (emailFromParam) {
             setEmailParam(emailFromParam);
             setValue('email', emailFromParam);
@@ -72,7 +78,7 @@ const Login = () => {
         if (user.jwt && user.userId) {
             // linea temporal mientras se httpOnly...
             localStorage.setItem('jwt-user', JSON.stringify(user));
-            return router.push('/user');
+            router.push('/user');
         }
 
         setLoding(false);
@@ -137,7 +143,18 @@ const Login = () => {
 
                 if (res) {
                     // Se actualiza contexto
-                    setUser({ jwt: res.token, userId: res.userId });
+                    const userData = { jwt: res.token, userId: res.userId };
+                    setUser(userData);
+                    const userDto = await fetchGetUser(userData);
+
+                    // Recuperamos la persona si esta creada
+                    if (userDto.idPerson) {
+                        const personaDto = await getPerson(
+                            userDto.idPerson,
+                            userData.jwt
+                        );
+                        setPerson(personaDto);
+                    }
                 }
             } catch (error: unknown) {
                 console.log(error);

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import UserProfilePhoto from '@user/components/general/UserProfilePhoto';
 import LogoZenwk from '@user/components/header/LogoZenwk';
 import ProfileMenu from '@user/components/header/ProfileMenu';
+import { UsePersonContext } from '@user/utils/UsePersonContext';
 
 const userMenuItems = [
     { label: 'Dashboard', href: '#' },
@@ -31,8 +32,9 @@ const navLinks: any[] = [
  * @param param0
  * @returns
  */
-const HeaderMenu = ({ isPhoto = false }: { isPhoto?: boolean }) => {
+const HeaderMenu = () => {
     const avatarBtnRef = useRef<HTMLButtonElement>(null);
+    const { person } = UsePersonContext();
     /**
      * Pasa el evento programaticamente.
      */
@@ -41,7 +43,7 @@ const HeaderMenu = ({ isPhoto = false }: { isPhoto?: boolean }) => {
     };
 
     /**
-     *  Use efect para recuperar el useJwtContext y consultar el usuario.
+     *  useEffect para recuperar el useJwtContext y consultar el usuario.
      **/
     //console.log('HeaderMenu: useFetchAuthenticatedUser: [OK]>');
     const { userDTO, userData } = useFetchAuthenticatedUser();
@@ -55,7 +57,7 @@ const HeaderMenu = ({ isPhoto = false }: { isPhoto?: boolean }) => {
         return (
             <UserProfilePhoto
                 isOpenMenu={isOpenMenu ?? false}
-                isPhoto={isPhoto}
+                profilePicture={person?.profilePicture}
             />
         );
     };
@@ -74,7 +76,7 @@ const HeaderMenu = ({ isPhoto = false }: { isPhoto?: boolean }) => {
                         isPhotoProfile={isPhotoProfile}
                         userDTO={userDTO}
                         userData={userData}
-                        isPhoto={isPhoto}
+                        profilePicture={person?.profilePicture}
                         handleChevronClick={handleChevronClick}
                     />
                 </div>

@@ -18,13 +18,12 @@ import React, { useState } from 'react';
 import Text from '@user/ui/user-feed/Text';
 import UserProfilePhoto from '@user/components/general/UserProfilePhoto';
 import Link from 'next/link';
-import { resolve } from 'path';
 
 /**
  * Interface que representa los props usados por el componente.
  */
 interface Props {
-    isPhoto: boolean;
+    profilePicture?: boolean | string;
     userDTO?: UserDTO;
     isPhotoMenuOpen?: boolean;
     userData?: User;
@@ -36,23 +35,15 @@ interface Props {
  * @returns
  */
 const UserMenu = ({
-    isPhoto,
+    profilePicture,
     userDTO,
     isPhotoMenuOpen = true,
     userData,
 }: Props) => {
     const [click, setClick] = useState(false);
     const [clickProfile, setClickProfile] = useState(false);
-    const { user, setUser } = useJwtContext();
+    const { setUser } = useJwtContext();
     const router = useRouter();
-
-    // Objetos requerido para el contexto del usuario.
-    // Se obtienen en la autenticación.
-    // console.log(
-    //     'UserMenu: userDTO / userData: ................>',
-    //     userDTO,
-    //     userData
-    // );
 
     /**
      * Manejador para el logOut
@@ -62,7 +53,6 @@ const UserMenu = ({
             setClick((prev) => !prev);
 
             if (true) {
-                // console.log('UserMenu --  user.jwt: ', userData?.jwt);
                 localStorage.removeItem(LOCAL_STORAGE_JWT_ITEM);
                 localStorage.removeItem(LOCAL_STORAGE_SEX_OPTIONS);
                 const path = '/auth/logout';
@@ -92,7 +82,10 @@ const UserMenu = ({
      */
     const renderProfilePhoto = () => {
         return (
-            <UserProfilePhoto isOpenMenu={isPhotoMenuOpen} isPhoto={isPhoto} />
+            <UserProfilePhoto
+                isOpenMenu={isPhotoMenuOpen}
+                profilePicture={profilePicture}
+            />
         );
     };
 

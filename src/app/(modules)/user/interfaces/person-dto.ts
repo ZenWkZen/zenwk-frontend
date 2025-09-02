@@ -11,5 +11,5 @@ export interface PersonDTO {
     address?: string;
     age: number;
     idSex: number;
-    profilePicture?: File;
+    profilePicture?: boolean | string;
 }

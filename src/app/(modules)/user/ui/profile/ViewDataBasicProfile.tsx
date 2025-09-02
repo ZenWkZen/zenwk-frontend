@@ -1,29 +1,22 @@
 'use client';
-import React, { useState, useRef, useEffect } from 'react';
 
+import React, { useState, useRef, useEffect } from 'react';
 import { PersonDTO } from '@user/interfaces/person-dto';
 import { useSexOptionsContext } from '@user/utils/useSexOptionsContext';
 import { getLabelById } from '@app/shared/utils/optionsSexUtils';
-import { PencilLine, Camera, Save } from 'lucide-react';
+import { PencilLine, Camera, Save, Trash2 } from 'lucide-react';
 import { Dispatch, SetStateAction } from 'react';
 import { User } from '@user/context/JwtContext';
 import { BarLoader } from 'react-spinners';
 import { RingLoader } from 'react-spinners';
 import { getInitials } from '@app/shared/utils/stringUtils';
-import {
-    fetchJwtBaseApi,
-    isApiFieldErrorArray,
-    isClientErrorMessage,
-} from '@app/helpers/fetch-api';
+import { fetchJwtBaseApi } from '@app/helpers/fetch-api';
+import { compressImage } from '@user/utils/ImageConvertUtils';
+import { updateOrCreatePerson } from '@user/utils/personUtils';
 
 import Tooltip from '@app/shared/ui/Tooltip';
-
 import Text from '@user/ui/user-feed/Text';
 import CompleteRegisterForm from '@user/ui/forms/CompleteRegisterForm';
-import {
-    backendToImageUrl,
-    compressImage,
-} from '@user/utils/ImageConvertUtils';
 
 interface FormValues {
     firstName: string;
@@ -68,6 +61,7 @@ const ViewDataBasicProfile = ({
     const [lineLoading, setLineLoading] = useState(false);
     const [loadPhotoLoading, setLoadPhotoLoading] = useState(false);
     const [savePhotoLoading, setSavePhotoLoading] = useState(false);
+    const [deletePhotoLoading, setDeletePhotoLoading] = useState(false);
     const [activeSavePhoto, setActiveSavePhoto] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
     const [photoProfile, setPhotoProfile] = useState<File>();
@@ -84,7 +78,9 @@ const ViewDataBasicProfile = ({
         profilePicture,
     } = personDTO;
 
-    // Limpiar el objeto URL cuando cambie la imagen o se desmonte el componente
+    /**
+     * Limpiar el objeto URL cuando cambie la imagen o se desmonte el componente
+     */
     useEffect(() => {
         return () => {
             if (preview) {
@@ -94,9 +90,23 @@ const ViewDataBasicProfile = ({
     }, [preview]);
 
     /**
-     * Animación para avento clic, boton editar y cancelar.
+     * Cuando el usuario elimina la imagen se reinician los estados correspondientes.
      */
-    const loadingLineClick = async (action?: 'loadPhoto' | 'savePhoto') => {
+    useEffect(() => {
+        if (!personDTO.profilePicture) {
+            setPreview(null);
+            setSavePhotoLoading(false);
+            setActiveSavePhoto(false);
+            setPhotoProfile(undefined);
+        }
+    }, [personDTO]);
+
+    /**
+     * Animación (spinner)  para avento clic, boton editar y cancelar.
+     */
+    const loadingLineClick = async (
+        action?: 'loadPhoto' | 'savePhoto' | 'deletePhoto'
+    ) => {
         try {
             setLineLoading(true);
 
@@ -105,6 +115,8 @@ const ViewDataBasicProfile = ({
                 setActiveSavePhoto(true);
             } else if (action === 'savePhoto') {
                 setSavePhotoLoading(true);
+            } else if (action === 'deletePhoto') {
+                setDeletePhotoLoading(true);
             }
 
             await new Promise((resolve) => setTimeout(resolve, 300));
@@ -117,19 +129,22 @@ const ViewDataBasicProfile = ({
                 setLoadPhotoLoading(false);
             } else if (action === 'savePhoto') {
                 setSavePhotoLoading(false);
+            } else if (action === 'deletePhoto') {
+                setDeletePhotoLoading(false);
             }
         }
     };
 
     /**
-     *  Dispara el input invisible
+     *  Dispara el input invisible a través de su referencia.
      */
     const handleButtonClick = () => {
         refLoadPhotoInput.current?.click();
     };
 
     /**
-     * Función encargada de la carga de la imagen
+     * Encargado de comprimir  y cargar la foto, para luego
+     * ser guardada desde el boton "Guardar foto"
      * @param event
      */
     const handleFileChange = async (
@@ -145,34 +160,42 @@ const ViewDataBasicProfile = ({
             setPreview(previewUrl);
         }
     };
+    /**
+     * Retornar un string con la representación base 64 de la imagen cargada,
+     * o false si no existe el archivo
+     * @returns
+     */
+    const getBytesFromPreview = async (): Promise<string | false> => {
+        if (photoProfile) {
+            return new Promise((resolve, reject) => {
+                // Api navegador para leer archivos cargados
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64WithPrefix = reader.result as string;
+                    // Elminar mime-type: data:image/jpeg;base64
+                    const base64 = base64WithPrefix.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                // Convierte el archivo en base 64
+                reader.readAsDataURL(photoProfile);
+            });
+        }
+
+        return false;
+    };
 
     /**
-     * Guarda la foto en el sistema.
+     * Maneja el evento clic del botón "guardar foto"  llama
+     * el api correspondiente para guardar el archivo
+     * MultipartFile (java).
      */
     const savePhotoHandleClick = async () => {
         try {
             if (photoProfile) {
-                const path = '/persons/' + personDTO?.id;
-
-                // Actualizar  estado  personDTO
-                setPersonDTO((prev) => {
-                    if (!prev) return prev;
-                    const updated = {
-                        ...prev,
-                        profilePicture: photoProfile,
-                    };
-                    return updated;
-                });
-
-                // De debe crear servicio en el backen para poder recibir la imagen.. seguir con el preview
+                const path = '/persons/profile/upload-photo';
                 const formData = new FormData();
-                formData.append('profilePicture', photoProfile);
-                formData.append('firstName', firstName);
-                formData.append('lastName', lastName);
-
-                for (let [key, value] of formData.entries()) {
-                    console.log(key, value);
-                }
+                formData.append('file', photoProfile);
 
                 if (userData.jwt) {
                     const res = await fetchJwtBaseApi(
@@ -180,21 +203,69 @@ const ViewDataBasicProfile = ({
                         undefined,
                         userData.jwt,
                         formData,
-                        'PUT'
+                        'POST'
                     );
 
-                    console.log(res);
+                    // Actualizar  estado  personDTO
+                    const newPhotoProfile = await getBytesFromPreview();
+                    await new Promise((resolve) => setTimeout(resolve, 300));
+                    setPersonDTO((prev) => {
+                        if (!prev) {
+                            return prev;
+                        }
+                        const updated = {
+                            ...prev,
+                            profilePicture: newPhotoProfile,
+                        };
+                        setSavePhotoLoading(false);
+                        setActiveSavePhoto(false);
+                        return updated;
+                    });
                 }
-
-                console.log('savePhotoHandleClick - personDTO', personDTO);
             }
         } catch (error) {
-            console.log('error');
+            // console.log('error');
             throw error;
         }
     };
 
-    //console.log('viewDataBasicProfile -- PersonDTO:', personDTO);
+    /**
+     * Maneja el evento clic del botón "Eliminar foto"  llama
+     * el api correspondiente para la foto de perfil
+     * MultipartFile (java).
+     */
+    const deletePhotoHandleClick = async () => {
+        try {
+            // Si existe una carga previa se elimina la foto en memoría.
+            if (activeSavePhoto) {
+                setPreview(null);
+                setSavePhotoLoading(false);
+                setActiveSavePhoto(false);
+                return;
+            }
+
+            if (userData.jwt) {
+                // Actualizo el contexto y se aprovecha valor actualizado para consumo de api
+                setPersonDTO((prev) => {
+                    if (!prev) {
+                        return prev;
+                    }
+                    const dataUpdate = { ...prev, profilePicture: undefined };
+                    updateOrCreatePerson(
+                        userData.jwt,
+                        dataUpdate,
+                        true,
+                        personDTO.id
+                    );
+                    return dataUpdate;
+                });
+            }
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    // console.log('viewDataBasicProfile -- PersonDTO:', personDTO);
     return (
         <>
             <div
@@ -224,15 +295,23 @@ const ViewDataBasicProfile = ({
                 <div className="flex items-center justify-items-center -space-x-4">
                     <div className="flex items-center justify-center -space-x-4">
                         <div
-                            className={`${!photoProfile ? 'grid items-center justify-items-center' : 'overflow-hidden'} relative h-25 w-25 rounded-full border border-cyan-900 bg-[#D5DDE2]`}
+                            className={`${photoProfile || profilePicture ? 'overflow-hidden' : 'grid items-center justify-items-center'} relative h-25 w-25 rounded-full border border-cyan-900 bg-[#D5DDE2]`}
                         >
                             {/* Texto por defecto */}
-                            {!preview && (
+                            {!profilePicture && !preview ? (
                                 <Text
                                     text={getInitials(firstName, lastName)}
                                     sizeOffset={20}
                                     className="font-[300] text-cyan-900"
                                 />
+                            ) : (
+                                !preview && (
+                                    <img
+                                        src={`data:image/jpeg;base64,${profilePicture}`}
+                                        alt="Preview"
+                                        className="h-full w-full object-cover"
+                                    />
+                                )
                             )}
 
                             {/* Imagen preview */}
@@ -245,6 +324,8 @@ const ViewDataBasicProfile = ({
                             )}
                         </div>
                     </div>
+
+                    {/** Botón Cargar foto */}
                     <button
                         type="button"
                         onClick={() => {
@@ -270,12 +351,14 @@ const ViewDataBasicProfile = ({
                                     speedMultiplier={1.5}
                                 />
                             ) : (
-                                <Camera size={17} strokeWidth={1.5} />
+                                <Camera size={20} strokeWidth={1.5} />
                             )}
-                            <Tooltip position="top">Cargar foto</Tooltip>
+                            <Tooltip position="top">Cambiar foto</Tooltip>
                         </div>
                     </button>
-                    <div className="flex px-8">
+
+                    {/** Botón guardar foto */}
+                    <div className="flex gap-2 px-6">
                         {activeSavePhoto && (
                             <button
                                 onClick={() => {
@@ -296,6 +379,32 @@ const ViewDataBasicProfile = ({
                                     )}
                                     <Tooltip position="top">
                                         Guardar foto
+                                    </Tooltip>
+                                </div>
+                            </button>
+                        )}
+
+                        {/** Botón eliminar foto */}
+                        {profilePicture && (
+                            <button
+                                onClick={() => {
+                                    loadingLineClick('deletePhoto');
+                                    deletePhotoHandleClick();
+                                }}
+                                type="button"
+                            >
+                                <div className="group relative cursor-pointer rounded-full border border-cyan-800 bg-gray-100 p-[0.4rem] text-cyan-800 hover:bg-gray-200">
+                                    {lineLoading && deletePhotoLoading ? (
+                                        <RingLoader
+                                            color="#155E75"
+                                            size={17}
+                                            speedMultiplier={1.5}
+                                        />
+                                    ) : (
+                                        <Trash2 size={16} strokeWidth={1.5} />
+                                    )}
+                                    <Tooltip position="top">
+                                        Eliminar foto
                                     </Tooltip>
                                 </div>
                             </button>
@@ -336,7 +445,7 @@ const ViewDataBasicProfile = ({
                                 sizeOffset={2}
                             />
                             <Text
-                                text={firstName + ' ' + middleName}
+                                text={firstName + ' ' + (middleName || '')}
                                 className="font-[300] text-gray-500"
                             />
                         </div>
@@ -348,7 +457,7 @@ const ViewDataBasicProfile = ({
                                 sizeOffset={2}
                             />
                             <Text
-                                text={lastName + ' ' + middleLastName}
+                                text={lastName + ' ' + (middleLastName || '')}
                                 className="font-[300] text-gray-500"
                             />
                         </div>

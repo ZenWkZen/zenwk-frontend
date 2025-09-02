@@ -76,35 +76,36 @@ export function isClientErrorMessage(
  *
  * @param methodHttp - Método HTTP (GET, POST, etc.).
  * @param tokenJwt - Token JWT opcional para autenticación.
- * @param bodyJson - Objeto JSON que se incluirá como cuerpo de la solicitud.
+ * @param body - Objeto JSON / FormData que se incluirá como cuerpo de la solicitud.
  * @returns Opciones para el método `fetch`.
  */
 export const getMergedOptions = (
     methodHttp: string,
     tokenJwt?: string,
-    bodyJson?: object
+    body?: object | FormData
 ) => {
     const headers: Record<string, string> = {};
-    let isBody = false;
+    let optionsBody: BodyInit | undefined;
 
     if (tokenJwt) {
         headers["Authorization"] = `Bearer ${tokenJwt}`;
     }
 
-    if (bodyJson && Object.keys(bodyJson).length > 0) {
+    if (body instanceof FormData) {
+        // Navegador setea header:
+        // ["content-type"] = "multipart/form-data"
+        optionsBody = body;
+    } else if (body && Object.keys(body).length > 0) {
         headers["content-type"] = "application/json";
-        isBody = true;
+        optionsBody = JSON.stringify(body);
     }
 
     const options: RequestInit & { next?: { revalidate: number } } = {
         next: { revalidate: 60 },
         method: methodHttp,
         headers,
+        body: optionsBody,
     };
-
-    if (isBody) {
-        options.body = JSON.stringify(bodyJson);
-    }
 
     return options;
 };
@@ -171,6 +172,7 @@ export const getFetch = async (
                 return await res.json();
         }
     } catch (error: unknown) {
+        console.log(error);
         throw error;
     }
 };
