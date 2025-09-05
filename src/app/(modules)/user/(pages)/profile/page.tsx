@@ -1,68 +1,38 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useFetchAuthenticatedUser } from '@user/hooks/useFetchAuthenticatedUser';
-import { PersonDTO } from '@user/interfaces/person-dto';
-import { getPerson } from '@user/utils/personUtils';
-import { useSearchParams } from 'next/navigation';
-import { UsePersonContext } from '@user/utils/UsePersonContext';
+import { usePersonContext } from '@app/app/(modules)/user/utils/usePersonContext';
 
+import Spinner from '@app/shared/ui/Spinner';
 import Title from '@user/ui/user-feed/Title';
 import ProfileItemConfiguration from '@user/components/profile/ProfileItemConfiguration';
-import ViewDataBasicProfile from '@user/ui/profile/ViewDataBasicProfile';
-import Spinner from '@app/shared/ui/Spinner';
+import PersonalInfoAndImageSection from '@app/app/(modules)/user/ui/profile/PersonalInfoAndImageSection';
+import UpdateEmailSection from '@user/ui/profile/UpdateEmailSection';
+import { useFetchGetPerson } from '@user/hooks/useFetchGetPerson';
 
 /**
  *Componente principal para la configuración del perfil
  * @returns
  */
 const ProfileConfiguration = () => {
-    const searchParams = useSearchParams();
-    const paramInfoBasic = searchParams.get('infoBasic') === 'true';
+    // Controlar secciones abiertas en el acordeon "Configuración de Perfil".
+    const [activeSection, setActiveSection] = useState<
+        | 'updateInfoBasic'
+        | 'updateEmail'
+        | 'updatePassword'
+        | 'deleteAccount'
+        | null
+    >(null);
 
-    const [updateInfoBasic, setUpdateInfoBasic] = useState(paramInfoBasic);
-    const [updateEmail, setUdapteEmail] = useState(false);
-    const [updatePassword, setUpdatePassword] = useState(false);
-    const [deleteAccount, setDeteleteAccount] = useState(false);
-    const [personDTO, setPersonDTO] = useState<PersonDTO | undefined>();
-    const { person, setPerson } = UsePersonContext();
-
-    /**
-     *  Use efect para recuperar el useJwtContext y consultar el usuario.
-     **/
     const { userDTO, loading, userData } = useFetchAuthenticatedUser();
+    const { personDTO } = useFetchGetPerson(userDTO?.idPerson, userData?.jwt);
 
     /**
-     * Carga DTO con la información de la persona.
+     * Cargador.
      */
-    useEffect(() => {
-        const getPersonData = async () => {
-            if (userDTO && userDTO.idPerson && userData.jwt) {
-                try {
-                    const data = await getPerson(
-                        userDTO.idPerson,
-                        userData.jwt
-                    );
-                    //setPersonDTO(data);
-                    setPerson(data);
-                } catch (error) {
-                    throw error;
-                }
-            }
-        };
-
-        if (!person) {
-            getPersonData();
-        }
-    }, [userDTO]);
-
-    /**
-     * Spinner para el render.
-     */
-    if (loading && personDTO === undefined) {
+    if (loading || !personDTO) {
         return <Spinner />;
     }
-
-    // console.log('ProfileConfiguration -- person:', person);
 
     return (
         <div className="mx-auto max-w-lg place-items-center rounded-xl bg-white px-7 py-5 shadow-2xs">
@@ -75,28 +45,74 @@ const ProfileConfiguration = () => {
                 {/** contenido para el frame actualización de perfil */}
                 <div className="px-7 py-5 text-justify">
                     <ul>
+                        {/** Sección: información personal & imagen */}
                         <div className="mb-3">
                             <ProfileItemConfiguration
                                 text="Información personal & imagen"
-                                setClickOption={setUpdateInfoBasic}
+                                isActive={activeSection === 'updateInfoBasic'}
+                                setClickOption={() =>
+                                    setActiveSection(
+                                        activeSection === 'updateInfoBasic'
+                                            ? null
+                                            : 'updateInfoBasic'
+                                    )
+                                }
                             />
-                            {updateInfoBasic && person && (
-                                <ViewDataBasicProfile
-                                    personDTO={person}
-                                    setPersonDTO={setPerson}
-                                    updateInfoBasic={updateInfoBasic}
-                                    userData={userData}
-                                />
+                            {activeSection === 'updateInfoBasic' &&
+                                personDTO && (
+                                    <PersonalInfoAndImageSection
+                                        idPerson={personDTO.id}
+                                        userData={userData}
+                                    />
+                                )}
+                        </div>
+
+                        {/** Sección: Actualizar email */}
+                        <div className="mb-3">
+                            <ProfileItemConfiguration
+                                text="Correo asociado a tu cuenta"
+                                isActive={activeSection === 'updateEmail'}
+                                setClickOption={() =>
+                                    setActiveSection(
+                                        activeSection === 'updateEmail'
+                                            ? null
+                                            : 'updateEmail'
+                                    )
+                                }
+                            />
+                            {activeSection === 'updateEmail' && (
+                                <UpdateEmailSection userDTO={userDTO} />
                             )}
                         </div>
+
+                        {/** Sección: Cambia tu constraseña */}
                         <div className="mb-3">
-                            <ProfileItemConfiguration text="Cambia tu email" />
+                            <ProfileItemConfiguration
+                                text="Cambia tu constraseña"
+                                isActive={activeSection === 'updatePassword'}
+                                setClickOption={() =>
+                                    setActiveSection(
+                                        activeSection === 'updatePassword'
+                                            ? null
+                                            : 'updatePassword'
+                                    )
+                                }
+                            />
                         </div>
+
+                        {/** Sección: Eliminar tu cuenta */}
                         <div className="mb-3">
-                            <ProfileItemConfiguration text="Cambia tu constraseña" />
-                        </div>
-                        <div className="mb-3">
-                            <ProfileItemConfiguration text="Eliminar tu cuenta" />
+                            <ProfileItemConfiguration
+                                text="Eliminar tu cuenta"
+                                isActive={activeSection === 'deleteAccount'}
+                                setClickOption={() =>
+                                    setActiveSection(
+                                        activeSection === 'deleteAccount'
+                                            ? null
+                                            : 'deleteAccount'
+                                    )
+                                }
+                            />
                         </div>
                     </ul>
                 </div>

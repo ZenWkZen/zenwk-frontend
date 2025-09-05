@@ -1,7 +1,7 @@
 import { Controller, UseFormReturn } from 'react-hook-form';
 import { UserMessages } from '@user/constants/user-messages';
 import { ageGenerator } from '@app/shared/utils/userUtils';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { Save, Ban } from 'lucide-react';
 import SelectGeneral, { Option } from '@user/ui/inputs/SelectGeneral';
 
@@ -65,10 +65,30 @@ const CompleteRegisterFormFields = ({
     loadingLineClick,
 }: Props) => {
     const {
+        watch,
         control,
         register,
         formState: { errors },
     } = form;
+    const [btnDisabled, setBtnDisabled] = useState(true);
+    const defaultValues = form.control._defaultValues; // Valores por defecto del form
+
+    /**
+     * Detecta si algún campo del formulario se edito y
+     * habilita el botón guardar (solo en modo edición)
+     */
+    useEffect(() => {
+        const subscription = watch((values) => {
+            const hasChanges = Object.keys(defaultValues).some(
+                (key) =>
+                    values[key as keyof typeof values] !==
+                    defaultValues[key as keyof typeof defaultValues]
+            );
+            setBtnDisabled(!hasChanges);
+        });
+        // watch simula la implementación del patrón observable.
+        return () => subscription.unsubscribe();
+    }, [watch, defaultValues]);
 
     return (
         <form onSubmit={onSubmit}>
@@ -213,7 +233,8 @@ const CompleteRegisterFormFields = ({
                 <div className="mb-17">
                     <div className="absolute flex gap-5">
                         <button
-                            className="group relative cursor-pointer rounded-lg border border-cyan-800 bg-gray-100 p-[0.4rem] text-cyan-800 hover:bg-gray-200"
+                            disabled={btnDisabled}
+                            className={`group relative rounded-lg border p-[0.4rem] ${btnDisabled ? 'cursor-not-allowed border-gray-400 bg-gray-100 text-gray-400' : 'cursor-pointer border-cyan-800 bg-gray-100 text-cyan-800 hover:bg-gray-200'} `}
                             type="submit"
                         >
                             <Save size={18} strokeWidth={1.5} />

@@ -1,9 +1,8 @@
 'use client';
 import React from 'react';
-import DataBasicProfileForm from '@user/ui/forms/DataBasicProfileForm';
 
 const page = () => {
-    return <DataBasicProfileForm />;
+    return <>... Sin usar.....</>;
 };
 
 export default page;

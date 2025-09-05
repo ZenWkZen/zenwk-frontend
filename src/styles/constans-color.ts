@@ -3,7 +3,7 @@
  */
 export const ERROR_COLOR = "#E77B73";
 export const BOLD_ERROR_COLOR = "#E1564C";
-export const BASE_TEXT_COLOR = "#6a7282";
+export const BASE_TEXT_COLOR = "#747B8B";
 export const BORDER_COLOR = "#d1d5dc";
 export const CYAN_CUSTOM_COLOR = "#566C7B";
 export const VIOLET_REDDISH_COLOR = "#C470A0";

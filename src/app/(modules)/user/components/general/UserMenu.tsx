@@ -12,7 +12,7 @@ import {
     LOCAL_STORAGE_SEX_OPTIONS,
 } from '@app/shared/constants/common-constants';
 import { useRouter } from 'next/navigation';
-import { UserDTO } from '@user/interfaces/user-dto';
+import { UserDTO } from '@app/app/(modules)/user/types/user-dto';
 import React, { useState } from 'react';
 
 import Text from '@user/ui/user-feed/Text';

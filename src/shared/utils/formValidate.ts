@@ -37,8 +37,11 @@ export const formValidate = () => {
         },
     };
 
-    const validateEquals = (value: string): RegisterOptions["validate"] => ({
-        equals: (v: string) => v === value || "No coinciden las contraseñas.",
+    const validateEquals = (
+        value: string,
+        messageError: string
+    ): RegisterOptions["validate"] => ({
+        equals: (v: string) => v === value || messageError,
     });
 
     // Retorna todas las validaciones disponibles para usar en los formularios

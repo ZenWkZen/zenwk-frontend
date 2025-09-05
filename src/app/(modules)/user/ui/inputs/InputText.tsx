@@ -1,12 +1,10 @@
 import clsx from 'clsx';
 import { forwardRef } from 'react';
-
 import {
     ERROR_COLOR,
     BASE_TEXT_COLOR,
     BORDER_COLOR,
 } from '@app/styles/constans-color';
-import { div } from 'framer-motion/client';
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
     placeholder: string;
@@ -32,7 +30,7 @@ const InputText = forwardRef<HTMLInputElement, Props>(
             'text-center text-xs focus:outline-none',
             isError
                 ? 'text-[#E77B73] placeholder:text-[#E77B73]'
-                : 'text-gray-500 placeholder:text-gray-500'
+                : 'text-gray-500 placeholder:text-gray-400'
         );
 
         const borderColor = isError ? ERROR_COLOR : BORDER_COLOR;

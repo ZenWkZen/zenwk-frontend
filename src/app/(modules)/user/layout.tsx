@@ -4,7 +4,7 @@ import { LOCAL_STORAGE_JWT_ITEM } from '@app/shared/constants/common-constants';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { fetchGetUser } from '@auth/utils/authUtils';
-import { UserDTO } from './interfaces/user-dto';
+import { UserDTO } from './types/user-dto';
 
 import Footer from '@user/ui/user-feed/Footer';
 import HeaderMenu from '@user/ui/user-feed/HeaderMenu';

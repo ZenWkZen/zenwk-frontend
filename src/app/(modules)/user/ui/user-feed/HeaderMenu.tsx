@@ -6,7 +6,7 @@ import Link from 'next/link';
 import UserProfilePhoto from '@user/components/general/UserProfilePhoto';
 import LogoZenwk from '@user/components/header/LogoZenwk';
 import ProfileMenu from '@user/components/header/ProfileMenu';
-import { UsePersonContext } from '@user/utils/UsePersonContext';
+import { usePersonContext } from '@app/app/(modules)/user/utils/usePersonContext';
 
 const userMenuItems = [
     { label: 'Dashboard', href: '#' },
@@ -34,7 +34,7 @@ const navLinks: any[] = [
  */
 const HeaderMenu = () => {
     const avatarBtnRef = useRef<HTMLButtonElement>(null);
-    const { person } = UsePersonContext();
+    const { person } = usePersonContext();
     /**
      * Pasa el evento programaticamente.
      */

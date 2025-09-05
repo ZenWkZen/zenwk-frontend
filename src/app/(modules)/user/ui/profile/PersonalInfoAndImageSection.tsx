@@ -1,22 +1,23 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { PersonDTO } from '@user/interfaces/person-dto';
+import { PersonDTO } from '@app/app/(modules)/user/types/person-dto';
 import { useSexOptionsContext } from '@user/utils/useSexOptionsContext';
 import { getLabelById } from '@app/shared/utils/optionsSexUtils';
 import { PencilLine, Camera, Save, Trash2 } from 'lucide-react';
-import { Dispatch, SetStateAction } from 'react';
 import { User } from '@user/context/JwtContext';
-import { BarLoader } from 'react-spinners';
-import { RingLoader } from 'react-spinners';
 import { getInitials } from '@app/shared/utils/stringUtils';
 import { fetchJwtBaseApi } from '@app/helpers/fetch-api';
 import { compressImage } from '@user/utils/ImageConvertUtils';
 import { updateOrCreatePerson } from '@user/utils/personUtils';
+import { usePersonContext } from '@app/app/(modules)/user/utils/usePersonContext';
+import { useFetchGetPerson } from '@user/hooks/useFetchGetPerson';
 
-import Tooltip from '@app/shared/ui/Tooltip';
 import Text from '@user/ui/user-feed/Text';
 import CompleteRegisterForm from '@user/ui/forms/CompleteRegisterForm';
+import ProfileItemHeader from '@user/components/profile/ProfileItemHeader';
+import ProfileBotonForm from '@app/app/(modules)/user/components/profile/ProfileButtomForm';
+import Spinner from '@app/shared/ui/Spinner';
 
 interface FormValues {
     firstName: string;
@@ -28,32 +29,16 @@ interface FormValues {
 }
 
 /**
- * Funcion que representa la linea de carga al pulsar un botón.
- * @returns
- */
-export function LineLoader() {
-    return (
-        <div className="w-full">
-            <BarLoader width={'100%'} height={2} color="#D08BB2" />
-        </div>
-    );
-}
-
-/**
  * Componente que gestiona los datos básicos de la persona.
  * @param param0
  * @returns
  */
-const ViewDataBasicProfile = ({
-    personDTO,
-    updateInfoBasic,
+const PersonalInfoAndImageSection = ({
     userData,
-    setPersonDTO,
+    idPerson,
 }: {
-    personDTO: PersonDTO;
-    updateInfoBasic: boolean;
+    idPerson: number;
     userData: User;
-    setPersonDTO: Dispatch<SetStateAction<PersonDTO | undefined>>;
 }) => {
     const refLoadPhotoInput = useRef<HTMLInputElement | null>(null);
     const { optionsSex } = useSexOptionsContext();
@@ -66,17 +51,17 @@ const ViewDataBasicProfile = ({
     const [preview, setPreview] = useState<string | null>(null);
     const [photoProfile, setPhotoProfile] = useState<File>();
 
-    const {
-        firstName,
-        middleName,
-        lastName,
-        middleLastName,
-        dateOfBirth,
-        address,
-        age,
-        idSex,
-        profilePicture,
-    } = personDTO;
+    const { person, setPerson } = usePersonContext();
+    const { personDTO } = useFetchGetPerson(idPerson, userData?.jwt);
+
+    /**
+     * Sincroniza el contexto de person
+     */
+    useEffect(() => {
+        if (personDTO) {
+            setPerson(personDTO);
+        }
+    }, [personDTO, setPerson]);
 
     /**
      * Limpiar el objeto URL cuando cambie la imagen o se desmonte el componente
@@ -93,13 +78,32 @@ const ViewDataBasicProfile = ({
      * Cuando el usuario elimina la imagen se reinician los estados correspondientes.
      */
     useEffect(() => {
-        if (!personDTO.profilePicture) {
+        if (person && !person.profilePicture) {
             setPreview(null);
             setSavePhotoLoading(false);
             setActiveSavePhoto(false);
             setPhotoProfile(undefined);
         }
-    }, [personDTO]);
+    }, [person]);
+
+    /**
+     * Cargador hasta que la persona sea definida.
+     */
+    if (!person) {
+        return <Spinner />;
+    }
+
+    const {
+        firstName,
+        middleName,
+        lastName,
+        middleLastName,
+        dateOfBirth,
+        address,
+        age,
+        idSex,
+        profilePicture,
+    } = person;
 
     /**
      * Animación (spinner)  para avento clic, boton editar y cancelar.
@@ -119,7 +123,7 @@ const ViewDataBasicProfile = ({
                 setDeletePhotoLoading(true);
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 300));
+            await new Promise((resolve) => setTimeout(resolve, 400));
         } catch (error) {
             throw error;
         } finally {
@@ -209,7 +213,7 @@ const ViewDataBasicProfile = ({
                     // Actualizar  estado  personDTO
                     const newPhotoProfile = await getBytesFromPreview();
                     await new Promise((resolve) => setTimeout(resolve, 300));
-                    setPersonDTO((prev) => {
+                    setPerson((prev) => {
                         if (!prev) {
                             return prev;
                         }
@@ -246,7 +250,7 @@ const ViewDataBasicProfile = ({
 
             if (userData.jwt) {
                 // Actualizo el contexto y se aprovecha valor actualizado para consumo de api
-                setPersonDTO((prev) => {
+                setPerson((prev) => {
                     if (!prev) {
                         return prev;
                     }
@@ -255,7 +259,7 @@ const ViewDataBasicProfile = ({
                         userData.jwt,
                         dataUpdate,
                         true,
-                        personDTO.id
+                        person.id
                     );
                     return dataUpdate;
                 });
@@ -265,26 +269,17 @@ const ViewDataBasicProfile = ({
         }
     };
 
-    // console.log('viewDataBasicProfile -- PersonDTO:', personDTO);
+    // console.log('viewDataBasicProfile -- PersonDTO:', person);
     return (
         <>
-            <div
-                className={`${updateInfoBasic && 'bg-gradient-to-tr from-[#F8EDF3] via-white/60 to-white px-2 py-1'} `}
-            >
-                <Text
-                    text="Aquí puedes actualizar tus datos personales y cambiar tu foto de perfil."
-                    className="leading-tight font-[300] text-[#B54A87]"
-                    sizeOffset={-5}
-                />
-            </div>
-            {/** Línea de carga */}
-            {lineLoading ? (
-                <LineLoader />
-            ) : (
-                <div className="h-[2px] w-full bg-gradient-to-b from-[#D08BB2]/70 shadow-md" />
-            )}
+            {/** Encabezado de la sección */}
+            <ProfileItemHeader
+                text="Aquí puedes actualizar tus datos personales y cambiar tu foto de perfil."
+                lineLoading={lineLoading}
+            />
 
-            <div className="px-2">
+            {/** Cuerpo de la sección */}
+            <div className="mt-2 px-2">
                 {/** Ftoto de perfil */}
                 <Text
                     text="Actualizar foto de perfil"
@@ -343,18 +338,13 @@ const ViewDataBasicProfile = ({
                             hidden
                             onChange={handleFileChange}
                         />
-                        <div className="group relative cursor-pointer rounded-full border border-cyan-900 bg-white p-[0.4rem] text-cyan-800 hover:bg-gray-100">
-                            {lineLoading && loadPhotoLoading ? (
-                                <RingLoader
-                                    color="#155E75"
-                                    size={17}
-                                    speedMultiplier={1.5}
-                                />
-                            ) : (
-                                <Camera size={20} strokeWidth={1.5} />
-                            )}
-                            <Tooltip position="top">Cambiar foto</Tooltip>
-                        </div>
+                        <ProfileBotonForm
+                            lineLoading={lineLoading}
+                            buttonLoading={loadPhotoLoading}
+                            icon={<Camera size={22} strokeWidth={1.5} />}
+                            text="Cambiar foto"
+                            shape="circle"
+                        />
                     </button>
 
                     {/** Botón guardar foto */}
@@ -367,20 +357,13 @@ const ViewDataBasicProfile = ({
                                 }}
                                 type="button"
                             >
-                                <div className="group relative cursor-pointer rounded-full border border-cyan-800 bg-gray-100 p-[0.4rem] text-cyan-800 hover:bg-gray-200">
-                                    {lineLoading && savePhotoLoading ? (
-                                        <RingLoader
-                                            color="#155E75"
-                                            size={17}
-                                            speedMultiplier={1.5}
-                                        />
-                                    ) : (
-                                        <Save size={16} strokeWidth={1.5} />
-                                    )}
-                                    <Tooltip position="top">
-                                        Guardar foto
-                                    </Tooltip>
-                                </div>
+                                <ProfileBotonForm
+                                    lineLoading={lineLoading}
+                                    buttonLoading={savePhotoLoading}
+                                    icon={<Save size={16} strokeWidth={1.5} />}
+                                    text="Guardar foto"
+                                    shape="circle"
+                                />
                             </button>
                         )}
 
@@ -393,20 +376,15 @@ const ViewDataBasicProfile = ({
                                 }}
                                 type="button"
                             >
-                                <div className="group relative cursor-pointer rounded-full border border-cyan-800 bg-gray-100 p-[0.4rem] text-cyan-800 hover:bg-gray-200">
-                                    {lineLoading && deletePhotoLoading ? (
-                                        <RingLoader
-                                            color="#155E75"
-                                            size={17}
-                                            speedMultiplier={1.5}
-                                        />
-                                    ) : (
+                                <ProfileBotonForm
+                                    lineLoading={lineLoading}
+                                    buttonLoading={deletePhotoLoading}
+                                    icon={
                                         <Trash2 size={16} strokeWidth={1.5} />
-                                    )}
-                                    <Tooltip position="top">
-                                        Eliminar foto
-                                    </Tooltip>
-                                </div>
+                                    }
+                                    text="Eliminar foto"
+                                    shape="circle"
+                                />
                             </button>
                         )}
                     </div>
@@ -430,8 +408,7 @@ const ViewDataBasicProfile = ({
                             user={userData}
                             editDataBasic={editDataBasic}
                             setEditDataBasic={setEditDataBasic}
-                            personDTO={personDTO}
-                            setPersonDTO={setPersonDTO}
+                            personDTO={person}
                             setLineLoading={setLineLoading}
                             loadingLineClick={loadingLineClick}
                         />
@@ -508,10 +485,13 @@ const ViewDataBasicProfile = ({
                                 loadingLineClick();
                             }}
                         >
-                            <div className="group relative mt-2 cursor-pointer rounded-md border border-cyan-800 bg-gray-100 p-[0.4rem] text-cyan-800 hover:bg-gray-200">
-                                <PencilLine size={16} strokeWidth={1.5} />
-                                <Tooltip position="right">Actualizar</Tooltip>
-                            </div>
+                            <ProfileBotonForm
+                                icon={
+                                    <PencilLine size={16} strokeWidth={1.5} />
+                                }
+                                text="Actualizar"
+                                shape="square"
+                            />
                         </button>
                     </>
                 )}
@@ -520,4 +500,4 @@ const ViewDataBasicProfile = ({
     );
 };
 
-export default ViewDataBasicProfile;
+export default PersonalInfoAndImageSection;

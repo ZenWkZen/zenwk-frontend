@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import { useForm, useWatch } from "react-hook-form";
-import { SetPassword, ClientErrorMessage } from "@app/shared/interfaces/auth";
-import { formValidate } from "@app/shared/utils/formValidate";
-import { AuthMessages } from "@auth/constants/auth-messages";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useForm, useWatch } from 'react-hook-form';
+import { SetPassword, ClientErrorMessage } from '@app/shared/interfaces/auth';
+import { formValidate } from '@app/shared/utils/formValidate';
+import { AuthMessages } from '@auth/constants/auth-messages';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
-import FormInput from "@app/app/(modules)/(auth)/ui/FormInput";
-import FormError from "@app/shared/ui/FormError";
-import HeaderText from "@app/app/(modules)/(auth)/ui/HeaderText";
-import InputDisabled from "@app/app/(modules)/(auth)/ui/InputDisabled";
-import CenteredHeaderWithBack from "@auth/components/CenteredHeaderWithBack";
-import Title from "@app/app/(modules)/(auth)/ui/Title";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import useRedirectRegister from "@auth/hooks/useRedirectRegister";
-import LoadButton from "@auth/components/LoadButton";
-import Spinner from "@app/shared/ui/Spinner";
+import FormInput from '@app/app/(modules)/(auth)/ui/FormInput';
+import FormError from '@app/shared/ui/FormError';
+import HeaderText from '@app/app/(modules)/(auth)/ui/HeaderText';
+import InputDisabled from '@app/app/(modules)/(auth)/ui/InputDisabled';
+import CenteredHeaderWithBack from '@auth/components/CenteredHeaderWithBack';
+import Title from '@app/app/(modules)/(auth)/ui/Title';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import useRedirectRegister from '@auth/hooks/useRedirectRegister';
+import LoadButton from '@auth/components/LoadButton';
+import Spinner from '@app/shared/ui/Spinner';
 
 /**
  * Interface que prepsenta los valores permitidos en la desestructuración.
@@ -31,8 +31,8 @@ interface Props {
     onSubmitPassword: (
         email: string,
         password: string,
-        uuid: string | "",
-        tokenCode: string | ""
+        uuid: string | '',
+        tokenCode: string | ''
     ) => Promise<void>;
 }
 
@@ -50,9 +50,9 @@ const SetPasswordUser = React.memo(
         isResetPassword = false,
     }: Props) => {
         const searchParams = useSearchParams();
-        const email = searchParams.get("email") ?? "";
-        const uuid = searchParams.get("uuid") ?? "";
-        const tokenCode = searchParams.get("code") ?? "";
+        const email = searchParams.get('email') ?? '';
+        const uuid = searchParams.get('uuid') ?? '';
+        const tokenCode = searchParams.get('code') ?? '';
         const [loading, setLoading] = useState(true);
         const [isBtnLoading, setBtnLoading] = useState(false);
         const router = useRouter();
@@ -70,9 +70,9 @@ const SetPasswordUser = React.memo(
             control,
             clearErrors,
             formState: { errors },
-        } = useForm<SetPassword>({ mode: "all" });
+        } = useForm<SetPassword>({ mode: 'all' });
 
-        const passwordValue = useWatch({ control, name: "password" });
+        const passwordValue = useWatch({ control, name: 'password' });
 
         /**
          * useEffect del componente.
@@ -84,7 +84,7 @@ const SetPasswordUser = React.memo(
          */
         useEffect(() => {
             if (passwordValue?.length === 1) {
-                trigger("repassword");
+                trigger('repassword');
             } else if (!passwordValue) {
                 clearErrors();
             }
@@ -111,7 +111,7 @@ const SetPasswordUser = React.memo(
                 await onSubmitPassword(email, data.password, uuid, tokenCode);
             } catch (error: unknown) {
                 const errors = error as ClientErrorMessage;
-                setError("repassword", { message: errors.message });
+                setError('repassword', { message: errors.message });
                 setErrorPassword(true);
             } finally {
                 setBtnLoading(false);
@@ -143,17 +143,17 @@ const SetPasswordUser = React.memo(
                             }
                             type="password"
                             placeholder={AuthMessages.placeholder.password}
-                            {...register("password", {
+                            {...register('password', {
                                 required: requiredPassword,
                                 pattern: patternPassword,
                             })}
                             onChange={async (e) => {
-                                register("password").onChange(e);
-                                await trigger("repassword");
+                                register('password').onChange(e);
+                                await trigger('repassword');
                             }}
                             isError={Boolean(errors.password)}
                         >
-                            <FormError error={errors.password?.message ?? ""} />
+                            <FormError error={errors.password?.message ?? ''} />
                         </FormInput>
 
                         <FormInput
@@ -165,13 +165,16 @@ const SetPasswordUser = React.memo(
                             }
                             type="password"
                             placeholder={AuthMessages.placeholder.repassword}
-                            {...register("repassword", {
-                                validate: validateEquals(getValues("password")),
+                            {...register('repassword', {
+                                validate: validateEquals(
+                                    getValues('password'),
+                                    'Las contraseñas no coinciden.'
+                                ),
                             })}
                             isError={Boolean(errors.repassword)}
                         >
                             <FormError
-                                error={errors.repassword?.message ?? ""}
+                                error={errors.repassword?.message ?? ''}
                             />
                         </FormInput>
 

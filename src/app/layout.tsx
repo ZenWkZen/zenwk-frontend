@@ -5,6 +5,7 @@ import '@app/styles/globals.css';
 import JwtContextProvider from '@user/context/JwtContext';
 import WidthSidebarContextProvider from '@user/context/WidthSidebarContext';
 import PersonContextProvider from '@user/context/PersonContext';
+import UserContextProvider from '@user/context/UserContext';
 
 /**
  * Configuración de la fuente Roboto. (No se aplica por el momento)
@@ -36,15 +37,17 @@ export default function RootLayout({
     return (
         <JwtContextProvider>
             <WidthSidebarContextProvider>
-                <PersonContextProvider>
-                    <html lang="en">
-                        <meta
-                            name="viewport"
-                            content="width=device-width, initial-scale=1.0"
-                        />
-                        <body className={''}>{children}</body>
-                    </html>
-                </PersonContextProvider>
+                <UserContextProvider>
+                    <PersonContextProvider>
+                        <html lang="en">
+                            <meta
+                                name="viewport"
+                                content="width=device-width, initial-scale=1.0"
+                            />
+                            <body className={''}>{children}</body>
+                        </html>
+                    </PersonContextProvider>
+                </UserContextProvider>
             </WidthSidebarContextProvider>
         </JwtContextProvider>
     );

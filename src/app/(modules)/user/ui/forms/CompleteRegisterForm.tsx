@@ -2,12 +2,13 @@ import { useForm } from 'react-hook-form';
 import { useState, Dispatch, SetStateAction } from 'react';
 import { User } from '@user/context/JwtContext';
 import { formValidateUser } from '@user/utils/formValidateUser';
-import { PersonDTO } from '@user/interfaces/person-dto';
+import { PersonDTO } from '@app/app/(modules)/user/types/person-dto';
 import { getLabelById } from '@app/shared/utils/optionsSexUtils';
 import { getPerson, updateOrCreatePerson } from '@user/utils/personUtils';
 import { safeValue } from '@app/shared/utils/stringUtils';
 import { useSexOptionsContext } from '@user/utils/useSexOptionsContext';
 import { handleApiErrors } from '@app/shared/utils/formValidate';
+import { usePersonContext } from '@app/app/(modules)/user/utils/usePersonContext';
 
 import CompleteRegisterFormFields from '@user/components/forms/CompleteRegisterFormFields';
 
@@ -32,7 +33,6 @@ const CompleteRegisterForm = ({
     editDataBasic,
     setEditDataBasic,
     personDTO,
-    setPersonDTO,
     setLineLoading,
     loadingLineClick,
 }: {
@@ -41,13 +41,13 @@ const CompleteRegisterForm = ({
     editDataBasic?: boolean;
     setEditDataBasic?: Dispatch<SetStateAction<boolean>>;
     personDTO?: PersonDTO;
-    setPersonDTO?: Dispatch<SetStateAction<PersonDTO | undefined>>;
     setLineLoading?: Dispatch<SetStateAction<boolean>>;
     loadingLineClick?: () => Promise<void>;
 }) => {
     const { optionsSex } = useSexOptionsContext();
     const [errorBack, setErrorBack] = useState('');
     const [isBtnLoading, setBtnLoading] = useState(false);
+    const { setPerson } = usePersonContext();
 
     /**
      * Formulario principal
@@ -105,8 +105,9 @@ const CompleteRegisterForm = ({
                             personDTO.id,
                             user.jwt
                         );
-                        if (freshData && setPersonDTO && setEditDataBasic) {
-                            setPersonDTO(freshData);
+
+                        if (freshData && setEditDataBasic) {
+                            setPerson(freshData);
                             setEditDataBasic(false);
                         }
                     }

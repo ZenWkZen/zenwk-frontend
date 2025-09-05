@@ -3,21 +3,19 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { formValidate } from '@app/shared/utils/formValidate';
-import {
-    fetchJwtBaseApi,
-    fetchValidateRegisterEmail,
-} from '@app/helpers/fetch-api';
+import { fetchValidateRegisterEmail } from '@app/helpers/fetch-api';
 import { ClientErrorMessage, LoginForm } from '@app/shared/interfaces/auth';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation.js';
 import { AuthMessages } from '@auth/constants/auth-messages';
-import { AuthErrors } from '../../constants/auth-errors';
+import { AuthErrors } from '@auth/constants/auth-errors';
 import { Messages } from '@app/shared/constants/messages';
 import { useJwtContext } from '@user/utils/useJwtContext';
 import { loginApi } from '@auth/utils/authUtils';
-import { UsePersonContext } from '@user/utils/UsePersonContext';
+import { UsePersonContext } from '@app/app/(modules)/user/utils/usePersonContext';
 import { fetchGetUser } from '@auth/utils/authUtils';
 import { getPerson } from '@user/utils/personUtils';
+import { UseUserContext } from '@user/utils/UseUserContext';
 
 import Title from '@app/app/(modules)/(auth)/ui/Title';
 import FormInput from '@app/app/(modules)/(auth)/ui/FormInput';
@@ -59,6 +57,7 @@ const Login = () => {
     } = useForm<LoginForm>();
     const { user, setUser } = useJwtContext();
     const { setPerson } = UsePersonContext();
+    const { setUserDTO } = UseUserContext();
 
     /**
      * Prellena el campo de email si se recibe como parámetro en la URL (?email=).
@@ -154,10 +153,11 @@ const Login = () => {
                             userData.jwt
                         );
                         setPerson(personaDto);
+                        setUserDTO(userDto);
                     }
                 }
             } catch (error: unknown) {
-                console.log(error);
+                // console.log(error);
                 const errors = error as ClientErrorMessage;
                 switch (errors.code) {
                     case AuthErrors.funciontal.login.notFoundUsername:

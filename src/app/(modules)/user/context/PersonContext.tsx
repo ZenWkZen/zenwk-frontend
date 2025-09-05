@@ -1,5 +1,5 @@
 'use client';
-import { PersonDTO } from '@user/interfaces/person-dto';
+import { PersonDTO } from '@user/types/person-dto';
 
 import {
     ReactNode,
@@ -26,7 +26,6 @@ export const PersonContext = createContext<PersonContextType | undefined>(
  */
 const PersonContextProvider = ({ children }: { children: ReactNode }) => {
     const [person, setPerson] = useState<PersonDTO>();
-
     return (
         <PersonContext.Provider value={{ person, setPerson }}>
             {children}

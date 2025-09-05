@@ -1,13 +1,13 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { UserMessages } from '../constants/user-messages';
-import { UserStateEnum } from '@user/interfaces/user-dto';
+import { UserStateEnum } from '@app/app/(modules)/user/types/user-dto';
 import {
     TEXT_CYAN_COLOR,
     TEXT_VIOLET_REDDISH,
 } from '@app/styles/constans-color';
 import { useFetchAuthenticatedUser } from '@user/hooks/useFetchAuthenticatedUser';
-import { useJwtContext } from '@user/utils/useJwtContext';
+import { useFetchGetPerson } from '@user/hooks/useFetchGetPerson';
 
 import Title from '@user/ui/user-feed/Title';
 import Spinner from '@app/shared/ui/Spinner';
@@ -20,11 +20,13 @@ import AlertInfo from '@app/shared/components/AlertInfo';
  */
 const WelcomeUser = () => {
     const [isCreatePerson, setIsCreatePerson] = useState(false);
+
     /**
      *  Use efect para recuperar el useJwtContext y consultar el usuario.
      **/
     // console.log('WelcomeUser: useFetchAuthenticatedUser: [OK]>')
     const { userDTO, loading, userData } = useFetchAuthenticatedUser();
+    const { personDTO } = useFetchGetPerson(userDTO?.idPerson, userData?.jwt);
 
     /**
      * Spinner para el render.
@@ -46,7 +48,7 @@ const WelcomeUser = () => {
                     >
                         {UserMessages.welcome.title}
                         <label className="font-medium">
-                            {userDTO?.username}
+                            {personDTO?.firstName}
                         </label>
                         {UserMessages.welcome.subtitle}
                     </div>
@@ -55,21 +57,23 @@ const WelcomeUser = () => {
 
             {/** Formulario para completar los datos personales */}
             <div className="">
-                {true && (
-                    <div className="mx-auto max-w-lg place-items-center rounded-xl bg-white px-5 py-5 shadow-2xs">
-                        <article className="mb-4 px-12">
-                            <Title
-                                sizeOffset={-5}
-                                text={UserMessages.welcome.completeRegister}
-                                className={`text-center font-[370] text-cyan-800`}
-                            />
-                            <CompleteRegisterForm
-                                setIsCreatePerson={setIsCreatePerson}
-                                user={userData}
-                            />
-                        </article>
-                    </div>
-                )}
+                {!isCreatePerson &&
+                    userDTO != undefined &&
+                    userDTO.state === UserStateEnum.INCOMPLETE_PERFIL && (
+                        <div className="mx-auto max-w-lg place-items-center rounded-xl bg-white px-5 py-5 shadow-2xs">
+                            <article className="mb-4 px-12">
+                                <Title
+                                    sizeOffset={-5}
+                                    text={UserMessages.welcome.completeRegister}
+                                    className={`text-center font-[370] text-cyan-800`}
+                                />
+                                <CompleteRegisterForm
+                                    setIsCreatePerson={setIsCreatePerson}
+                                    user={userData}
+                                />
+                            </article>
+                        </div>
+                    )}
 
                 {isCreatePerson && (
                     <AlertInfo duration={3}>

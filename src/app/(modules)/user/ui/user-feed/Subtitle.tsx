@@ -6,13 +6,15 @@ const Subtitle = ({
     text,
     isError,
     sizeOffset,
+    className = 'mt-[0.6rem] mb-[0.4rem]',
 }: {
     text: React.ReactNode;
     isError?: boolean;
     sizeOffset?: number;
+    className?: string;
 }) => {
     return (
-        <div className="mt-[0.6rem] mb-[0.4rem]">
+        <div className={className}>
             <Text
                 sizeOffset={sizeOffset}
                 text={text}

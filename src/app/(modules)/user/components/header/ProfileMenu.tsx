@@ -5,7 +5,7 @@ import UserMenu from '@user/components/general/UserMenu';
 import { mergeRefs } from '@user/utils/utilsRef';
 import { TEXT_CYAN_COLOR } from '@app/styles/constans-color';
 import { User } from '@user/context/JwtContext';
-import { UserDTO } from '@user/interfaces/user-dto';
+import { UserDTO } from '@app/app/(modules)/user/types/user-dto';
 
 interface Props {
     isPhotoProfile: () => React.ReactNode;

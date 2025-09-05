@@ -10,33 +10,30 @@ import ChevronUpIcon from '@user/components/icons/ChevronUpIcon';
 const ProfileItemConfiguration = ({
     text,
     setClickOption,
+    isActive,
 }: {
     text: string;
-    setClickOption?: Dispatch<SetStateAction<boolean>>;
+    setClickOption?: () => void;
+    isActive: boolean;
 }) => {
-    const [click, setClick] = useState(false);
-
     return (
         <li
             className="group mb-1 flex cursor-pointer items-center gap-3"
-            onClick={() => {
-                setClick((prev) => !prev);
-                setClickOption && setClickOption((prev) => !prev);
-            }}
+            onClick={setClickOption}
         >
             <Text
                 sizeOffset={13}
                 text={text}
                 className={`font-[380] group-hover:text-[#C470A0] ${
-                    click ? 'font-[370] text-[#B54A87]' : 'text-cyan-800'
+                    isActive ? 'font-[370] text-[#B54A87]' : 'text-cyan-800'
                 }`}
             />
-            {click ? (
+            {isActive ? (
                 <ChevronUpIcon
                     size={17}
                     sizeStroke={2}
                     className={`group-hover:text-[#C470A0] ${
-                        click ? 'font-[370] text-[#B54A87]' : 'text-cyan-800'
+                        isActive ? 'font-[370] text-[#B54A87]' : 'text-cyan-800'
                     }`}
                 />
             ) : (
@@ -44,7 +41,7 @@ const ProfileItemConfiguration = ({
                     size={17}
                     sizeStroke={2}
                     className={`group-hover:text-[#C470A0] ${
-                        click ? 'font-[370] text-[#B54A87]' : 'text-cyan-800'
+                        isActive ? 'font-[370] text-[#B54A87]' : 'text-cyan-800'
                     }`}
                 />
             )}
