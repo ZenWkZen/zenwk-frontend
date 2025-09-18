@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import { User } from '@user/context/JwtContext';
 import { formValidateUser } from '@user/utils/formValidateUser';
 import { PersonDTO } from '@app/app/(modules)/user/types/person-dto';
@@ -34,6 +34,7 @@ const CompleteRegisterForm = ({
     setEditDataBasic,
     personDTO,
     setLineLoading,
+    setBtnUpdate,
     loadingLineClick,
 }: {
     setIsCreatePerson?: Dispatch<SetStateAction<boolean>>;
@@ -42,6 +43,7 @@ const CompleteRegisterForm = ({
     setEditDataBasic?: Dispatch<SetStateAction<boolean>>;
     personDTO?: PersonDTO;
     setLineLoading?: Dispatch<SetStateAction<boolean>>;
+    setBtnUpdate?: Dispatch<SetStateAction<boolean>>;
     loadingLineClick?: () => Promise<void>;
 }) => {
     const { optionsSex } = useSexOptionsContext();
@@ -89,6 +91,7 @@ const CompleteRegisterForm = ({
     const onSubmit = form.handleSubmit(async (data) => {
         setBtnLoading(true);
         setLineLoading?.(true);
+        setBtnUpdate?.(true);
 
         try {
             if (user) {
@@ -119,6 +122,7 @@ const CompleteRegisterForm = ({
         } finally {
             setBtnLoading(false);
             setLineLoading?.(false);
+            setBtnUpdate?.(false);
         }
     });
 

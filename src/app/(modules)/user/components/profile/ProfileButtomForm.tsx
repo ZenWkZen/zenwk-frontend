@@ -23,21 +23,21 @@ const ProfileButtomForm = ({
     lineLoading?: boolean;
     buttonLoading?: boolean;
     icon: ReactNode;
-    text: string;
-    shape: 'circle' | 'square';
+    text?: string;
+    shape?: 'circle' | 'square';
     positionToltip?: 'top' | 'bottom' | 'left' | 'right';
     hiddenArrow?: boolean;
     disabled?: boolean;
     nameButtom?: string;
 }) => {
     const className = clsx(
-        'group relative border p-[0.4rem]',
+        'group relative',
         nameButtom
-            ? 'inline-flex items-center justify-items-center gap-2 bg-gray-50 px-3 font-[350]'
-            : 'bg-gray-100',
+            ? 'flex w-full items-center justify-center gap-4 bg-gray-200 p-[0.3rem] px-4'
+            : 'border bg-gray-100 p-[0.4rem]',
         disabled
             ? 'cursor-not-allowed border-gray-400 bg-gray-100 text-gray-400'
-            : 'cursor-pointer border-cyan-800 text-cyan-800 hover:bg-gray-200',
+            : 'cursor-pointer border-black group-hover:text-black hover:bg-gray-300',
         shape === 'circle' && 'rounded-full',
         shape === 'square' && 'rounded-md'
     );
@@ -47,12 +47,25 @@ const ProfileButtomForm = ({
             {nameButtom && (
                 <Text
                     text={nameButtom}
-                    sizeOffset={-2}
-                    className="cursor-pointer text-cyan-800"
+                    sizeOffset={0}
+                    className={`font-[400] ${disabled ? 'cursor-not-allowed text-gray-400' : 'cursor-pointer text-gray-700 group-hover:text-black'} `}
                 />
             )}
-            {lineLoading && buttonLoading ? <ProfileRingLoader /> : icon}
-            <Tooltip position={positionToltip}>{text}</Tooltip>
+            {lineLoading && buttonLoading ? (
+                <ProfileRingLoader />
+            ) : (
+                <span
+                    className={clsx(
+                        'flex items-center',
+                        disabled
+                            ? 'text-gray-400'
+                            : 'text-gray-700 group-hover:text-black'
+                    )}
+                >
+                    {icon}
+                </span>
+            )}
+            {text && <Tooltip position={positionToltip}>{text}</Tooltip>}
         </div>
     );
 };

@@ -1,10 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { PersonDTO } from '@app/app/(modules)/user/types/person-dto';
-import { useSexOptionsContext } from '@user/utils/useSexOptionsContext';
-import { getLabelById } from '@app/shared/utils/optionsSexUtils';
-import { PencilLine, Camera, Save, Trash2 } from 'lucide-react';
+import { Camera, Save, Trash2 } from 'lucide-react';
 import { User } from '@user/context/JwtContext';
 import { getInitials } from '@app/shared/utils/stringUtils';
 import { fetchJwtBaseApi } from '@app/helpers/fetch-api';
@@ -14,7 +11,6 @@ import { usePersonContext } from '@app/app/(modules)/user/utils/usePersonContext
 import { useFetchGetPerson } from '@user/hooks/useFetchGetPerson';
 
 import Text from '@user/ui/user-feed/Text';
-import CompleteRegisterForm from '@user/ui/forms/CompleteRegisterForm';
 import ProfileItemHeader from '@user/components/profile/ProfileItemHeader';
 import ProfileBotonForm from '@app/app/(modules)/user/components/profile/ProfileButtomForm';
 import Spinner from '@app/shared/ui/Spinner';
@@ -33,7 +29,7 @@ interface FormValues {
  * @param param0
  * @returns
  */
-const PersonalInfoAndImageSection = ({
+const ProfilePhotoSection = ({
     userData,
     idPerson,
 }: {
@@ -41,8 +37,6 @@ const PersonalInfoAndImageSection = ({
     userData: User;
 }) => {
     const refLoadPhotoInput = useRef<HTMLInputElement | null>(null);
-    const { optionsSex } = useSexOptionsContext();
-    const [editDataBasic, setEditDataBasic] = useState(false);
     const [lineLoading, setLineLoading] = useState(false);
     const [loadPhotoLoading, setLoadPhotoLoading] = useState(false);
     const [savePhotoLoading, setSavePhotoLoading] = useState(false);
@@ -273,31 +267,28 @@ const PersonalInfoAndImageSection = ({
     return (
         <>
             {/** Encabezado de la sección */}
-            <ProfileItemHeader
-                text="Aquí puedes actualizar tus datos personales y cambiar tu foto de perfil."
-                lineLoading={lineLoading}
-            />
+            <ProfileItemHeader lineLoading={lineLoading} />
 
             {/** Cuerpo de la sección */}
-            <div className="mt-2 px-2">
+            <div className="grid items-center justify-items-center px-4 py-6">
                 {/** Ftoto de perfil */}
-                <Text
+                {/* <Text
                     text="Actualizar foto de perfil"
-                    className="py-2 font-[400] text-cyan-800"
-                    sizeOffset={10}
-                />
+                    className="py-2 font-[350] text-[#0056B3]"
+                    sizeOffset={5}
+                /> */}
                 {/** Ftoto de perfil: Gestión de la imagen de perfil */}
                 <div className="flex items-center justify-items-center -space-x-4">
                     <div className="flex items-center justify-center -space-x-4">
                         <div
-                            className={`${photoProfile || profilePicture ? 'overflow-hidden' : 'grid items-center justify-items-center'} relative h-25 w-25 rounded-full border border-cyan-900 bg-[#D5DDE2]`}
+                            className={`${photoProfile || profilePicture ? 'overflow-hidden' : 'grid items-center justify-items-center'} relative h-25 w-25 rounded-full border border-black bg-[#D5DDE2]`}
                         >
                             {/* Texto por defecto */}
                             {!profilePicture && !preview ? (
                                 <Text
                                     text={getInitials(firstName, lastName)}
                                     sizeOffset={20}
-                                    className="font-[300] text-cyan-900"
+                                    className="font-[300] text-black"
                                 />
                             ) : (
                                 !preview && (
@@ -341,7 +332,14 @@ const PersonalInfoAndImageSection = ({
                         <ProfileBotonForm
                             lineLoading={lineLoading}
                             buttonLoading={loadPhotoLoading}
-                            icon={<Camera size={22} strokeWidth={1.5} />}
+                            icon={
+                                <Camera
+                                    size={20}
+                                    strokeWidth={1.5}
+                                    // className="text-[#0056B3]"
+                                    className="text-black"
+                                />
+                            }
                             text="Cambiar foto"
                             shape="circle"
                         />
@@ -360,7 +358,14 @@ const PersonalInfoAndImageSection = ({
                                 <ProfileBotonForm
                                     lineLoading={lineLoading}
                                     buttonLoading={savePhotoLoading}
-                                    icon={<Save size={16} strokeWidth={1.5} />}
+                                    icon={
+                                        <Save
+                                            size={16}
+                                            strokeWidth={1.5}
+                                            // className="text-[#0056B3]"
+                                            className="text-black"
+                                        />
+                                    }
                                     text="Guardar foto"
                                     shape="circle"
                                 />
@@ -380,7 +385,12 @@ const PersonalInfoAndImageSection = ({
                                     lineLoading={lineLoading}
                                     buttonLoading={deletePhotoLoading}
                                     icon={
-                                        <Trash2 size={16} strokeWidth={1.5} />
+                                        <Trash2
+                                            size={16}
+                                            strokeWidth={1.5}
+                                            // className="text-[#0056B3]"
+                                            className="text-black"
+                                        />
                                     }
                                     text="Eliminar foto"
                                     shape="circle"
@@ -389,115 +399,12 @@ const PersonalInfoAndImageSection = ({
                         )}
                     </div>
                 </div>
-
-                {/** Información personal */}
-                <Text
-                    text={
-                        editDataBasic
-                            ? 'Actualizar información personal'
-                            : 'Información personal'
-                    }
-                    className="mt-3 font-[400] text-cyan-800"
-                    sizeOffset={10}
-                />
-
-                {/** visuliazar y editar la persona */}
-                {editDataBasic ? (
-                    <div className="origin-left scale-95">
-                        <CompleteRegisterForm
-                            user={userData}
-                            editDataBasic={editDataBasic}
-                            setEditDataBasic={setEditDataBasic}
-                            personDTO={person}
-                            setLineLoading={setLineLoading}
-                            loadingLineClick={loadingLineClick}
-                        />
-                    </div>
-                ) : (
-                    <>
-                        <div className="mt-3 mb-1 flex columns-2 gap-2 text-gray-500">
-                            <Text
-                                text="Nombres:"
-                                className="font-[370]"
-                                sizeOffset={2}
-                            />
-                            <Text
-                                text={firstName + ' ' + (middleName || '')}
-                                className="font-[300] text-gray-500"
-                            />
-                        </div>
-                        {/** Apellidos */}
-                        <div className="mb-1 flex columns-2 gap-2 text-gray-500">
-                            <Text
-                                text="Apellidos:"
-                                className="font-[370]"
-                                sizeOffset={2}
-                            />
-                            <Text
-                                text={lastName + ' ' + (middleLastName || '')}
-                                className="font-[300] text-gray-500"
-                            />
-                        </div>
-                        {/** Sexo, edad y fecha de nacimiento*/}
-
-                        <div className="mb-1 flex columns-2 gap-2">
-                            <Text
-                                text="Sexo:"
-                                className="font-[370] text-gray-500"
-                                sizeOffset={2}
-                            />
-                            <Text
-                                text={getLabelById(optionsSex, idSex)}
-                                className="font-[300] text-gray-500"
-                            />
-                        </div>
-                        <div className="mb-1 flex columns-2 gap-1">
-                            <Text
-                                text="Edad:"
-                                className="font-[370] text-gray-500"
-                                sizeOffset={2}
-                            />
-                            <Text
-                                text={age}
-                                className="font-[300] text-gray-500"
-                            />
-                        </div>
-
-                        {/** Fecha de nacimiento */}
-                        <div className="mb-3 flex columns-2 gap-1">
-                            <Text
-                                text="Fecha de nacimiento:"
-                                className="font-[370] text-gray-500"
-                                sizeOffset={2}
-                            />
-                            <Text
-                                text={
-                                    dateOfBirth ? dateOfBirth : 'No registrado'
-                                }
-                                className="font-[300] text-gray-500"
-                            />
-                        </div>
-
-                        <button
-                            type="button"
-                            onClick={() => {
-                                setEditDataBasic((prev) => !prev);
-                                loadingLineClick();
-                            }}
-                        >
-                            <ProfileBotonForm
-                                icon={
-                                    <PencilLine size={16} strokeWidth={1.5} />
-                                }
-                                text="Actualizar"
-                                shape="square"
-                            />
-                        </button>
-                    </>
-                )}
+            </div>
+            <div className="px-2">
+                {/* <hr className="border-gray-200" /> */}
             </div>
         </>
     );
 };
 
-export default PersonalInfoAndImageSection;
+export default ProfilePhotoSection;

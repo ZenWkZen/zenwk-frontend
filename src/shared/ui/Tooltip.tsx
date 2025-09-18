@@ -34,7 +34,7 @@ const Tooltip = ({
 
     return (
         <div
-            className={`absolute z-10 flex scale-0 items-center transition-transform duration-100 group-hover:scale-100 group-hover:opacity-55 ${positionClasses[position]}`}
+            className={`absolute z-10 flex scale-0 items-center transition-transform duration-100 group-hover:scale-100 group-hover:opacity-60 ${positionClasses[position]}`}
         >
             <div className="rounded bg-black px-[0.45rem] py-[0.18rem] text-xs font-[320] tracking-tight whitespace-nowrap text-white">
                 {children}

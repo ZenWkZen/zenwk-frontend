@@ -5,11 +5,10 @@ import { formValidate } from '@app/shared/utils/formValidate';
 import { useForm, useWatch } from 'react-hook-form';
 import { RefreshCcw, MailCheck } from 'lucide-react';
 
-import ProfileButtomForm from '@app/app/(modules)/user/components/profile/ProfileButtomForm';
+import ProfileButtomForm from '@user/components/profile/ProfileButtomForm';
 import ProfileItemHeader from '@user/components/profile/ProfileItemHeader';
 import InputText from '@user/ui/inputs/InputText';
 import FormErrorUser from '@user/ui/forms/FormErrorUser';
-import Subtitle from '@user/ui/user-feed/Subtitle';
 import Text from '@user/ui/user-feed/Text';
 import OpenMailbox from '@auth/components/OpenMailbox';
 
@@ -76,7 +75,7 @@ const UpdateEmailSection = ({ userDTO }: { userDTO: UserDTO }) => {
     /**
      * Configuración de validación para el campo de contraseña.
      */
-    const reEmailRegister = register('reemail', {
+    const reemailRegister = register('reemail', {
         required: requiredEmail,
         pattern: patternEmail,
         validate: validateEquals(
@@ -130,109 +129,94 @@ const UpdateEmailSection = ({ userDTO }: { userDTO: UserDTO }) => {
     return (
         <div>
             {/** Encabezado de la sección */}
-
-            <ProfileItemHeader
-                text={
-                    <div className="">
-                        {isApprove ? (
-                            'Confirma tu correo para activar los cambios.'
-                        ) : emailChangeSucceeded ? (
-                            <>
-                                Revisa tu bandeja de entrada y aprueba el cambio
-                                de correo electrónico.
-                                <div className="">
-                                    <OpenMailbox
-                                        isSuccessResend={false}
-                                        typeStyle="profileConfiguration"
-                                    />
-                                </div>
-                            </>
-                        ) : (
-                            <div>
-                                {isNewEmail ? (
-                                    <>
-                                        ¡Listo! Tu nueva dirección de correo es
-                                        <label className="font-[340]">
-                                            {' ' + userDTO.email}
-                                        </label>
-                                    </>
-                                ) : (
-                                    <div className="">
-                                        El correo asociado a tu cuenta es
-                                        <label className="font-[340]">
-                                            {' ' + userDTO.email}
-                                        </label>
-                                    </div>
-                                )}
-                            </div>
-                        )}{' '}
-                    </div>
-                }
-                lineLoading={lineLoading}
-            />
-
+            <ProfileItemHeader lineLoading={lineLoading} />
             {/** Cuerpo de la sección */}
             {isApprove ? (
-                <div className="py-8 text-center" onClick={handleClikApprove}>
+                <div
+                    className="mx-auto flex w-full max-w-[260px] flex-col items-center rounded-md py-8"
+                    onClick={handleClikApprove}
+                >
                     <ProfileButtomForm
                         lineLoading={lineLoading}
                         buttonLoading={loadBtnUpdateEmail}
                         icon={<MailCheck size={17} strokeWidth={1.5} />}
-                        text="Aprobar"
                         shape="square"
                         positionToltip="top"
-                        nameButtom="Confirmar correo "
+                        nameButtom="Confirmar correo"
                     />
                 </div>
             ) : (
-                <div className="mt-4 px-2">
-                    <Text
-                        text="Aquí puedes actualizar tu dirección de correo"
-                        className="font-[350] tracking-normal text-gray-700"
-                        sizeOffset={1}
-                    />
+                <div className="grid items-center justify-items-center py-5">
+                    <div className="mx-auto flex w-full max-w-[260px] flex-col items-center rounded-md bg-[#EBF9F0]">
+                        {/** Centro de notificaciones de la sección   isNewEmail       bg-gradient-to-r from-green-50 to-[#E8FCF3]*/}
+                        {isApprove ? (
+                            <p>Confirma tu correo para activar los cambios</p>
+                        ) : emailChangeSucceeded ? (
+                            <div className="py-3">
+                                <Text
+                                    text="Revisa tu bandeja de entrada y aprueba el
+                                    cambio de correo electrónico"
+                                    className="mx-auto max-w-[260px] p-2 text-center text-emerald-700"
+                                    sizeOffset={-8}
+                                />
+
+                                <OpenMailbox
+                                    isSuccessResend={false}
+                                    typeStyle="profileConfiguration"
+                                />
+                            </div>
+                        ) : (
+                            <>
+                                {isNewEmail && (
+                                    <Text
+                                        text={
+                                            '¡Listo! Tu nueva dirección de correo es ' +
+                                            userDTO.email
+                                        }
+                                        className="mx-auto max-w-[260px] p-2 text-center text-emerald-700"
+                                        sizeOffset={-8}
+                                    />
+                                )}
+                            </>
+                        )}
+                    </div>
                     {/** Cuerpo de la sección */}
                     <form onSubmit={onSubmit}>
-                        {/* Apellidos */}
-
-                        <Subtitle
-                            text="Ingresa tu nuevo correo"
+                        {/* Input: email */}
+                        <InputText
+                            minWidth={260}
+                            text="Nuevo correo"
+                            type="text"
+                            placeholder={Messages.placeholder.emailExample}
+                            {...emailRegister}
                             isError={Boolean(errors.email)}
-                            sizeOffset={-4}
-                        />
+                        >
+                            <FormErrorUser
+                                sizeOffset={-15}
+                                error={errors.email?.message ?? ''}
+                            />
+                        </InputText>
 
-                        <div className="mb-1 w-[80%] flex-1">
-                            <InputText
-                                placeholder={Messages.placeholder.emailExample}
-                                {...emailRegister}
-                                isError={Boolean(errors.email)}
-                            >
-                                <FormErrorUser
-                                    sizeOffset={-15}
-                                    error={errors.email?.message ?? ''}
-                                />
-                            </InputText>
-                        </div>
-                        <Subtitle
-                            text="Confirma tu nuevo correo"
-                            isError={Boolean(errors.reemail || errors.root)}
-                            sizeOffset={-4}
-                            className="py-1"
-                        />
-                        <div className="mb-4 w-[80%] flex-1">
-                            <InputText
-                                placeholder={Messages.placeholder.emailExample}
-                                {...reEmailRegister}
-                                isError={Boolean(errors.reemail)}
-                            >
-                                <FormErrorUser
-                                    sizeOffset={-15}
-                                    error={errors.reemail?.message ?? ''}
-                                />
-                            </InputText>
-                        </div>
+                        {/* Input: reemail */}
+                        <InputText
+                            text="Confirmar nuevo correo"
+                            type="text"
+                            placeholder={Messages.placeholder.emailExample}
+                            {...reemailRegister}
+                            isError={Boolean(errors.reemail)}
+                            minWidth={260}
+                        >
+                            <FormErrorUser
+                                sizeOffset={-15}
+                                error={errors.reemail?.message ?? ''}
+                            />
+                        </InputText>
 
-                        <button type="submit" disabled={disabled}>
+                        <button
+                            type="submit"
+                            disabled={disabled}
+                            className="mt-4 mb-3 w-full"
+                        >
                             <ProfileButtomForm
                                 disabled={disabled}
                                 lineLoading={lineLoading}
@@ -240,9 +224,8 @@ const UpdateEmailSection = ({ userDTO }: { userDTO: UserDTO }) => {
                                 icon={
                                     <RefreshCcw size={17} strokeWidth={1.5} />
                                 }
-                                text="Actualizar email"
                                 shape="square"
-                                positionToltip="top"
+                                nameButtom="Actualizar correo"
                             />
                         </button>
                     </form>

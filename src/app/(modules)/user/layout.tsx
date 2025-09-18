@@ -1,5 +1,5 @@
 'use client';
-import { useSidebarContext } from '@user/utils/UseWidthSidebarContext';
+import { useSidebarContext } from '@user/utils/useWidthSidebarContext';
 import { LOCAL_STORAGE_JWT_ITEM } from '@app/shared/constants/common-constants';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';

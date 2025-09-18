@@ -2,15 +2,15 @@ import { Controller, UseFormReturn } from 'react-hook-form';
 import { UserMessages } from '@user/constants/user-messages';
 import { ageGenerator } from '@app/shared/utils/userUtils';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { Save, Ban } from 'lucide-react';
+import { Save, ArrowLeft } from 'lucide-react';
 import SelectGeneral, { Option } from '@user/ui/inputs/SelectGeneral';
 
 import InputText from '@user/ui/inputs/InputText';
 import FormErrorUser from '@user/ui/forms/FormErrorUser';
-import Subtitle from '@user/ui/user-feed/Subtitle';
 import Button from '@user/ui/buttons/Button';
 import FirstNameField from '@user/components/forms/iputs/FirstNameField';
 import Tooltip from '@app/shared/ui/Tooltip';
+import ProfileButtomForm from '@user/components/profile/ProfileButtomForm';
 
 /**
  * Interrace que representa los valores del formulario.
@@ -40,6 +40,7 @@ interface Props {
     editDataBasic?: boolean;
     setEditDataBasic?: Dispatch<SetStateAction<boolean>>;
     loadingLineClick?: () => Promise<void>;
+    btnUpdate?: boolean;
 }
 
 /**
@@ -63,6 +64,7 @@ const CompleteRegisterFormFields = ({
     editDataBasic,
     setEditDataBasic,
     loadingLineClick,
+    btnUpdate,
 }: Props) => {
     const {
         watch,
@@ -91,16 +93,32 @@ const CompleteRegisterFormFields = ({
     }, [watch, defaultValues]);
 
     return (
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} className="">
+            {editDataBasic && (
+                <button
+                    type="button"
+                    onClick={async () => {
+                        if (setEditDataBasic) {
+                            await loadingLineClick?.();
+                            setEditDataBasic((prev) => !prev);
+                        }
+                    }}
+                    className="group relative cursor-pointer rounded-md bg-gray-200 p-2 text-gray-600 hover:bg-gray-300 hover:text-black"
+                >
+                    <ArrowLeft size={16} strokeWidth={1.7} />
+                    <Tooltip position="top">Atrás</Tooltip>
+                </button>
+            )}
             {/* Nombres */}
-            <Subtitle
+            {/* <Subtitle
                 isError={Boolean(errors.firstName)}
                 text={UserMessages.formComplete.labelNames}
-            />
+            /> */}
             <div className="grid grid-cols-2 gap-5">
                 <FirstNameField form={form} />
 
                 <InputText
+                    text="Segundo nombre"
                     placeholder={
                         UserMessages.formComplete.placeholder.middleName
                     }
@@ -119,12 +137,13 @@ const CompleteRegisterFormFields = ({
             </div>
 
             {/* Apellidos */}
-            <Subtitle
+            {/* <Subtitle
                 text={UserMessages.formComplete.labelLastNames}
                 isError={Boolean(errors.lastName)}
-            />
+            /> */}
             <div className="grid grid-cols-2 gap-5">
                 <InputText
+                    text="Primer apelllido"
                     placeholder={UserMessages.formComplete.placeholder.lastName}
                     {...register('lastName', {
                         required: requiredLastName,
@@ -142,6 +161,7 @@ const CompleteRegisterFormFields = ({
                 </InputText>
 
                 <InputText
+                    text="Segundo apelllido"
                     placeholder={
                         UserMessages.formComplete.placeholder.middleLastName
                     }
@@ -160,10 +180,10 @@ const CompleteRegisterFormFields = ({
             </div>
 
             {/* Sexo y edad */}
-            <Subtitle
+            {/* <Subtitle
                 text={UserMessages.formComplete.labelSexAndAge}
                 isError={Boolean(errors.sex || errors.age)}
-            />
+            /> */}
             <div className="mb-6 grid grid-cols-2 gap-5">
                 <Controller
                     control={control}
@@ -171,6 +191,7 @@ const CompleteRegisterFormFields = ({
                     rules={{ required: requiredSex }}
                     render={({ field }) => (
                         <SelectGeneral
+                            text="Sexo"
                             data={optionsSex}
                             placeholder={
                                 UserMessages.formComplete.sex.placeholder
@@ -195,6 +216,7 @@ const CompleteRegisterFormFields = ({
                     rules={{ required: requiredAge }}
                     render={({ field }) => (
                         <SelectGeneral
+                            text="Edad"
                             data={ageGenerator}
                             placeholder={
                                 UserMessages.formComplete.age.placeholder
@@ -230,30 +252,22 @@ const CompleteRegisterFormFields = ({
 
             {/** Botón crear o editar*/}
             {editDataBasic ? (
-                <div className="mb-17">
-                    <div className="absolute flex gap-5">
-                        <button
+                <div className="flex justify-center">
+                    <button
+                        className="flex w-full items-center justify-items-center gap-5"
+                        type="submit"
+                        disabled={btnDisabled}
+                    >
+                        <ProfileButtomForm
                             disabled={btnDisabled}
-                            className={`group relative rounded-lg border p-[0.4rem] ${btnDisabled ? 'cursor-not-allowed border-gray-400 bg-gray-100 text-gray-400' : 'cursor-pointer border-cyan-800 bg-gray-100 text-cyan-800 hover:bg-gray-200'} `}
-                            type="submit"
-                        >
-                            <Save size={18} strokeWidth={1.5} />
-                            <Tooltip position="top">Guardar</Tooltip>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={async () => {
-                                if (setEditDataBasic) {
-                                    await loadingLineClick?.();
-                                    setEditDataBasic((prev) => !prev);
-                                }
-                            }}
-                            className="group relative cursor-pointer rounded-lg border border-cyan-800 bg-gray-100 p-[0.4rem] text-cyan-800 hover:bg-gray-200"
-                        >
-                            <Ban size={18} strokeWidth={1.5} />
-                            <Tooltip position="top">Cancelar</Tooltip>
-                        </button>
-                    </div>
+                            icon={<Save size={17} strokeWidth={1.5} />}
+                            shape="square"
+                            positionToltip="top"
+                            nameButtom="Guardar"
+                            buttonLoading={isBtnLoading}
+                            lineLoading={true}
+                        />
+                    </button>
                 </div>
             ) : (
                 <Button

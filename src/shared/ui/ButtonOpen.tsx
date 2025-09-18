@@ -1,6 +1,7 @@
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Link from 'next/link';
 import clsx from 'clsx';
+import Text from '@user/ui/user-feed/Text';
 
 // Define la interfaz de props esperadas por el componente ButtonOpen
 interface Props {
@@ -19,9 +20,9 @@ interface Props {
 const ButtonOpen = ({ href, text, typeStyle = 'default' }: Props) => {
     // estilos base por defecto
     const baseStyle =
-        ' inline-flex items-center gap-1 rounded-lg border-[0.1rem] border-gray-600 px-2 py-1 text-sm hover:border-[#2E887B] hover:text-[#2E887B] sm:text-xs';
+        ' inline-flex items-center gap-1 rounded-lg border-[0.08rem] border-gray-600 px-2 py-1 text-sm hover:border-[#2E887B] hover:text-[#2E887B] sm:text-xs';
     const profileConfiguration =
-        'inline-flex items-center  text-[0.72rem] gap-1 text-[#C26B9C] rounded-md border-[0.08rem]  hover:border-[#D08BB2] border-[#C26B9C] px-2 py-1  hover:bg-[#D08BB2] hover:text-white ';
+        ' cursor-pointer inline-flex items-center gap-1 rounded-md border-[0.08rem] border-emerald-700 p-1 hover:border-emerald-900  hover:text-emerald-900 text-emerald-700  hover:bg-[#D1F2DD]';
 
     // estilos condicionales según el tipo
     const styleClasses = clsx({
@@ -37,7 +38,15 @@ const ButtonOpen = ({ href, text, typeStyle = 'default' }: Props) => {
             className={styleClasses}
         >
             {/* Texto del botón */}
-            {text}
+            {typeStyle === 'profileConfiguration' ? (
+                <Text
+                    text={text}
+                    sizeOffset={-20}
+                    className="cursor-pointer hover:text-emerald-900"
+                />
+            ) : (
+                text
+            )}
 
             {/* Ícono que indica que el enlace se abre en una nueva pestaña */}
             <OpenInNewIcon className="!text-[0.9rem]" />

@@ -12,6 +12,8 @@ import {
     BORDER_COLOR,
 } from '@app/styles/constans-color';
 
+import Text from '../user-feed/Text';
+
 /**
  *  Interface que representa los datoa a usar en este componente.
  */
@@ -63,6 +65,8 @@ const customStyles = (
     // Input: tamaño, borde
     control: (provided, state) => ({
         ...provided,
+        width: 'fit-content', // ...
+        minWidth: '120px',
         minHeight: '28px',
         height: '30px',
         fontSize: '12px',
@@ -179,9 +183,11 @@ const customStyles = (
     // Menú de opciones.
     menu: (provided) => ({
         ...provided,
+        width: 'fit-content', //...
+        minWidth: '120px',
         fontSize: '12px',
         borderRadius: '1em',
-        border: ` ${isError ? ERROR_COLOR + '1px solid' : 'transparent'}`, // ✅ borde correcto
+        border: ` ${isError ? ERROR_COLOR + '1px solid' : 'transparent'}`,
         borderColor: isError ? ERROR_COLOR : '',
         backgroundColor: 'rgba(255, 255, 255, 1)', // fondo semitransparente
         boxShadow: isError
@@ -234,7 +240,7 @@ const CustomClearIndicator = ({
                 height="15"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke={isError ? ERROR_COLOR : '#9ca3af'} // ⬅️ aquí aplicamos color dinámico
+                stroke={isError ? ERROR_COLOR : '#9ca3af'}
                 strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -303,12 +309,14 @@ const SelectGeneral = ({
     onBlur, // react-form
     name, // react-form
     children,
+    text,
 }: Props & {
     value?: { label: string; value: string };
     onChange?: (value: Option | null) => void;
     onBlur?: () => void;
     name?: string;
     children?: React.ReactNode;
+    text?: string;
 }) => {
     // console.log('SelectGeneral -- value:', value);
     // console.log('SelectGeneral -- data:', data);
@@ -335,6 +343,13 @@ const SelectGeneral = ({
      */
     return (
         <div>
+            {text && (
+                <Text
+                    text={text}
+                    sizeOffset={-3}
+                    className={` ${isError ? 'text-[#E1564C]' : 'text-gray-700'} mt-3 mb-1 font-[370]`}
+                />
+            )}
             <Select<Option, false, GroupedOption>
                 options={groupedOptions}
                 formatGroupLabel={(data) => formatGroupLabel(data, isError)}

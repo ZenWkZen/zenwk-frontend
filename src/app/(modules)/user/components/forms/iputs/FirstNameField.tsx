@@ -35,6 +35,7 @@ const FirstNameField = ({ form }: Props) => {
 
     return (
         <InputText
+            text="Primer nombre"
             placeholder={UserMessages.formComplete.placeholder.firstName}
             {...register('firstName', {
                 required: requiredFirstName,

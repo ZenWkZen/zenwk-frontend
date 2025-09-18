@@ -12,10 +12,10 @@ import { AuthErrors } from '@auth/constants/auth-errors';
 import { Messages } from '@app/shared/constants/messages';
 import { useJwtContext } from '@user/utils/useJwtContext';
 import { loginApi } from '@auth/utils/authUtils';
-import { UsePersonContext } from '@app/app/(modules)/user/utils/usePersonContext';
+import { usePersonContext } from '@app/app/(modules)/user/utils/usePersonContext';
 import { fetchGetUser } from '@auth/utils/authUtils';
 import { getPerson } from '@user/utils/personUtils';
-import { UseUserContext } from '@user/utils/UseUserContext';
+import { useUserContext } from '@app/app/(modules)/user/utils/useUserContext';
 
 import Title from '@app/app/(modules)/(auth)/ui/Title';
 import FormInput from '@app/app/(modules)/(auth)/ui/FormInput';
@@ -56,8 +56,8 @@ const Login = () => {
         formState: { errors },
     } = useForm<LoginForm>();
     const { user, setUser } = useJwtContext();
-    const { setPerson } = UsePersonContext();
-    const { setUserDTO } = UseUserContext();
+    const { setPerson } = usePersonContext();
+    const { setUserDTO } = useUserContext();
 
     /**
      * Prellena el campo de email si se recibe como parámetro en la URL (?email=).

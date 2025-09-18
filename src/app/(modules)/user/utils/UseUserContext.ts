@@ -4,6 +4,6 @@ import { useSafeConext } from "@app/shared/utils/useContextUtils";
 /**
  * @returns RegisterFlowContext
  */
-export const UseUserContext = () => {
+export const useUserContext = () => {
     return useSafeConext(UserContext, "UserContext");
 };

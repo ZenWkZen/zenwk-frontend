@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 import {
     TEXT_VIOLET_REDDISH_BOLD_HOVER,
     TEXT_CYAN_COLOR,
     TEXT_VIOLET_REDDISH_BOLD,
-} from "@app/styles/constans-color";
-import { UserMessages } from "@user/constants/user-messages";
-import { useSidebarContext } from "@user/utils/UseWidthSidebarContext";
+} from '@app/styles/constans-color';
+import { UserMessages } from '@user/constants/user-messages';
+import { useSidebarContext } from '@user/utils/useWidthSidebarContext';
 
-import Text from "@user/ui/user-feed/Text";
-import SidebarIcon from "@user/components/icons/SidebarIcon";
-import CloseSidebarIcon from "@user/components/icons/CloseSidebarIcon";
-import Tooltip from "@app/shared/ui/Tooltip";
-import CalendarCheckIcon from "@user/components/icons/CalendarCheckIcon";
-import AlarmClockIcon from "@user/components/icons/AlarmClockIcon";
-import FolderRootIcon from "@user/components/icons/FolderRoot";
-import CurveIcon from "@user/components/icons/CurveIcon";
-import Link from "next/link";
-import ChevronRightIcon from "@user/components/icons/ChevronRightIcon";
-import BrainIcon from "@user/components/icons/BrainIcon"; // nuevo icono IA (debes tenerlo o crearlo)
+import Text from '@user/ui/user-feed/Text';
+import SidebarIcon from '@user/components/icons/SidebarIcon';
+import CloseSidebarIcon from '@user/components/icons/CloseSidebarIcon';
+import Tooltip from '@app/shared/ui/Tooltip';
+import CalendarCheckIcon from '@user/components/icons/CalendarCheckIcon';
+import AlarmClockIcon from '@user/components/icons/AlarmClockIcon';
+import FolderRootIcon from '@user/components/icons/FolderRoot';
+import CurveIcon from '@user/components/icons/CurveIcon';
+import Link from 'next/link';
+import ChevronRightIcon from '@user/components/icons/ChevronRightIcon';
+import BrainIcon from '@user/components/icons/BrainIcon'; // nuevo icono IA (debes tenerlo o crearlo)
 
 /**
  * Secciones del sidebar con acciones IA.
@@ -29,31 +29,31 @@ export const sections = [
         title: UserMessages.sidebar.options.myTime,
         icon: <AlarmClockIcon sizeStroke={1.1} size={20} className="" />,
         links: [
-            { href: "/", label: "Iniciar registro" },
-            { href: "/", label: "Iniciar registro 2" },
+            { href: '/', label: 'Iniciar registro' },
+            { href: '/', label: 'Iniciar registro 2' },
         ],
-        aiAction: "Analizar y optimizar mi tiempo",
+        aiAction: 'Analizar y optimizar mi tiempo',
     },
     {
         title: UserMessages.sidebar.options.tasks,
         icon: <CalendarCheckIcon sizeStroke={1.1} size={20} className="" />,
         links: [],
-        aiAction: "Priorizar mis tareas con IA",
+        aiAction: 'Priorizar mis tareas con IA',
     },
     {
         title: UserMessages.sidebar.options.proyects,
         icon: <FolderRootIcon sizeStroke={1.1} size={20} className="" />,
         links: [],
-        aiAction: "Detectar riesgos del proyecto",
+        aiAction: 'Detectar riesgos del proyecto',
     },
     {
         title: UserMessages.sidebar.options.reports,
         icon: <CurveIcon sizeStroke={1.1} size={20} className="" />,
         links: [
-            { href: "/", label: "Iniciar registro" },
-            { href: "/", label: "Iniciar registro 2" },
+            { href: '/', label: 'Iniciar registro' },
+            { href: '/', label: 'Iniciar registro 2' },
         ],
-        aiAction: "Generar análisis inteligente",
+        aiAction: 'Generar análisis inteligente',
     },
 ];
 
@@ -95,7 +95,7 @@ const Sidebar = () => {
     };
 
     const handleAIAction = (action: string) => {
-        console.log("Ejecutar IA:", action);
+        console.log('Ejecutar IA:', action);
         // Aquí podrías abrir un modal o llamar a tu backend IA
     };
 
@@ -134,8 +134,8 @@ const Sidebar = () => {
             <div
                 className={`mx-4 h-fit origin-top-left transform-gpu rounded-lg border-0 border-gray-300 bg-white shadow-[0_10px_14px_rgba(0,0,0,0.18)] transition-transform duration-200 ease-in-out select-none ${
                     hiddenSidebar
-                        ? "scale-100 opacity-100"
-                        : "scale-0 overflow-hidden opacity-0"
+                        ? 'scale-100 opacity-100'
+                        : 'scale-0 overflow-hidden opacity-0'
                 }`}
             >
                 {hiddenSidebar &&
@@ -151,8 +151,8 @@ const Sidebar = () => {
                                         <div
                                             onClick={() => toggleSection(idx)}
                                             className={`group relative flex cursor-pointer items-center px-4 py-3 hover:bg-gray-50 ${
-                                                isOpen && "bg-gray-50"
-                                            } ${idx == 0 ? "hover: rounded-t-lg" : idx === sections.length - 1 && !isOpen && "hover: rounded-b-lg"}`}
+                                                isOpen && 'bg-gray-50'
+                                            } ${idx == 0 ? 'hover: rounded-t-lg' : idx === sections.length - 1 && !isOpen && 'hover: rounded-b-lg'}`}
                                         >
                                             <div
                                                 className={`mr-2 flex items-center gap-2 font-[340] tracking-tighter ${
@@ -169,7 +169,7 @@ const Sidebar = () => {
                                                 <ChevronRightIcon
                                                     className={`ml-auto transition-transform duration-200 ${
                                                         isOpen
-                                                            ? "rotate-90 " +
+                                                            ? 'rotate-90 ' +
                                                               TEXT_VIOLET_REDDISH_BOLD
                                                             : TEXT_CYAN_COLOR
                                                     }`}
@@ -190,8 +190,8 @@ const Sidebar = () => {
                                     <ul
                                         className={`overflow-hidden transition-all duration-300 ease-in-out ${
                                             isOpen
-                                                ? "max-h-40 opacity-100"
-                                                : "max-h-0 opacity-0"
+                                                ? 'max-h-40 opacity-100'
+                                                : 'max-h-0 opacity-0'
                                         }`}
                                     >
                                         {section.links.map((link, i) => (
@@ -216,7 +216,7 @@ const Sidebar = () => {
                                         }
                                         className={` ${
                                             idx === sections.length - 1 &&
-                                            "hover: rounded-b-lg"
+                                            'hover: rounded-b-lg'
                                         } flex w-full gap-2 px-4 py-2 text-xs text-violet-700 transition-colors hover:bg-violet-50`}
                                     >
                                         <BrainIcon sizeStroke={1.2} size={18} />

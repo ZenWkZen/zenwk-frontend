@@ -14,9 +14,9 @@ export const UserMessages = {
     formComplete: {
         age: { placeholder: "Edad... ", labelOption: "Edad" },
         sex: { placeholder: "Sexo...", labelOption: "Sexo" },
-        labelNames: "Cuéntanos cómo te llamas",
-        labelLastNames: "Y tus apellidos, por favor",
-        labelSexAndAge: "Ahora compártenos tu sexo y edad",
+        labelNames: "Nombres",
+        labelLastNames: "Apellidos",
+        labelSexAndAge: "Sexo y Edad",
         // Placeholders para los inputs
         placeholder: {
             firstName: "Primer nombre...",

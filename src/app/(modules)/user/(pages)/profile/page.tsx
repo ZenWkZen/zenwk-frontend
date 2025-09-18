@@ -2,13 +2,17 @@
 import React, { useState, useEffect } from 'react';
 import { useFetchAuthenticatedUser } from '@user/hooks/useFetchAuthenticatedUser';
 import { usePersonContext } from '@app/app/(modules)/user/utils/usePersonContext';
+import { useFetchGetPerson } from '@user/hooks/useFetchGetPerson';
 
 import Spinner from '@app/shared/ui/Spinner';
 import Title from '@user/ui/user-feed/Title';
 import ProfileItemConfiguration from '@user/components/profile/ProfileItemConfiguration';
-import PersonalInfoAndImageSection from '@app/app/(modules)/user/ui/profile/PersonalInfoAndImageSection';
+import PersonalInfoSection from '@app/app/(modules)/user/ui/profile/PersonalInfoSection';
 import UpdateEmailSection from '@user/ui/profile/UpdateEmailSection';
-import { useFetchGetPerson } from '@user/hooks/useFetchGetPerson';
+import UpdatePasswordSection from '@user/ui/profile/UpdatePasswordSection';
+import DeleteAccount from '@user/ui/profile/DeleteAccount';
+import ProfilePhotoSection from '@user/ui/profile/ProfilePhotoSection';
+import Text from '@user/ui/user-feed/Text';
 
 /**
  *Componente principal para la configuración del perfil
@@ -21,6 +25,7 @@ const ProfileConfiguration = () => {
         | 'updateEmail'
         | 'updatePassword'
         | 'deleteAccount'
+        | 'updatePhotoProfile'
         | null
     >(null);
 
@@ -35,60 +40,93 @@ const ProfileConfiguration = () => {
     }
 
     return (
-        <div className="mx-auto max-w-lg place-items-center rounded-xl bg-white px-7 py-5 shadow-2xs">
+        <div className="mx-auto max-w-xl place-items-center rounded-xl bg-white px-10 py-5 shadow-2xs">
             <div className="text-center">
                 <Title
                     sizeOffset={10}
                     text="Configuración de Perfil"
-                    className="font-[380] text-cyan-800"
+                    className="font-[380] text-[#333333]"
                 />
+                {/* <AccordionItem /> */}
                 {/** contenido para el frame actualización de perfil */}
-                <div className="px-7 py-5 text-justify">
+                <div className="px-8 py-5 text-justify">
                     <ul>
-                        {/** Sección: información personal & imagen */}
-                        <div className="mb-3">
-                            <ProfileItemConfiguration
-                                text="Información personal & imagen"
-                                isActive={activeSection === 'updateInfoBasic'}
-                                setClickOption={() =>
-                                    setActiveSection(
-                                        activeSection === 'updateInfoBasic'
-                                            ? null
-                                            : 'updateInfoBasic'
-                                    )
-                                }
-                            />
-                            {activeSection === 'updateInfoBasic' &&
+                        {/** Sección:  imagen */}
+                        <ProfileItemConfiguration
+                            text="Cambia tu foto de perfil"
+                            description="Aquí puedes actualizar tu foto de perfil"
+                            isActive={activeSection === 'updatePhotoProfile'}
+                            setClickOption={() =>
+                                setActiveSection(
+                                    activeSection === 'updatePhotoProfile'
+                                        ? null
+                                        : 'updatePhotoProfile'
+                                )
+                            }
+                        >
+                            {activeSection === 'updatePhotoProfile' &&
                                 personDTO && (
-                                    <PersonalInfoAndImageSection
+                                    <ProfilePhotoSection
                                         idPerson={personDTO.id}
                                         userData={userData}
                                     />
                                 )}
-                        </div>
+                        </ProfileItemConfiguration>
+
+                        {/** Sección: información personal & imagen */}
+                        <ProfileItemConfiguration
+                            text="Información personal"
+                            description="Actualiza tus datos básicos y cambia tu foto de perfil"
+                            isActive={activeSection === 'updateInfoBasic'}
+                            setClickOption={() =>
+                                setActiveSection(
+                                    activeSection === 'updateInfoBasic'
+                                        ? null
+                                        : 'updateInfoBasic'
+                                )
+                            }
+                        >
+                            {activeSection === 'updateInfoBasic' &&
+                                personDTO && (
+                                    <PersonalInfoSection
+                                        idPerson={personDTO.id}
+                                        userData={userData}
+                                    />
+                                )}
+                        </ProfileItemConfiguration>
 
                         {/** Sección: Actualizar email */}
-                        <div className="mb-3">
-                            <ProfileItemConfiguration
-                                text="Correo asociado a tu cuenta"
-                                isActive={activeSection === 'updateEmail'}
-                                setClickOption={() =>
-                                    setActiveSection(
-                                        activeSection === 'updateEmail'
-                                            ? null
-                                            : 'updateEmail'
-                                    )
-                                }
-                            />
+                        <ProfileItemConfiguration
+                            //text="Correo asociado a tu cuenta"
+                            text={
+                                <div className="flex items-center gap-2">
+                                    Correo asociado a tu cuenta
+                                    <Text
+                                        text="Verificado"
+                                        className="rounded-lg bg-indigo-100 px-[0.3rem]"
+                                    />
+                                </div>
+                            }
+                            description={'Tu correo es ' + userDTO.email}
+                            isActive={activeSection === 'updateEmail'}
+                            setClickOption={() =>
+                                setActiveSection(
+                                    activeSection === 'updateEmail'
+                                        ? null
+                                        : 'updateEmail'
+                                )
+                            }
+                        >
                             {activeSection === 'updateEmail' && (
                                 <UpdateEmailSection userDTO={userDTO} />
                             )}
-                        </div>
+                        </ProfileItemConfiguration>
 
                         {/** Sección: Cambia tu constraseña */}
-                        <div className="mb-3">
+                        <div className="">
                             <ProfileItemConfiguration
                                 text="Cambia tu constraseña"
+                                //description="Mantén tu cuenta segura actualizando tu contraseña periódicamente"
                                 isActive={activeSection === 'updatePassword'}
                                 setClickOption={() =>
                                     setActiveSection(
@@ -97,13 +135,18 @@ const ProfileConfiguration = () => {
                                             : 'updatePassword'
                                     )
                                 }
-                            />
+                            >
+                                {activeSection === 'updatePassword' && (
+                                    <UpdatePasswordSection />
+                                )}
+                            </ProfileItemConfiguration>
                         </div>
 
                         {/** Sección: Eliminar tu cuenta */}
-                        <div className="mb-3">
+                        <div className="">
                             <ProfileItemConfiguration
                                 text="Eliminar tu cuenta"
+                                description="Si decides eliminar tu cuenta, recuerda que esta acción es permanente"
                                 isActive={activeSection === 'deleteAccount'}
                                 setClickOption={() =>
                                     setActiveSection(
@@ -112,7 +155,11 @@ const ProfileConfiguration = () => {
                                             : 'deleteAccount'
                                     )
                                 }
-                            />
+                            >
+                                {activeSection === 'deleteAccount' && (
+                                    <DeleteAccount />
+                                )}
+                            </ProfileItemConfiguration>
                         </div>
                     </ul>
                 </div>
